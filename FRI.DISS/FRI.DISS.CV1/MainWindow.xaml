@@ -3,11 +3,21 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FRI.DISS.CV1"
+        xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
+        xmlns:local="clr-namespace:FRI.DISS.CV1" 
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="400" Width="550">
     <Grid>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="54,42,0,0" VerticalAlignment="Top" Click="Button_Click"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
+        <Button Content="Run simulation" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="Button_Click"/>
+        
+        <Button Content="Update graph" HorizontalAlignment="Left" Margin="100,10,0,0" VerticalAlignment="Top" Click="Button_Click_1"/>
+
+        <ScottPlot:WpfPlot x:Name="WpfPlot1" Grid.Row="2" />
     </Grid>
 </Window>

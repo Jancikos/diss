@@ -8,6 +8,8 @@ namespace FRI.DISS.CV1
 {
     abstract class MonteCarlo
     {
+        public int UpdateStatsInterval { get; set; } = 1000;
+        public Action<int, double>? UpdateStatsCallback { get; set; }
 
         protected abstract void _initialize(int repCount);
         protected abstract double _doExperiment();
@@ -26,11 +28,18 @@ namespace FRI.DISS.CV1
             for (int i = 0; i < repCount; i++)
             {
                 results += _doExperiment();
+
+                if (i % UpdateStatsInterval == 0)
+                {
+                    UpdateStatsCallback?.Invoke(i, _processExperimentResults(i, results));
+                }
             }
 
             _afterReplications(repCount, results);
 
-            return _processExperimentResults(repCount, results);
+            var result = _processExperimentResults(repCount, results);
+            UpdateStatsCallback?.Invoke(repCount, result);
+            return result;
         }
     }
 }
