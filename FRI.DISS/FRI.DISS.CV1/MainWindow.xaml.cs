@@ -21,6 +21,8 @@ namespace FRI.DISS.CV1
     /// </summary>
     public partial class MainWindow : Window
     {
+        MonteCarlo? _simulation;
+
         Scatter? _myScatter;
         Crosshair MyCrosshair;
 
@@ -63,16 +65,17 @@ namespace FRI.DISS.CV1
             };
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Start_Click(object sender, RoutedEventArgs e)
         {
-            int repCount = 100000;
+            int repCount = 10000000;
             int l = 5;
             int d = 10;
 
-            var buffonExp = new BuffonNeedle()
+            _simulation = new BuffonNeedle()
             {
                 D = d,
                 L = l,
+                // UpdateStatsInterval = 100
                 UpdateStatsInterval = repCount / 100
             };
 
@@ -82,9 +85,7 @@ namespace FRI.DISS.CV1
             var buffonResults = new List<double>();
             var buffonIterations = new List<int>();
 
-
-
-            buffonExp.UpdateStatsCallback = (i, result) =>
+            _simulation.UpdateStatsCallback = (i, result) =>
             {
                 Debug.WriteLine($"Iteration: {i}, Results: {result}");
 
@@ -107,20 +108,30 @@ namespace FRI.DISS.CV1
 
             Task.Run(() =>
             {
-                var piEst = buffonExp.RunExperiment(repCount);
+                var piEst = _simulation.RunExperiment(repCount);
+                Debug.WriteLine($"Runned iterations: {buffonIterations.Last()}");
                 Debug.WriteLine($"Estimated Pi: {piEst}");
                 // var piEst = (2 * l) / (p * d);
                 MessageBox.Show($"Estimated Pi: {piEst}");
             });
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_Plot_Click(object sender, RoutedEventArgs e)
         {
             double[] dataX = { 1, 2, 3, 4, 5 };
             double[] dataY = { 1, 4, 9, 16, 25 };
 
             WpfPlot1.Plot.Add.Scatter(dataX, dataY);
             WpfPlot1.Refresh();
+        }
+
+        private void Button_Stop_Click(object sender, RoutedEventArgs e)
+        {
+            try {
+                _simulation?.StopExperiment();
+            } catch (System.InvalidOperationException ex) {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

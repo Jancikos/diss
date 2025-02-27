@@ -11,6 +11,7 @@ namespace FRI.DISS.CV1
         public int UpdateStatsInterval { get; set; } = 1000;
         public Action<int, double>? UpdateStatsCallback { get; set; }
 
+        public bool IsRunning { get; protected set; }
         protected abstract void _initialize(int repCount);
         protected abstract double _doExperiment();
         protected virtual double _processExperimentResults(int repCount, double results) { return results / repCount;}
@@ -20,26 +21,44 @@ namespace FRI.DISS.CV1
 
         public double RunExperiment(int repCount)
         {
+            IsRunning = true;
             _initialize(repCount);
 
             _beforeReplications(repCount);
 
             double results = 0.0;
-            for (int i = 0; i < repCount; i++)
+            int repDone;
+            for (repDone = 0; repDone < repCount; repDone++)
             {
+                if (!IsRunning)
+                {
+                    break;
+                }
+
                 results += _doExperiment();
 
-                if (i % UpdateStatsInterval == 0)
+                if (repDone % UpdateStatsInterval == 0)
                 {
-                    UpdateStatsCallback?.Invoke(i, _processExperimentResults(i, results));
+                    UpdateStatsCallback?.Invoke(repDone, _processExperimentResults(repDone, results));
                 }
             }
 
-            _afterReplications(repCount, results);
+            _afterReplications(repDone, results);
 
-            var result = _processExperimentResults(repCount, results);
-            UpdateStatsCallback?.Invoke(repCount, result);
+            var result = _processExperimentResults(repDone, results);
+            UpdateStatsCallback?.Invoke(repDone, result);
+            IsRunning = false;
             return result;
+        }
+
+        public void StopExperiment()
+        {
+            if (!IsRunning)
+            {
+                throw new InvalidOperationException("Experiment is not running");
+            }
+
+            IsRunning = false;
         }
     }
 }
