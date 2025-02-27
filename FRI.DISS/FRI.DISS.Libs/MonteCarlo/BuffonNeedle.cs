@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FRI.DISS.CV1
+namespace FRI.DISS.Libs.MonteCarlo
 {
-    internal class BuffonNeedle : MonteCarlo
+    public class BuffonNeedle : MonteCarlo
     {
         public double D;
         public double L;

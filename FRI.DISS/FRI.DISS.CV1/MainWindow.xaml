@@ -4,22 +4,35 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
+        xmlns:libsuc="clr-namespace:FRI.DISS.Libs.GUI.Controls;assembly=FRI.DISS.Libs.GUI"
         xmlns:local="clr-namespace:FRI.DISS.CV1" 
         mc:Ignorable="d"
-        Title="MainWindow" Height="400" Width="550">
-    <Grid>
+        Title="MainWindow" Height="600" Width="1250">
+    <Grid Margin="5">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="10"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <Button Content="Run simulation" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="Button_Start_Click"/>
-        
-        <Button Content="Stop simulation" HorizontalAlignment="Left" Margin="100,10,0,0" VerticalAlignment="Top" Click="Button_Stop_Click"/>
-        
-        <Button Content="Update graph" HorizontalAlignment="Left" Margin="200,10,0,0" VerticalAlignment="Top" Click="Button_Plot_Click"/>
+        <GroupBox Header="Simulation parameters" Grid.Row="0" Margin="10,10,10,0">
+            <StackPanel Orientation="Horizontal">
+                <libsuc:InlineTextBox x:Name="_txtbx_RepCount" Title="Replications count:" Value="1000000" />
+                <Rectangle Width="30"/>
+                <libsuc:InlineTextBox x:Name="_txtbx_UpdateIntervalCount" Title="Update stats interval count:" Value="50" />
+            </StackPanel>
+        </GroupBox>
 
         <ScottPlot:WpfPlot x:Name="WpfPlot1" Grid.Row="2" />
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal">
+            <Button Content="Run simulation" Click="Button_Start_Click"/>
+            <Rectangle Width="30"/>
+            <Button Content="Stop simulation" Click="Button_Stop_Click"/>
+            <Rectangle Width="30"/>
+            <Button Content="Update graph" Click="Button_Plot_Click"/>
+        </StackPanel>
     </Grid>
 </Window>

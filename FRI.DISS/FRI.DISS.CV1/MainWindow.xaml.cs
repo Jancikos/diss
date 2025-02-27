@@ -1,4 +1,5 @@
-﻿using ScottPlot;
+﻿using FRI.DISS.Libs.MonteCarlo;
+using ScottPlot;
 using ScottPlot.Plottables;
 using ScottPlot.WPF;
 using System.Diagnostics;
@@ -67,7 +68,7 @@ namespace FRI.DISS.CV1
 
         private void Button_Start_Click(object sender, RoutedEventArgs e)
         {
-            int repCount = 10000000;
+            int repCount = int.Parse(_txtbx_RepCount.Value);
             int l = 5;
             int d = 10;
 
@@ -75,8 +76,7 @@ namespace FRI.DISS.CV1
             {
                 D = d,
                 L = l,
-                // UpdateStatsInterval = 100
-                UpdateStatsInterval = repCount / 100
+                UpdateStatsInterval = int.Parse(_txtbx_UpdateIntervalCount.Value)
             };
 
             WpfPlot1.Plot.Clear();

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FRI.DISS.CV1
+namespace FRI.DISS.Libs.MonteCarlo
 {
-    abstract class MonteCarlo
+    public abstract class MonteCarlo
     {
         public int UpdateStatsInterval { get; set; } = 1000;
         public Action<int, double>? UpdateStatsCallback { get; set; }
