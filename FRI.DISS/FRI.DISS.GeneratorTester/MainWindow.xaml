@@ -1,0 +1,75 @@
+﻿<Window x:Class="FRI.DISS.GeneratorTester.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:libsuc="clr-namespace:FRI.DISS.Libs.GUI.Controls;assembly=FRI.DISS.Libs.GUI"
+        xmlns:local="clr-namespace:FRI.DISS.GeneratorTester"
+        mc:Ignorable="d"
+        SizeToContent="WidthAndHeight"
+        Title="Generator Tester" Height="500" Width="400">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <Menu>
+                <MenuItem Header="File">
+                </MenuItem>
+
+                <MenuItem x:Name="_mnitem_Close" Header="Close" Click="_mnitem_Close_Click" />
+            </Menu>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="5">
+            <GroupBox Header="Generator parameters" HorizontalAlignment="Left" MinWidth="200">
+                <StackPanel Orientation="Vertical">
+                    <GroupBox Header="Generator type">
+                        <ComboBox x:Name="_cmbx_GeneratorType" />
+                    </GroupBox>
+                    <libsuc:InlineTextBox x:Name="_txtbx_GeneratorSeed" Title="Seed:" Value="0" />
+                    <Rectangle Height="5" />
+                    <libsuc:InlineTextBox x:Name="_txtbx_GeneratorSamplesCount" Title="Samples Count:" Value="100000" />
+                    <Rectangle Height="5" />
+                    <Button Content="Generate" Click="_btn_Generate_Click" Margin="5" />
+                </StackPanel>
+            </GroupBox>
+
+            <StackPanel Orientation="Horizontal">
+                <GroupBox Header="Generated samples">
+                    <StackPanel Orientation="Vertical">
+                        <CheckBox x:Name="_chkbx_SaveSamples" Content="Save samples" IsChecked="True" />
+                        <Button Content="Save to txt" Click="_btn_SaveSamples_Click" />
+                        <Rectangle Height="5" />
+
+                        <CheckBox x:Name="_chkbx_RenderSamples" Content="Render samples" />
+                        <Rectangle Height="5" />
+
+                        <ListBox x:Name="_lstbx_GeneratedSamples" ScrollViewer.VerticalScrollBarVisibility="Auto" Height="200" />
+                    </StackPanel>
+                </GroupBox>
+
+                <Rectangle Width="10" />
+
+                <GroupBox Header="Generated samples stats">
+                    <StackPanel Orientation="Vertical">
+                        <libsuc:InlineText x:Name="_txt_GeneratedSamplesCount" Title="Samples Count:" Value="0" />
+                        <libsuc:InlineText x:Name="_txt_GeneratedSamplesTime" Title="Time:" Value="0" />
+                        <Rectangle Height="5" />
+                        <libsuc:InlineText x:Name="_txt_GeneratedSamplesMin" Title="Min:" Value="0" />
+                        <libsuc:InlineText x:Name="_txt_GeneratedSamplesMax" Title="Max:" Value="0" />
+                        <Rectangle Height="5" />
+                        <libsuc:InlineText x:Name="_txt_GeneratedSamplesMean" Title="Mean:" Value="0" />
+                        <libsuc:InlineText x:Name="_txt_GeneratedSamplesVariance" Title="Variance:" Value="0" />
+                        <libsuc:InlineText x:Name="_txt_GeneratedSamplesStdDev" Title="StdDev:" Value="0" />
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

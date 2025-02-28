@@ -2,17 +2,12 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="Controls\*.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Controls\*.xaml">
+    <ApplicationDefinition Update="App.xaml">
       <SubType>Designer</SubType>
-    </Page>
+    </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Resources\Dictionary.xaml">
+    <Page Update="MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
