@@ -15,13 +15,13 @@ namespace FRI.DISS.Libs.Generators
         /// Minimalna hodnota (obsiahnuta v generovanych hodnotach)
         /// </summary>
         /// <value></value>
-        public int Min { get; init; } = 0;
+        public double Min { get; init; } = 0;
 
         /// <summary>
         /// Maximalna hodnota (neoobsiahnuta v generovanych hodnotach)
         /// </summary>
         /// <value></value>
-        public int Max { get; init; } = 1;
+        public double Max { get; init; } = 1;
 
         public UniformGenerator(GenerationMode mode, SeedGenerator seedGenerator) : base(mode)
         {
@@ -30,7 +30,7 @@ namespace FRI.DISS.Libs.Generators
 
         protected override int _GetSampleInt()
         {
-            return _random.Next(Min, Max);
+            return _random.Next((int)Min, (int)Max);
         }
 
         protected override double _GetSampleDouble()
