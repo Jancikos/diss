@@ -70,6 +70,7 @@ namespace FRI.DISS.GeneratorTester
                 _clearGUI();
 
                 AbstractGenerator generator = _createGenerator(generatorType, seed);
+                Statistics statistics = new();
 
                 const int PERIODIC_SAVE_SAMPLES_INTERVAL = 50000; // iba odhanuta hodnota po experimentovani, aby sa nepristupovalo k disku prilis casto
                 StringBuilder sb = new();
@@ -84,6 +85,7 @@ namespace FRI.DISS.GeneratorTester
                     var sample = generator.Mode == GenerationMode.Discrete
                         ? generator.GetSampleInt()
                         : generator.GetSampleDouble();
+                    statistics.AddSample(sample);
 
                     if (saveSamples)
                     {
@@ -105,14 +107,26 @@ namespace FRI.DISS.GeneratorTester
                 timer.Stop();
                 sw.Close();
 
-                // TODO - update statistics 
-                _txt_GeneratedSamplesCount.Value = samplesCount.ToString();
+                // update statistics 
                 _txt_GeneratedSamplesTime.Value = $"{timer.Elapsed.Minutes:00}:{timer.Elapsed.Seconds:00}:{timer.Elapsed.Milliseconds:000}";
+                _updateStatistics(statistics);
 
                 MessageBox.Show($"Samples generation done.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
             } catch (Exception ex) {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void _updateStatistics(Statistics statistics)
+        {
+            _txt_GeneratedSamplesCount.Value = statistics.Count.ToString();
+
+            _txt_GeneratedSamplesMin.Value = statistics.Min.ToString();
+            _txt_GeneratedSamplesMax.Value = statistics.Max.ToString();
+            
+            _txt_GeneratedSamplesMean.Value = statistics.Mean.ToString();
+            _txt_GeneratedSamplesVariance.Value = statistics.Variance.ToString();
+            _txt_GeneratedSamplesStdDev.Value = statistics.StandardDeviation.ToString();
         }
 
         private AbstractGenerator _createGenerator(GeneratorType generatorType, int seed)
