@@ -16,7 +16,9 @@ namespace FRI.DISS.GeneratorTester
     internal enum GeneratorType
     {
         UniformDiscrete,
-        UniformContinuous
+        UniformContinuous,
+        EmpiricalDiscrete,
+        EmpiricalContinuous
     }
 
     /// <summary>
@@ -127,6 +129,16 @@ namespace FRI.DISS.GeneratorTester
                     };
                 case GeneratorType.UniformContinuous:
                     return new UniformGenerator(GenerationMode.Continuous, seedGenerator);
+                case GeneratorType.EmpiricalDiscrete:
+                case GeneratorType.EmpiricalContinuous:
+                    return new EmpiricalGenerator (
+                        generatorType == GeneratorType.EmpiricalDiscrete 
+                            ? GenerationMode.Discrete
+                            : GenerationMode.Continuous,
+                        [5, 10, 50, 70, 80, 95],
+                        [0.4, 0.3, 0.2, 0.06, 0.04],
+                        seedGenerator
+                    );
                 default:
                     throw new ArgumentException("Invalid generator type");
             }
