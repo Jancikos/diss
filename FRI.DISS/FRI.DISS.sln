@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FRI.DISS.Libs.GUI", "FRI.DI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FRI.DISS.GeneratorTester", "FRI.DISS.GeneratorTester\FRI.DISS.GeneratorTester.csproj", "{2E6DA7A4-47CD-4E8C-BBB7-6DC20964A8EB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FRI.DISS.SP1", "FRI.DISS.SP1\FRI.DISS.SP1.csproj", "{BB7D75C9-EE87-46E6-A55C-DC00B9352935}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{2E6DA7A4-47CD-4E8C-BBB7-6DC20964A8EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E6DA7A4-47CD-4E8C-BBB7-6DC20964A8EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E6DA7A4-47CD-4E8C-BBB7-6DC20964A8EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB7D75C9-EE87-46E6-A55C-DC00B9352935}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB7D75C9-EE87-46E6-A55C-DC00B9352935}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB7D75C9-EE87-46E6-A55C-DC00B9352935}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB7D75C9-EE87-46E6-A55C-DC00B9352935}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
