@@ -72,7 +72,7 @@ namespace FRI.DISS.GeneratorTester
                 AbstractGenerator generator = _createGenerator(generatorType, seed);
                 Statistics statistics = new();
 
-                const int PERIODIC_SAVE_SAMPLES_INTERVAL = 50000; // iba odhanuta hodnota po experimentovani, aby sa nepristupovalo k disku prilis casto
+                const int PeriodicSaveSamplesInterval = 50000; // iba odhanuta hodnota po experimentovani, aby sa nepristupovalo k disku prilis casto
                 StringBuilder sb = new();
                 _lastTestFile = new FileInfo($"{_testFilesDirectory}/{generatorType}_{seed}_{samplesCount}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt");
                 StreamWriter sw = _lastTestFile.CreateText();
@@ -92,7 +92,7 @@ namespace FRI.DISS.GeneratorTester
                         sb.AppendLine(sample.ToString());
 
                         // Save periodically to avoid memory issues with large sample counts
-                        if ((i + 1) % PERIODIC_SAVE_SAMPLES_INTERVAL == 0 || i == samplesCount - 1)
+                        if ((i + 1) % PeriodicSaveSamplesInterval == 0 || i == samplesCount - 1)
                         {
                             sw.Write(sb.ToString());
                             sb.Clear();
