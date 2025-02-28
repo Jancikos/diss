@@ -59,7 +59,7 @@
                 <GroupBox Header="Generated samples stats">
                     <StackPanel Orientation="Vertical">
                         <libsuc:InlineText x:Name="_txt_GeneratedSamplesCount" Title="Samples Count:" Value="0" />
-                        <libsuc:InlineText x:Name="_txt_GeneratedSamplesTime" Title="Time:" Value="0" />
+                        <libsuc:InlineText x:Name="_txt_GeneratedSamplesTime" Title="Generation time:" Value="0" />
                         <Rectangle Height="5" />
                         <libsuc:InlineText x:Name="_txt_GeneratedSamplesMin" Title="Min:" Value="0" />
                         <libsuc:InlineText x:Name="_txt_GeneratedSamplesMax" Title="Max:" Value="0" />
