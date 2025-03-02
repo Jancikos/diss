@@ -56,7 +56,12 @@ namespace FRI.DISS.SP1
             var renderSkipFirst = _txtbx_SimulationRenderSkipFirst.IntValue;
 
             foreach (var simElement in _simulationElements)
-            {
+            {   
+                if (!simElement.IsActive)
+                {
+                    continue;
+                }
+
                 if (simElement.Simulation == null)
                 {
                     throw new InvalidOperationException("Simulation not set");
@@ -66,7 +71,6 @@ namespace FRI.DISS.SP1
                 simElement.Simulation.ReplicationsCount = replicationCount;
                 simElement.Simulation.UpdateStatsInterval = renderUpdateStatsInterval;
                 simElement.SkipFirstCount = renderSkipFirst;
-             
 
                 Task.Run(() =>
                 {
@@ -78,15 +82,19 @@ namespace FRI.DISS.SP1
 
         private void _btn_Simulation_Stop_Click(object sender, RoutedEventArgs e)
         {
-
             foreach (var simElement in _simulationElements)
             {
                 try {
+                    if (!simElement.IsActive)
+                    {
+                        continue;
+                    }
+                    
                     simElement.StopSimulation();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error stopping simulation: {ex.Message}", "Simulation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error stopping simulation {simElement.Title}: {ex.Message}", "Simulation Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
