@@ -11,7 +11,8 @@ namespace FRI.DISS.Libs.MonteCarlo
     {
         Created,
         Running,
-        Stopped
+        Stopping,
+        Done
     }
 
     public abstract class MonteCarlo
@@ -54,7 +55,7 @@ namespace FRI.DISS.Libs.MonteCarlo
             ResultRaw = new Statistics();
             for (int repDone = 0; repDone < ReplicationsCount; repDone++)
             {
-                if (State == MonteCarloState.Stopped)
+                if (State == MonteCarloState.Stopping)
                 {
                     break;
                 }
@@ -71,16 +72,18 @@ namespace FRI.DISS.Libs.MonteCarlo
             }
 
             _afterSimulation();
+
+            State = MonteCarloState.Done;
         }
 
-        public void StopExperiment()
+        public void StopSimulation()
         {
             if (State != MonteCarloState.Running)
             {
-                throw new InvalidOperationException("Experiment is not running");
+                throw new InvalidOperationException("Simulation is not running");
             }
 
-            State = MonteCarloState.Stopped;
+            State = MonteCarloState.Stopping;
         }
     }
 }

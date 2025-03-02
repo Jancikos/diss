@@ -148,7 +148,7 @@ namespace FRI.DISS.Libs.MonteCarlo
             _rndBuyerDampers = new UniformGenerator(GenerationMode.Discrete, SeedGenerator) { Min = 50, Max = 100 };
             _rndBuyerBrakes = new UniformGenerator(GenerationMode.Discrete, SeedGenerator) { Min = 60, Max = 250 };
             _rndBuyerLights = new EmpiricalGenerator(GenerationMode.Discrete,
-                [30, 60, 10, 140, 160],
+                [30, 60, 100, 140, 160],
                 [0.2, 0.4, 0.3, 0.1],
                 SeedGenerator
             );

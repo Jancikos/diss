@@ -44,6 +44,9 @@ namespace FRI.DISS.Libs.GUI.Controls
             }
         }
 
+        public int IntValue => int.Parse(Value);
+        public double DoubleValue => double.Parse(Value);
+
         public TextAlignment TextAlignment
         {
             get

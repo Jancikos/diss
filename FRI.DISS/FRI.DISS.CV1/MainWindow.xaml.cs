@@ -131,7 +131,7 @@ namespace FRI.DISS.CV1
         private void Button_Stop_Click(object sender, RoutedEventArgs e)
         {
             try {
-                _simulation?.StopExperiment();
+                _simulation?.StopSimulation();
             } catch (System.InvalidOperationException ex) {
                 MessageBox.Show(ex.Message);
             }
