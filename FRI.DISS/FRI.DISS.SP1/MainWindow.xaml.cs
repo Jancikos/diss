@@ -25,5 +25,15 @@ namespace FRI.DISS.SP1
         {
             Close();
         }
+
+        private void _btn_Simulation_Start_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void _btn_Simulation_Stop_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

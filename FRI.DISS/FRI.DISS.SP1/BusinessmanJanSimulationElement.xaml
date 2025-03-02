@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="FRI.DISS.SP1.BusinessmanJanSimulationElement"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ScottPlot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
+             xmlns:libsuc="clr-namespace:FRI.DISS.Libs.GUI.Controls;assembly=FRI.DISS.Libs.GUI"
+             xmlns:local="clr-namespace:FRI.DISS.SP1"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="500">
+    <GroupBox x:Name="_txt_Title" Header="Businessman Jan Simulation" Margin="5">
+        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <ScottPlot:WpfPlot x:Name="_plot" Grid.Row="1" Margin="0 0 0 10" />
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="15" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <libsuc:InlineText x:Name="_txt_RepDone" Title="Replications count:" Value="1000000" />
+                    <libsuc:InlineText x:Name="_txt_TimeElapsed" Title="Time elapsed:" Value="00:00:000" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Vertical">
+                    <libsuc:InlineText x:Name="_txt_StatsMean" Title="Mean:" Value="0" />
+                    <libsuc:InlineText x:Name="_txt_StatsVariance" Title="Variance:" Value="0" />
+                    <libsuc:InlineText x:Name="_txt_StatsMin" Title="Min:" Value="0" />
+                    <libsuc:InlineText x:Name="_txt_StatsMax" Title="Max:" Value="0" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </GroupBox>
+</UserControl>

@@ -4,10 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:libsuc="clr-namespace:FRI.DISS.Libs.GUI.Controls;assembly=FRI.DISS.Libs.GUI"
+        xmlns:uc="clr-namespace:FRI.DISS.SP1"
         xmlns:local="clr-namespace:FRI.DISS.SP1"
-        SizeToContent="WidthAndHeight"
         mc:Ignorable="d"
-        Title="DISS SP1 - Businessman Jan" Height="450" Width="800">
+        Title="DISS SP1 - Businessman Jan" Height="800" Width="1200">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -26,8 +26,56 @@
             </Menu>
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="5">
+        <Grid Grid.Row="1" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            
+            <!-- simulation params -->
+            <StackPanel Orientation="Horizontal">
+                <GroupBox Header="Simulation parameters" HorizontalAlignment="Left" MinWidth="200">
+                    <StackPanel Orientation="Vertical">
+                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationSeed" Title="Seed:" Value="0" />
+                        <Rectangle Height="5" />
+                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRepliations" Title="Repliations:" Value="100" />
+                        <Rectangle Height="5" />
+                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRenderInterval" Title="Render interval:" Value="1" />
+                        <Rectangle Height="5" />
+                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRenderSkipFirst" Title="Render skip first:" Value="0" />
+                    </StackPanel>
+                </GroupBox>
 
-        </StackPanel>
+                <GroupBox Header="Simulation actions" MinWidth="150">
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                        <Button Content="Start" Click="_btn_Simulation_Start_Click" Margin="5" />
+                        <Button Content="Stop" Click="_btn_Simulation_Stop_Click" Margin="5" />
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+
+            <!-- simulations -->
+            <GroupBox Header="Simulations" Grid.Row="2" Padding="5">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyA" Title="Strategy A" />
+                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyB" Grid.Column="2" Title="Strategy B" />
+
+                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyC" Grid.Row="2" Title="Strategy C" />
+                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyD" Grid.Row="2" Grid.Column="2" Title="Strategy D" />
+                </Grid>
+            </GroupBox>
+        </Grid>
     </Grid>
 </Window>
