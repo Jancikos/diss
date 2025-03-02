@@ -21,6 +21,7 @@ namespace FRI.DISS.Libs.MonteCarlo
         public int ReplicationsCount { get; set; } = 1000;
         public int UpdateStatsInterval { get; set; } = 1000;
         public Action<MonteCarlo, int, double>? UpdateStatsCallback { get; set; }
+        public SeedGenerator SeedGenerator { get; set; } = SeedGenerator.Global;
 
         
         public Statistics? ResultRaw { get; protected set; }

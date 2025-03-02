@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FRI.DISS.Libs.Generators;
 
 namespace FRI.DISS.Libs.MonteCarlo
 {
@@ -12,14 +13,14 @@ namespace FRI.DISS.Libs.MonteCarlo
         public double D;
         public double L;
 
-        private Random? _randY;
-        private Random? _randAngle;
+        private UniformGenerator? _randY;
+        private UniformGenerator? _randAngle;
 
         protected override double _doExperiment()
         {
-            double y = _randY!.NextDouble() * D;
+            double y = _randY!.GetSampleDouble();
 
-            double angleInDegrees = _randAngle!.NextDouble() * 180;
+            double angleInDegrees = _randAngle!.GetSampleDouble();
             double angleInRadians = angleInDegrees * Math.PI / 180;
 
             double a = L * Math.Sin(angleInRadians);
@@ -35,8 +36,8 @@ namespace FRI.DISS.Libs.MonteCarlo
 
         protected override void _initialize()
         {
-            _randY = new Random();
-            _randAngle = new Random();
+            _randY = new UniformGenerator(GenerationMode.Continuous, SeedGenerator) { Min = 0, Max = D };
+            _randAngle = new UniformGenerator(GenerationMode.Continuous, SeedGenerator) { Min = 0, Max = 180 };
         }
 
         protected override void _afterSimulation()

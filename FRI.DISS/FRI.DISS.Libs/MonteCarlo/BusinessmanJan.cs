@@ -125,34 +125,32 @@ namespace FRI.DISS.Libs.MonteCarlo
 
         protected override void _initialize()
         {
-            var seedGenerator = SeedGenerator.Global;
-
-            _rndSupplyProbability = new UniformGenerator(GenerationMode.Continuous, seedGenerator) { Min = 0, Max = 100};
+            _rndSupplyProbability = new UniformGenerator(GenerationMode.Continuous, SeedGenerator) { Min = 0, Max = 100};
             _rndSupplier1Reliability =
             [
-                new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 10, Max = 70},
-                new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 30, Max = 95}
+                new UniformGenerator(GenerationMode.Continuous, SeedGenerator) {Min = 10, Max = 70},
+                new UniformGenerator(GenerationMode.Continuous, SeedGenerator) {Min = 30, Max = 95}
             ];
             _rndSupplier2Reliability =
             [
                 new EmpiricalGenerator(GenerationMode.Continuous,
                     [5, 10, 50, 70, 80, 95],
                     [0.4, 0.3, 0.2, 0.06, 0.04],
-                    seedGenerator
+                    SeedGenerator
                 ),
                 new EmpiricalGenerator(GenerationMode.Continuous,
                     [5, 10, 50, 70, 80, 95],
                     [0.2, 0.4, 0.3, 0.06, 0.04],
-                    seedGenerator
+                    SeedGenerator
                 )
             ];
 
-            _rndBuyerDampers = new UniformGenerator(GenerationMode.Discrete, seedGenerator) { Min = 50, Max = 100 };
-            _rndBuyerBrakes = new UniformGenerator(GenerationMode.Discrete, seedGenerator) { Min = 60, Max = 250 };
+            _rndBuyerDampers = new UniformGenerator(GenerationMode.Discrete, SeedGenerator) { Min = 50, Max = 100 };
+            _rndBuyerBrakes = new UniformGenerator(GenerationMode.Discrete, SeedGenerator) { Min = 60, Max = 250 };
             _rndBuyerLights = new EmpiricalGenerator(GenerationMode.Discrete,
                 [30, 60, 10, 140, 160],
                 [0.2, 0.4, 0.3, 0.1],
-                seedGenerator
+                SeedGenerator
             );
         }
 
