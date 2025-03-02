@@ -76,7 +76,8 @@ namespace FRI.DISS.CV1
             {
                 D = d,
                 L = l,
-                UpdateStatsInterval = int.Parse(_txtbx_UpdateIntervalCount.Value)
+                UpdateStatsInterval = int.Parse(_txtbx_UpdateIntervalCount.Value),
+                ReplicationsCount = repCount
             };
 
             WpfPlot1.Plot.Clear();
@@ -85,11 +86,12 @@ namespace FRI.DISS.CV1
             var buffonResults = new List<double>();
             var buffonIterations = new List<int>();
 
-            _simulation.UpdateStatsCallback = (i, result) =>
+            _simulation.UpdateStatsCallback = (_, i, rawResult) =>
             {
-                Debug.WriteLine($"Iteration: {i}, Results: {result}");
+                var processedResult = _simulation.ProcessExperimentResult();
+                Debug.WriteLine($"Iteration: {i}, Results: {processedResult}");
 
-                buffonResults.Add(result);
+                buffonResults.Add(processedResult);
                 buffonIterations.Add(i);
 
                 Dispatcher.Invoke(() =>
@@ -108,7 +110,8 @@ namespace FRI.DISS.CV1
 
             Task.Run(() =>
             {
-                var piEst = _simulation.RunExperiment(repCount);
+                _simulation.RunSimulation();
+                var piEst =  _simulation.ProcessExperimentResult();
                 Debug.WriteLine($"Runned iterations: {buffonIterations.Last()}");
                 Debug.WriteLine($"Estimated Pi: {piEst}");
                 // var piEst = (2 * l) / (p * d);

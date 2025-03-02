@@ -3,62 +3,83 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FRI.DISS.Libs.Generators;
 
 namespace FRI.DISS.Libs.MonteCarlo
 {
+    public enum MonteCarloState
+    {
+        Created,
+        Running,
+        Stopped
+    }
+
     public abstract class MonteCarlo
     {
+        public MonteCarloState State { get; protected set; } = MonteCarloState.Created;
+
+        public int ReplicationsCount { get; set; } = 1000;
         public int UpdateStatsInterval { get; set; } = 1000;
-        public Action<int, double>? UpdateStatsCallback { get; set; }
+        public Action<MonteCarlo, int, double>? UpdateStatsCallback { get; set; }
 
-        public bool IsRunning { get; protected set; }
-        protected abstract void _initialize(int repCount);
+        
+        public Statistics? ResultRaw { get; protected set; }
+        public int ReplicationsDone => ResultRaw?.Count ?? 0;
+
+
+
+        protected abstract void _initialize();
         protected abstract double _doExperiment();
-        protected virtual double _processExperimentResults(int repCount, double results) { return results / repCount;}
+        public virtual double ProcessExperimentResult() { return ResultRaw?.Mean ?? throw new InvalidOperationException("Simulation not run yet"); }
 
-        protected virtual void _beforeReplications(int repCount) { }
-        protected virtual void _afterReplications(int repCount, double result) { }
+        protected virtual void _beforeSimulation() { }
+        protected virtual void _afterSimulation() { }
 
-        public double RunExperiment(int repCount)
+        protected virtual void _beforeExperiment() { }
+        protected virtual void _afterExperiment(int replication, double result) { }
+
+        public void RunSimulation()
         {
-            IsRunning = true;
-            _initialize(repCount);
-
-            _beforeReplications(repCount);
-
-            double results = 0.0;
-            int repDone;
-            for (repDone = 0; repDone < repCount; repDone++)
+            if (State == MonteCarloState.Running)
             {
-                if (!IsRunning)
+                throw new InvalidOperationException("Simulation already running");
+            }
+            State = MonteCarloState.Running;
+
+            _initialize();
+
+            _beforeSimulation();
+
+            ResultRaw = new Statistics();
+            for (int repDone = 0; repDone < ReplicationsCount; repDone++)
+            {
+                if (State == MonteCarloState.Stopped)
                 {
                     break;
                 }
 
-                results += _doExperiment();
+                _beforeExperiment();
+                var expRawResult = _doExperiment();
+                ResultRaw.AddSample(expRawResult);
+                _afterExperiment(repDone, expRawResult);
 
-                if (repDone % UpdateStatsInterval == 0)
+                if (repDone % UpdateStatsInterval == 0 || repDone == ReplicationsCount - 1)
                 {
-                    UpdateStatsCallback?.Invoke(repDone, _processExperimentResults(repDone, results));
+                    UpdateStatsCallback?.Invoke(this, repDone, expRawResult);
                 }
             }
 
-            _afterReplications(repDone, results);
-
-            var result = _processExperimentResults(repDone, results);
-            UpdateStatsCallback?.Invoke(repDone, result);
-            IsRunning = false;
-            return result;
+            _afterSimulation();
         }
 
         public void StopExperiment()
         {
-            if (!IsRunning)
+            if (State != MonteCarloState.Running)
             {
                 throw new InvalidOperationException("Experiment is not running");
             }
 
-            IsRunning = false;
+            State = MonteCarloState.Stopped;
         }
     }
 }
