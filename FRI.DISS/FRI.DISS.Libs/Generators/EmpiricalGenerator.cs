@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FRI.DISS.Libs.Helpers;
 
 namespace FRI.DISS.Libs.Generators
 {
@@ -38,7 +39,7 @@ namespace FRI.DISS.Libs.Generators
                 throw new ArgumentException("Probabilities must have one element less than borders");
             }
 
-            if (probabilities.Sum() != 1)
+            if (!probabilities.Sum().EqualsToWithE(1))
             {
                 throw new ArgumentException("Probabilities must sum to 1");
             }
