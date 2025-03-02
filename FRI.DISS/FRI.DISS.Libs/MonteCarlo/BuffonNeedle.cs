@@ -27,22 +27,21 @@ namespace FRI.DISS.Libs.MonteCarlo
             return y + a >= D ? 1 : 0;
         }
 
-        protected override double _processExperimentResults(int repCount, double results)
+        public override double ProcessExperimentResult()
         {
-            var p = results / repCount;
-            return (2 * L) / (p * D);
+            var p = base.ProcessExperimentResult();
+            return 2 * L / (p * D);
         }
 
-        protected override void _initialize(int repCount)
+        protected override void _initialize()
         {
             _randY = new Random();
             _randAngle = new Random();
         }
 
-        protected override void _afterReplications(int repCount, double result)
+        protected override void _afterSimulation()
         {
-            var piEst = (2 * L) / (result * D);
-            Debug.WriteLine($"Pi estimation: {piEst}");
+            Debug.WriteLine($"Pi estimation: {ProcessExperimentResult()}");
         }
     }
 }

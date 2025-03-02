@@ -123,11 +123,11 @@ namespace FRI.DISS.Libs.MonteCarlo
         /// <returns></returns>
         protected abstract int _getSupplierIndex(int w);
 
-        protected override void _initialize(int repCount)
+        protected override void _initialize()
         {
             var seedGenerator = SeedGenerator.Global;
 
-            _rndSupplyProbability = new UniformGenerator(GenerationMode.Continuous, seedGenerator);
+            _rndSupplyProbability = new UniformGenerator(GenerationMode.Continuous, seedGenerator) { Min = 0, Max = 100};
             _rndSupplier1Reliability =
             [
                 new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 10, Max = 70},
