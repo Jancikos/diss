@@ -48,6 +48,17 @@ namespace FRI.DISS.Libs.MonteCarlo
         protected AbstractGenerator? _rndBuyerBrakes;
         protected AbstractGenerator? _rndBuyerLights;
 
+        public Statistics? ResultSuplliersReliability { get; protected set; }
+        public Statistics? ResultMissingDemandItemsCount { get; protected set; }
+        public Statistics? ResultWarehouseItemsLeftCount { get; protected set; }
+
+        protected override void _beforeSimulation()
+        {
+            ResultSuplliersReliability = new Statistics();
+            ResultMissingDemandItemsCount = new Statistics();
+            ResultWarehouseItemsLeftCount = new Statistics();
+        }
+
         protected override double _doExperiment()
         {
             var warehouse = new Warehouse();
@@ -67,6 +78,9 @@ namespace FRI.DISS.Libs.MonteCarlo
                         if (supplierReliability < supplyProbability)
                         {
                             warehouse.Supply();
+                            ResultSuplliersReliability!.AddSample(1);
+                        } else {
+                            ResultSuplliersReliability!.AddSample(0);
                         }
                     }
 
@@ -78,11 +92,15 @@ namespace FRI.DISS.Libs.MonteCarlo
                             _rndBuyerLights!.GetSampleInt()
                         );
 
+                        ResultMissingDemandItemsCount!.AddSample(missingDemand);
+
                         totalCost += missingDemand * MissingDemandPenalty;
                     }
 
                     totalCost += warehouse.GetDailyCost();
                 }
+
+                ResultWarehouseItemsLeftCount!.AddSample(warehouse.TotalItemsCount);
             }
 
             return totalCost;
@@ -162,6 +180,8 @@ namespace FRI.DISS.Libs.MonteCarlo
             public int Brakes => _brakes;
             private int _lights = 0;
             public int Lights => _lights;
+
+            public int TotalItemsCount => Dampers + Brakes + Lights;
 
             public void Supply()
             {
