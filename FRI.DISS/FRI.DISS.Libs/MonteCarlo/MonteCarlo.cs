@@ -20,7 +20,7 @@ namespace FRI.DISS.Libs.MonteCarlo
         public MonteCarloState State { get; protected set; } = MonteCarloState.Created;
 
         public int ReplicationsCount { get; set; } = 1000;
-        public int UpdateStatsInterval { get; set; } = 1000;
+        public int UpdateStatsInterval { get; set; } = 100;
         public Action<MonteCarlo, int, double>? UpdateStatsCallback { get; set; }
         public SeedGenerator SeedGenerator { get; set; } = SeedGenerator.Global;
 
@@ -67,7 +67,7 @@ namespace FRI.DISS.Libs.MonteCarlo
 
                 if (repDone % UpdateStatsInterval == 0 || repDone == ReplicationsCount - 1)
                 {
-                    UpdateStatsCallback?.Invoke(this, repDone, expRawResult);
+                    UpdateStatsCallback?.Invoke(this, repDone + 1, expRawResult);
                 }
             }
 

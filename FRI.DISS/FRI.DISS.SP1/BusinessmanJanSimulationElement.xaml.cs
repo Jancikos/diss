@@ -38,10 +38,17 @@ namespace FRI.DISS.SP1
             set { _txt_Title.Header = value; }
         }
 
+        public bool IsActive
+        {
+            get { return _chkbx_Active.IsChecked == true; }
+            set { _chkbx_Active.IsChecked = value; }
+        }
+
         public BusinessmanJanSimulationElement()
         {
             InitializeComponent();
 
+            _clearGUI();
         }
 
         public void StartSimulation()
@@ -77,7 +84,7 @@ namespace FRI.DISS.SP1
             };
 
             _startTimer();
-            
+
             Simulation.RunSimulation();
         }
 
@@ -134,8 +141,32 @@ namespace FRI.DISS.SP1
 
         public void StopSimulation()
         {
-
             Simulation?.StopSimulation();
         }
+
+        #region GUI Events
+
+        private void _btn_Start_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                StartSimulation();
+            } catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void _btn_Stop_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                StopSimulation();
+            } catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
+    #endregion
 }
