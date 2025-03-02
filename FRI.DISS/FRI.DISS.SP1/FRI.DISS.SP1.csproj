@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ScottPlot.WPF" Version="5.0.54" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FRI.DISS.Libs.GUI\FRI.DISS.Libs.GUI.csproj" />
     <ProjectReference Include="..\FRI.DISS.Libs\FRI.DISS.Libs.csproj" />
   </ItemGroup>
