@@ -74,8 +74,7 @@ namespace FRI.DISS.Libs.MonteCarlo
                         var supplierReliability = _getSupplierReliabilityGenerator(w).GetSampleDouble();
                         var supplyProbability = _rndSupplyProbability!.GetSampleDouble();
 
-                        // ak true, tak dodavatel dodal tovar
-                        if (supplierReliability < supplyProbability)
+                        if (supplyProbability < supplierReliability)
                         {
                             warehouse.Supply();
                             ResultSuplliersReliability!.AddSample(1);
@@ -119,13 +118,13 @@ namespace FRI.DISS.Libs.MonteCarlo
             {
                 // dodavatel 1
                 case 0:
-                    if (w < 11)
+                    if (w < 10)
                         return _rndSupplier1Reliability![0];
 
                     return _rndSupplier1Reliability![1];
                 // dodavatel 2
                 case 1:
-                    if (w < 16)
+                    if (w < 15)
                         return _rndSupplier2Reliability![0];
 
                     return _rndSupplier2Reliability![1];
@@ -163,8 +162,8 @@ namespace FRI.DISS.Libs.MonteCarlo
                 )
             ];
 
-            _rndBuyerDampers = new UniformGenerator(GenerationMode.Discrete, SeedGenerator) { Min = 50, Max = 100 };
-            _rndBuyerBrakes = new UniformGenerator(GenerationMode.Discrete, SeedGenerator) { Min = 60, Max = 250 };
+            _rndBuyerDampers = new UniformGenerator(GenerationMode.Discrete, SeedGenerator) { Min = 50, Max = 100 + 1 };
+            _rndBuyerBrakes = new UniformGenerator(GenerationMode.Discrete, SeedGenerator) { Min = 60, Max = 250 + 1 };
             _rndBuyerLights = new EmpiricalGenerator(GenerationMode.Discrete,
                 [30, 60, 100, 140, 160],
                 [0.2, 0.4, 0.3, 0.1],
