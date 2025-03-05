@@ -1,9 +1,0 @@
-
-
-init genreatorov
-
-for (pocet replikacii)
-    v = experiment()
-    kumulativV += v
-
-vysledok = kumulativV / pocet replikacii
