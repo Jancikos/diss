@@ -43,7 +43,7 @@
                         <Rectangle Height="5" />
                         <libsuc:InlineTextBox x:Name="_txtbx_SimulationRenderInterval" Title="Render interval:" Value="1000" />
                         <Rectangle Height="5" />
-                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRenderSkipFirst" Title="Render skip first:" Value="20000" />
+                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRenderSkipFirst" Title="Render skip first:" Value="100000" />
                     </StackPanel>
                 </GroupBox>
 
