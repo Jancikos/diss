@@ -38,10 +38,10 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Orientation="Vertical">
-                    <libsuc:InlineText x:Name="_txt_StatsMean" Title="Mean:" Value="0" />
-                    <libsuc:InlineText x:Name="_txt_StatsVariance" Title="Variance:" Value="0" />
-                    <libsuc:InlineText x:Name="_txt_StatsMin" Title="Min:" Value="0" />
-                    <libsuc:InlineText x:Name="_txt_StatsMax" Title="Max:" Value="0" />
+                    <libsuc:InlineText x:Name="_txt_StatsMeanTotalCost" Title="Mean Total Cost:" Value="0" />
+                    <libsuc:InlineText x:Name="_txt_StatsMeanSuppliersReliabily" Title="Mean Suppliers Reliability:" Value="0" />
+                    <libsuc:InlineText x:Name="_txt_StatsMeanMissingDemand" Title="Mean Missing Demand:" Value="0" />
+                    <libsuc:InlineText x:Name="_txt_StatsMeanItemsLeftInStock" Title="Mean Items Left In Stock:" Value="0" />
                 </StackPanel>
             </Grid>
         </Grid>

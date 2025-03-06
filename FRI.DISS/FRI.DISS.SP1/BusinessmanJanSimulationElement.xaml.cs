@@ -169,25 +169,19 @@ namespace FRI.DISS.SP1
             // clear stats
             _txt_TimeElapsed.Value = "00:00:000";
             _txt_RepDone.Value = "0";
-            _txt_StatsMean.Value = "0";
-            _txt_StatsVariance.Value = "0";
-            _txt_StatsMax.Value = "0";
-            _txt_StatsMin.Value = "0";
+            _txt_StatsMeanTotalCost.Value = "0";
+            _txt_StatsMeanItemsLeftInStock.Value = "0";
+            _txt_StatsMeanMissingDemand.Value = "0";
+            _txt_StatsMeanSuppliersReliabily.Value = "0";
         }
 
         private void _updateStats()
         {
-            var stats = Simulation?.ResultRaw;
-            if (stats == null)
-            {
-                return;
-            }
-
-            _txt_RepDone.Value = stats.Count.ToString();
-            _txt_StatsMean.Value = stats.Mean.ToString("0.####");
-            _txt_StatsVariance.Value = stats.Variance.ToString("0.####");
-            _txt_StatsMax.Value = stats.Max.ToString("0.##");
-            _txt_StatsMin.Value = stats.Min.ToString("0.##");
+            _txt_RepDone.Value = Simulation?.ResultRaw?.Count.ToString() ?? "0";
+            _txt_StatsMeanTotalCost.Value = Simulation?.ResultRaw?.MeanToString(true) ?? "0";
+            _txt_StatsMeanItemsLeftInStock.Value = Simulation?.ResultWarehouseItemsLeftCount?.MeanToString(true) ?? "0";
+            _txt_StatsMeanMissingDemand.Value = Simulation?.ResultMissingDemandItemsCount?.MeanToString(true) ?? "0";
+            _txt_StatsMeanSuppliersReliabily.Value = Simulation?.ResultSuplliersReliability?.MeanToString(true) ?? "0";
         }
 
         public void StopSimulation()

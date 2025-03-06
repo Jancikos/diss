@@ -66,5 +66,17 @@ namespace FRI.DISS.Libs.Generators
             Sum = 0;
             SumOfSquares = 0;
         }
+
+        public override string ToString()
+        {
+            return $"Count: {Count}, Mean: {Mean}, Variance: {Variance}, Max: {Max}, Min: {Min}";
+        }
+
+        public string MeanToString(bool withMinMax = false)
+        {
+            return withMinMax
+            ? $"{Mean:0.####} [{Min:0.####}; {Max:0.####}]"
+            : Mean.ToString("0.####");
+        }
     }
 }

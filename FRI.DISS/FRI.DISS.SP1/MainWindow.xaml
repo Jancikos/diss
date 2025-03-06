@@ -39,11 +39,11 @@
                     <StackPanel Orientation="Vertical">
                         <libsuc:InlineTextBox x:Name="_txtbx_SimulationSeed" Title="Seed:" Value="0" />
                         <Rectangle Height="5" />
-                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRepliations" Title="Repliations:" Value="100" />
+                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRepliations" Title="Repliations:" Value="1000000" />
                         <Rectangle Height="5" />
-                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRenderInterval" Title="Render interval:" Value="1" />
+                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRenderInterval" Title="Render interval:" Value="1000" />
                         <Rectangle Height="5" />
-                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRenderSkipFirst" Title="Render skip first:" Value="0" />
+                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRenderSkipFirst" Title="Render skip first:" Value="20000" />
                     </StackPanel>
                 </GroupBox>
 
