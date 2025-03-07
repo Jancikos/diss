@@ -78,7 +78,11 @@ namespace FRI.DISS.Libs.MonteCarlo
 
                         if (supplyProbability < supplierReliability)
                         {
-                            _warehouse!.Supply();
+                            _warehouse!.Supply(
+                                _getSupplyDampers(w),
+                                _getSupplyBrakes(w),
+                                _getSupplyLights(w)
+                            );
                             ResultSuplliersReliability!.AddSample(1);
                         } else {
                             ResultSuplliersReliability!.AddSample(0);
@@ -143,6 +147,10 @@ namespace FRI.DISS.Libs.MonteCarlo
         /// <returns></returns>
         protected abstract int _getSupplierIndex(int w);
 
+        protected virtual int _getSupplyDampers(int w) => 100;
+        protected virtual int _getSupplyBrakes(int w) => 200;
+        protected virtual int _getSupplyLights(int w) => 150;
+
         protected override void _initialize()
         {
             _warehouse = new Warehouse();
@@ -180,21 +188,18 @@ namespace FRI.DISS.Libs.MonteCarlo
         {
             private int _dampers = 0;
             public int Dampers => _dampers;
-            public int DampersSupply {get; init;} = 100;
             private int _brakes = 0;
             public int Brakes => _brakes;
-            public int BrakesSupply {get; init;} = 200;
             private int _lights = 0;
             public int Lights => _lights;
-            public int LightsSupply {get; init;} = 150;
 
             public int TotalItemsCount => Dampers + Brakes + Lights;
 
-            public void Supply()
+            public void Supply(int dampers, int brakes, int lights)
             {
-                _dampers += DampersSupply;
-                _brakes += BrakesSupply;
-                _lights += LightsSupply;
+                _dampers += dampers;
+                _brakes += brakes;
+                _lights += lights;
             }
 
             public int Sell(int dampers, int brakes, int lights)
@@ -250,16 +255,80 @@ namespace FRI.DISS.Libs.MonteCarlo
     {
         protected override int _getSupplierIndex(int w) => 1;
 
+        protected override int _getSupplyDampers(int w) => 50;
+        protected override int _getSupplyBrakes(int w) => 60;
+        protected override int _getSupplyLights(int w) => 30;
+    }
+
+    public class BusinessmanJanCustomStrategy : BusinessmanJan
+    {
+        /// <summary>
+        /// csv subor s konfiguraciou strategie 
+        /// 
+        /// obsahuje strukturu: Week, SupplierIndex, DamperSupply, BrakeSupply, LightSupply
+        /// </summary>
+        /// <value></value>
+        public FileInfo? SuppliersStrategyConfig { get; set; }
+
+        protected int[]? _supplierIndexes { get; set; }
+        protected int[]? _dampersSupplies { get; set; }
+        protected int[]? _brakesSupplies { get; set; }
+        protected int[]? _lightsSupplies { get; set; }
+
         protected override void _initialize()
         {
             base._initialize();
 
-            _warehouse = new Warehouse
+            if (SuppliersStrategyConfig == null)
             {
-                DampersSupply = 50,
-                BrakesSupply = 60,
-                LightsSupply = 30
-            };
+                throw new InvalidOperationException("SuppliersStrategyConfig not set");
+            }
+
+            var lines = File.ReadAllLines(SuppliersStrategyConfig.FullName);
+            if (lines.Length != Weeks)
+            {
+                throw new InvalidOperationException($"Invalid SuppliersStrategyConfig file. Must have {Weeks} lines (weeks).");
+            }
+
+            _supplierIndexes = new int[lines.Length];
+            _dampersSupplies = new int[lines.Length];
+            _brakesSupplies = new int[lines.Length];
+            _lightsSupplies = new int[lines.Length];
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var parts = lines[i].Split(';');
+                if (parts.Length != 5)
+                {
+                    throw new InvalidOperationException($"Invalid SuppliersStrategyConfig file. Line {i + 1} must have 5 parts.");
+                }
+
+                if (!int.TryParse(parts[1], out _supplierIndexes[i]))
+                {
+                    throw new InvalidOperationException($"Invalid SuppliersStrategyConfig file. Line {i + 1} must have integer as first part.");
+                }
+
+                if (!int.TryParse(parts[2], out _dampersSupplies[i]))
+                {
+                    throw new InvalidOperationException($"Invalid SuppliersStrategyConfig file. Line {i + 1} must have integer as second part.");
+                }
+
+                if (!int.TryParse(parts[3], out _brakesSupplies[i]))
+                {
+                    throw new InvalidOperationException($"Invalid SuppliersStrategyConfig file. Line {i + 1} must have integer as third part.");
+                }
+
+                if (!int.TryParse(parts[4], out _lightsSupplies[i]))
+                {
+                    throw new InvalidOperationException($"Invalid SuppliersStrategyConfig file. Line {i + 1} must have integer as fourth part.");
+                }
+            }
+
         }
+
+        protected override int _getSupplierIndex(int w) => _supplierIndexes![w];
+        protected override int _getSupplyDampers(int w) => _dampersSupplies![w];
+        protected override int _getSupplyBrakes(int w) => _brakesSupplies![w];
+        protected override int _getSupplyLights(int w) => _lightsSupplies![w];
     }
 }

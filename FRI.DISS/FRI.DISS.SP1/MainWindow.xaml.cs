@@ -1,15 +1,9 @@
-﻿using System.Text;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using FRI.DISS.Libs.Generators;
 using FRI.DISS.Libs.MonteCarlo;
+using Microsoft.Win32;
 
 namespace FRI.DISS.SP1
 {
@@ -31,6 +25,7 @@ namespace FRI.DISS.SP1
         {
             get { return (SimulationsType)_cmbx_SimulationType.SelectedItem; }
         }
+        protected FileInfo? _loadedSuppliersStrategyConfig;
 
 
         public MainWindow()
@@ -71,9 +66,8 @@ namespace FRI.DISS.SP1
             _simulationElements[(int)SimulationsType.CustomStrategy] = new List<BusinessmanJanSimulationElement>(){
                 _simStrategyCustom
             };
-            _simStrategyCustom.Simulation = new BusinessmanJanStrategyKostor();
+            _simStrategyCustom.Simulation = new BusinessmanJanCustomStrategy();
 
-            
             // Initialize ComboBox
             foreach (SimulationsType type in Enum.GetValues(typeof(SimulationsType)))
             {
@@ -111,9 +105,24 @@ namespace FRI.DISS.SP1
                 simElement.Simulation.UpdateStatsInterval = renderUpdateStatsInterval;
                 simElement.SkipFirstCount = renderSkipFirst;
 
+                if (SimulationsType == SimulationsType.CustomStrategy)
+                {
+                    ((BusinessmanJanCustomStrategy)simElement.Simulation).SuppliersStrategyConfig = _loadedSuppliersStrategyConfig;
+                }
+
                 Task.Run(() =>
                 {
-                    simElement.StartSimulation();
+                    try
+                    {
+                        simElement.StartSimulation();
+                    }
+                    catch (Exception ex)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            MessageBox.Show($"Error starting simulation: {ex.Message}", "Simulation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        });
+                    }
                 });
             }
 
@@ -147,12 +156,32 @@ namespace FRI.DISS.SP1
             {
                 foreach (var simElement in _simulationElements[i])
                 {
-                    simElement.Visibility = i == (int)selectedType 
+                    simElement.Visibility = i == (int)selectedType
                         ? Visibility.Visible
                         : Visibility.Collapsed;
                 }
             }
 
+            _grbx_SupplierStrategyConfigFile.Visibility = selectedType == SimulationsType.CustomStrategy
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        private void _btn_LoadSuppliersStrategyConfig_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog()
+            {
+                Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+                Title = "Select suppliers strategy configuration"
+            };
+
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            _loadedSuppliersStrategyConfig = new FileInfo(dialog.FileName);
+            _txt_SupplierStrategyConfigFile.Text = _loadedSuppliersStrategyConfig.FullName;
         }
     }
 }

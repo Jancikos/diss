@@ -51,18 +51,26 @@
                     </StackPanel>
                 </GroupBox>
 
+                <GroupBox x:Name="_grbx_SupplierStrategyConfigFile" Header="Suppliers strategy configuration file" MinWidth="150" Padding="5">
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+                        <TextBlock x:Name="_txt_SupplierStrategyConfigFile" Text="No file selected" />
+                        <Button Content="Load file" Click="_btn_LoadSuppliersStrategyConfig_Click" Margin="0 5 0 0" />
+                    </StackPanel>
+                </GroupBox>
+                
                 <GroupBox Header="Simulation actions" MinWidth="150">
                     <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                         <Button Content="Start" Click="_btn_Simulation_Start_Click" Margin="5" />
                         <Button Content="Stop" Click="_btn_Simulation_Stop_Click" Margin="5" />
                     </StackPanel>
                 </GroupBox>
+
             </StackPanel>
 
             <!-- simulations -->
             <GroupBox Header="Simulations" Grid.Row="2">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
-                    <StackPanel Orientation="Horizontal">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyA" Title="Strategy A" />
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyB" Title="Strategy B" />
 
@@ -73,7 +81,7 @@
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorB" Title="Strategy Kostor B" />
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorC" Title="Strategy Kostor C" />
 
-                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyCustom" Title="Custom strategy" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyCustom" Title="Custom strategy" HorizontalAlignment="Stretch" />
                     </StackPanel>
                 </ScrollViewer>
             </GroupBox>
