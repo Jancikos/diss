@@ -35,6 +35,10 @@
             
             <!-- simulation params -->
             <StackPanel Orientation="Horizontal">
+                <GroupBox Header="Simulations" HorizontalAlignment="Left" MinWidth="200" Margin="0 0 5 0" VerticalAlignment="Top">
+                    <ComboBox x:Name="_cmbx_SimulationType" SelectionChanged="_cmbx_SimulationType_SelectionChanged" />
+                </GroupBox>
+
                 <GroupBox Header="Simulation parameters" HorizontalAlignment="Left" MinWidth="200">
                     <StackPanel Orientation="Vertical">
                         <libsuc:InlineTextBox x:Name="_txtbx_SimulationSeed" Title="Seed:" Value="0" />
@@ -56,29 +60,22 @@
             </StackPanel>
 
             <!-- simulations -->
-            <GroupBox Header="Simulations" Grid.Row="2" Padding="5">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="10" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+            <GroupBox Header="Simulations" Grid.Row="2">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
+                    <StackPanel Orientation="Horizontal">
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyA" Title="Strategy A" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyB" Title="Strategy B" />
 
-                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyA" Title="Strategy A" />
-                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyB" Grid.Column="2" Title="Strategy B" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyC" Title="Strategy C" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyD" Title="Strategy D" />
 
-                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyC" Grid.Row="2" Title="Strategy C" />
-                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyD" Grid.Row="2" Grid.Column="2" Title="Strategy D" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorA" Title="Strategy Kostor A" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorB" Title="Strategy Kostor B" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorC" Title="Strategy Kostor C" />
 
-                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostor" Grid.RowSpan="3" Grid.Column="4" Title="Strategy Kostor" />
-                </Grid>
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyCustom" Title="Custom strategy" />
+                    </StackPanel>
+                </ScrollViewer>
             </GroupBox>
         </Grid>
     </Grid>
