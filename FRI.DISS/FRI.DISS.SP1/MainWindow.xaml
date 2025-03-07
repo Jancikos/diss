@@ -69,20 +69,17 @@
 
             <!-- simulations -->
             <GroupBox Header="Simulations" Grid.Row="2">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
+                    <UniformGrid Rows="1">
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyA" Title="Strategy A" />
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyB" Title="Strategy B" />
-
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyC" Title="Strategy C" />
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyD" Title="Strategy D" />
-
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorA" Title="Strategy Kostor A" />
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorB" Title="Strategy Kostor B" />
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorC" Title="Strategy Kostor C" />
-
-                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyCustom" Title="Custom strategy" HorizontalAlignment="Stretch" />
-                    </StackPanel>
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyCustom" Title="Custom strategy" />
+                    </UniformGrid>
                 </ScrollViewer>
             </GroupBox>
         </Grid>

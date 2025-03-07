@@ -30,8 +30,11 @@ namespace FRI.DISS.SP1
         public BusinessmanJan? Simulation { get; set; }
 
         public int SkipFirstCount = 0;
-        protected DataLogger? _dataLoggerCosts;
-        protected IYAxis? _yAxisCosts;
+        protected DataLogger? _dataLoggerTotalCosts;
+        protected IYAxis? _yAxisTotalCosts;
+
+        protected DataLogger? _dataDailyCosts;
+        protected IYAxis? _yAxisDailyCosts;
 
         protected Stopwatch _stopwatch = new();
 
@@ -57,10 +60,19 @@ namespace FRI.DISS.SP1
 
         private void _initializePlot()
         {
-            _yAxisCosts = _plot.Plot.Axes.Left;
-            _yAxisCosts.Label.Text = "Total costs";
-            _yAxisCosts.Label.FontSize = 12;
-            _yAxisCosts.Label.ForeColor = ScottPlot.Color.FromColor(System.Drawing.Color.Orange);
+            _plotTotal.Plot.Title("Avg. total costs through replications");
+            _plotTotal.Plot.XLabel("Replications done", 12);
+            _yAxisTotalCosts = _plotTotal.Plot.Axes.Left;
+            _yAxisTotalCosts.Label.Text = "Total costs";
+            _yAxisTotalCosts.Label.FontSize = 12;
+            _yAxisTotalCosts.Label.ForeColor = ScottPlot.Color.FromColor(System.Drawing.Color.Red);
+
+            _plotDaily.Plot.Title("Cumulated daily costs of the first replication");
+            _plotDaily.Plot.XLabel("Day", 12);
+            _yAxisDailyCosts = _plotDaily.Plot.Axes.Left;
+            _yAxisDailyCosts.Label.Text = "Daily costs";
+            _yAxisDailyCosts.Label.FontSize = 12;
+            _yAxisDailyCosts.Label.ForeColor = ScottPlot.Color.FromColor(System.Drawing.Color.Blue);
         }
 
         public void StartSimulation()
@@ -71,14 +83,23 @@ namespace FRI.DISS.SP1
             }
             Dispatcher.Invoke(_clearGUI);
 
-            _plot.Plot.Clear();
+            _plotTotal.Plot.Clear();
 
-            _dataLoggerCosts = _plot.Plot.Add.DataLogger();
-            _dataLoggerCosts.Axes.YAxis = _yAxisCosts!;
-            _dataLoggerCosts.Color = _yAxisCosts!.Label.ForeColor;
+            _dataLoggerTotalCosts = _plotTotal.Plot.Add.DataLogger();
+            _dataLoggerTotalCosts.Axes.YAxis = _yAxisTotalCosts!;
+            _dataLoggerTotalCosts.Color = _yAxisTotalCosts!.Label.ForeColor;
 
-            var axis = (RightAxis)_plot.Plot.Axes.Right;
-            axis.Color(_dataLoggerCosts.Color);
+            var axis = (RightAxis)_plotTotal.Plot.Axes.Right;
+            axis.Color(_dataLoggerTotalCosts.Color);
+
+            _plotDaily.Plot.Clear();
+
+            _dataDailyCosts = _plotDaily.Plot.Add.DataLogger();
+            _dataDailyCosts.Axes.YAxis = _yAxisDailyCosts!;
+            _dataDailyCosts.Color = _yAxisDailyCosts!.Label.ForeColor;
+
+            var axisDaily = (RightAxis)_plotDaily.Plot.Axes.Right;
+            axisDaily.Color(_dataDailyCosts.Color);
 
             Simulation.UpdateStatsCallback = (mc, repDone, resultRaw) =>
             {
@@ -92,9 +113,17 @@ namespace FRI.DISS.SP1
                     _updateStats();
 
                     // update plot
-                    _dataLoggerCosts!.Add(repDone, Simulation.ProcessExperimentResult());
+                    _dataLoggerTotalCosts!.Add(repDone, Simulation.ProcessExperimentResult());
+                    _plotTotal.Refresh();
+                });
+            };
 
-                    _plot.Refresh();
+            Simulation.UpdateStatsDailyCallback = (week, day, totalCost) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    _dataDailyCosts!.Add(week * 7 + day + 1, totalCost);
+                    _plotDaily.Refresh();
                 });
             };
 
@@ -127,8 +156,9 @@ namespace FRI.DISS.SP1
 
         private void _clearGUI()
         {
-            // clear plot
-            _plot.Plot.Clear();
+            // clear plots
+            _plotTotal.Plot.Clear();
+            _plotDaily.Plot.Clear();
 
             // clear stats
             _txt_TimeElapsed.Value = "00:00:000";

@@ -75,7 +75,7 @@ namespace FRI.DISS.Libs.Generators
         public string MeanToString(bool withMinMax = false)
         {
             return withMinMax
-            ? $"{Mean:0.####} [{Min:0.####}; {Max:0.####}]"
+            ? $"{Mean:0.##} [{Min:0.##}; {Max:0.##}]"
             : Mean.ToString("0.####");
         }
     }

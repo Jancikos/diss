@@ -7,11 +7,13 @@
              xmlns:libsuc="clr-namespace:FRI.DISS.Libs.GUI.Controls;assembly=FRI.DISS.Libs.GUI"
              xmlns:local="clr-namespace:FRI.DISS.SP1"
              mc:Ignorable="d" 
+             MinWidth="600" 
              d:DesignHeight="300" d:DesignWidth="500">
     <GroupBox x:Name="_txt_Title" Header="Businessman Jan Simulation" Margin="5">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
@@ -23,9 +25,10 @@
                 <Button Content="Stop" Click="_btn_Stop_Click" Margin="5" />
             </StackPanel>
 
-            <ScottPlot:WpfPlot x:Name="_plot" Grid.Row="1" Margin="0 0 0 10" />
+            <ScottPlot:WpfPlot x:Name="_plotDaily" Grid.Row="1" Margin="0 0 0 10" />
+            <ScottPlot:WpfPlot x:Name="_plotTotal" Grid.Row="2" Margin="0 0 0 10" />
 
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="15" />

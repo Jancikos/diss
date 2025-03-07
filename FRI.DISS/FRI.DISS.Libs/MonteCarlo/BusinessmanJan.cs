@@ -54,6 +54,13 @@ namespace FRI.DISS.Libs.MonteCarlo
         public Statistics? ResultMissingDemandPenalty { get; protected set; }
         public Statistics? ResultWarehouseCosts { get; protected set; }
 
+        /// <summary>
+        /// week, day, totalCost
+        /// 
+        /// called only in first replication
+        /// </summary>
+        public Action<int, int, double>? UpdateStatsDailyCallback { get; set; }
+
         protected override void _beforeSimulation()
         {
             ResultSuplliersReliability = new Statistics();
@@ -102,6 +109,11 @@ namespace FRI.DISS.Libs.MonteCarlo
                     }
 
                     totalWarehouseCost += _warehouse!.GetDailyCost();
+
+                    if (ReplicationsDone == 0) 
+                    {
+                        UpdateStatsDailyCallback?.Invoke(w, d, totalPenalty + totalWarehouseCost);
+                    }
                 }
 
             }
