@@ -67,6 +67,8 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
                     <uc:BusinessmanJanSimulationElement x:Name="_simStrategyA" Title="Strategy A" />
@@ -74,6 +76,8 @@
 
                     <uc:BusinessmanJanSimulationElement x:Name="_simStrategyC" Grid.Row="2" Title="Strategy C" />
                     <uc:BusinessmanJanSimulationElement x:Name="_simStrategyD" Grid.Row="2" Grid.Column="2" Title="Strategy D" />
+
+                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostor" Grid.RowSpan="3" Grid.Column="4" Title="Strategy Kostor" />
                 </Grid>
             </GroupBox>
         </Grid>

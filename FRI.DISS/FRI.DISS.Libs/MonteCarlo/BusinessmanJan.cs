@@ -40,6 +40,8 @@ namespace FRI.DISS.Libs.MonteCarlo
         protected const double DailyStorageCostBrakes = 0.3;
         protected const double DailyStorageCostLights = 0.25;
 
+        protected Warehouse? _warehouse;
+
         protected AbstractGenerator? _rndSupplyProbability;
         protected AbstractGenerator[]? _rndSupplier1Reliability;
         protected AbstractGenerator[]? _rndSupplier2Reliability;
@@ -49,20 +51,20 @@ namespace FRI.DISS.Libs.MonteCarlo
         protected AbstractGenerator? _rndBuyerLights;
 
         public Statistics? ResultSuplliersReliability { get; protected set; }
-        public Statistics? ResultMissingDemandItemsCount { get; protected set; }
-        public Statistics? ResultWarehouseItemsLeftCount { get; protected set; }
+        public Statistics? ResultMissingDemandPenalty { get; protected set; }
+        public Statistics? ResultWarehouseCosts { get; protected set; }
 
         protected override void _beforeSimulation()
         {
             ResultSuplliersReliability = new Statistics();
-            ResultMissingDemandItemsCount = new Statistics();
-            ResultWarehouseItemsLeftCount = new Statistics();
+            ResultMissingDemandPenalty = new Statistics();
+            ResultWarehouseCosts = new Statistics();
         }
 
         protected override double _doExperiment()
         {
-            var warehouse = new Warehouse();
-            var totalCost = 0.0;
+            var totalPenalty = 0.0;
+            var totalWarehouseCost = 0.0;
 
             for (int w = 0; w < Weeks; w++)
             {
@@ -76,7 +78,7 @@ namespace FRI.DISS.Libs.MonteCarlo
 
                         if (supplyProbability < supplierReliability)
                         {
-                            warehouse.Supply();
+                            _warehouse!.Supply();
                             ResultSuplliersReliability!.AddSample(1);
                         } else {
                             ResultSuplliersReliability!.AddSample(0);
@@ -85,24 +87,25 @@ namespace FRI.DISS.Libs.MonteCarlo
 
                     if (d == DayOfSell)
                     {
-                        var missingDemand = warehouse.Sell(
+                        var missingDemand = _warehouse!.Sell(
                             _rndBuyerDampers!.GetSampleInt(),
                             _rndBuyerBrakes!.GetSampleInt(),
                             _rndBuyerLights!.GetSampleInt()
                         );
 
-                        ResultMissingDemandItemsCount!.AddSample(missingDemand);
 
-                        totalCost += missingDemand * MissingDemandPenalty;
+                        totalPenalty += missingDemand * MissingDemandPenalty;
                     }
 
-                    totalCost += warehouse.GetDailyCost();
+                    totalWarehouseCost += _warehouse!.GetDailyCost();
                 }
 
-                ResultWarehouseItemsLeftCount!.AddSample(warehouse.TotalItemsCount);
             }
 
-            return totalCost;
+            ResultMissingDemandPenalty!.AddSample(totalPenalty);
+            ResultWarehouseCosts!.AddSample(totalWarehouseCost);
+
+            return totalPenalty + totalWarehouseCost;
         }
 
         /// <summary>
@@ -142,6 +145,8 @@ namespace FRI.DISS.Libs.MonteCarlo
 
         protected override void _initialize()
         {
+            _warehouse = new Warehouse();
+
             _rndSupplyProbability = new UniformGenerator(GenerationMode.Continuous, SeedGenerator) { Min = 0, Max = 100};
             _rndSupplier1Reliability =
             [
@@ -175,18 +180,21 @@ namespace FRI.DISS.Libs.MonteCarlo
         {
             private int _dampers = 0;
             public int Dampers => _dampers;
+            public int DampersSupply {get; init;} = 100;
             private int _brakes = 0;
             public int Brakes => _brakes;
+            public int BrakesSupply {get; init;} = 200;
             private int _lights = 0;
             public int Lights => _lights;
+            public int LightsSupply {get; init;} = 150;
 
             public int TotalItemsCount => Dampers + Brakes + Lights;
 
             public void Supply()
             {
-                _dampers += 100;
-                _brakes += 200;
-                _lights += 150;
+                _dampers += DampersSupply;
+                _brakes += BrakesSupply;
+                _lights += LightsSupply;
             }
 
             public int Sell(int dampers, int brakes, int lights)
@@ -236,5 +244,22 @@ namespace FRI.DISS.Libs.MonteCarlo
     public class BusinessmanJanStrategyD : BusinessmanJan
     {
         protected override int _getSupplierIndex(int w) => (w + 1) % 2;
+    }
+
+    public class BusinessmanJanStrategyKostor : BusinessmanJan
+    {
+        protected override int _getSupplierIndex(int w) => 1;
+
+        protected override void _initialize()
+        {
+            base._initialize();
+
+            _warehouse = new Warehouse
+            {
+                DampersSupply = 50,
+                BrakesSupply = 60,
+                LightsSupply = 30
+            };
+        }
     }
 }

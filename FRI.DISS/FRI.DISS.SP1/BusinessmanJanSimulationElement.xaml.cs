@@ -143,8 +143,8 @@ namespace FRI.DISS.SP1
         {
             _txt_RepDone.Value = Simulation?.ResultRaw?.Count.ToString() ?? "0";
             _txt_StatsMeanTotalCost.Value = Simulation?.ResultRaw?.MeanToString(true) ?? "0";
-            _txt_StatsMeanItemsLeftInStock.Value = Simulation?.ResultWarehouseItemsLeftCount?.MeanToString(true) ?? "0";
-            _txt_StatsMeanMissingDemand.Value = Simulation?.ResultMissingDemandItemsCount?.MeanToString(true) ?? "0";
+            _txt_StatsMeanItemsLeftInStock.Value = Simulation?.ResultWarehouseCosts?.MeanToString(true) ?? "0";
+            _txt_StatsMeanMissingDemand.Value = Simulation?.ResultMissingDemandPenalty?.MeanToString(true) ?? "0";
             _txt_StatsMeanSuppliersReliabily.Value = Simulation?.ResultSuplliersReliability?.MeanToString(true) ?? "0";
         }
 

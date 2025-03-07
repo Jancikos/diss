@@ -41,6 +41,9 @@ namespace FRI.DISS.SP1
 
             _simulationElements.Add(_simStrategyD);
             _simStrategyD.Simulation = new BusinessmanJanStrategyD();
+
+            _simulationElements.Add(_simStrategyKostor);
+            _simStrategyKostor.Simulation = new BusinessmanJanStrategyKostor();
         }
 
         private void _mnitem_Close_Click(object sender, RoutedEventArgs e)
