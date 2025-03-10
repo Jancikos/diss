@@ -263,13 +263,44 @@ namespace FRI.DISS.Libs.MonteCarlo
         protected override int _getSupplierIndex(int w) => (w + 1) % 2;
     }
 
-    public class BusinessmanJanStrategyKostor : BusinessmanJan
+    /// <summary>
+    /// Strategy Kostor A - objednavanie len ak kapaicta skladu je pod priemernou velkostou objednavok, dodavatel 0
+    /// </summary>
+    public class BusinessmanJanStrategyKostorA : BusinessmanJan
+    {
+        protected override int _getSupplierIndex(int w) => 0;
+
+        protected override int _getSupplyDampers(int w) => _warehouse!.Dampers > 75 ? 0 : base._getSupplyDampers(w);
+        protected override int _getSupplyBrakes(int w) => _warehouse!.Brakes > 155 ? 0 : base._getSupplyBrakes(w);
+        protected override int _getSupplyLights(int w) => _warehouse!.Lights > 95 ? 0 : base._getSupplyLights(w);
+    }
+
+    /// <summary>
+    /// Strategy Kostor B - objednavanie len ak kapaicta skladu je pod priemernou velkostou objednavok, dodavatel 1
+    /// </summary>
+    public class BusinessmanJanStrategyKostorB : BusinessmanJanStrategyKostorA
     {
         protected override int _getSupplierIndex(int w) => 1;
+    } 
 
-        protected override int _getSupplyDampers(int w) => 50;
-        protected override int _getSupplyBrakes(int w) => 60;
-        protected override int _getSupplyLights(int w) => 30;
+    /// <summary>
+    /// Strategy Kostor C - objednavanie podla priemernej velkosti objednavok, dodavatel 0
+    /// </summary>
+    public class BusinessmanJanStrategyKostorC : BusinessmanJan
+    {
+        protected override int _getSupplierIndex(int w) => 0;
+
+        protected override int _getSupplyDampers(int w) => 75; // 100 + 50 / 2
+        protected override int _getSupplyBrakes(int w) => 155; //  60 + 250 / 2
+        protected override int _getSupplyLights(int w) => 92; // 45*0.2 + 80*0.4 + 120*0.3 + 150*0.1 = 92
+    }
+
+    /// <summary>
+    /// Strategy Kostor D - objednavanie podla priemernej velkosti objednavok, dodavatel 1
+    /// </summary>
+    public class BusinessmanJanStrategyKostorD : BusinessmanJanStrategyKostorC 
+    {
+        protected override int _getSupplierIndex(int w) => 1;
     }
 
     public class BusinessmanJanCustomStrategy : BusinessmanJan

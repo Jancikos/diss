@@ -78,6 +78,7 @@
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorA" Title="Strategy Kostor A" />
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorB" Title="Strategy Kostor B" />
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorC" Title="Strategy Kostor C" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorD" Title="Strategy Kostor D" />
                         <uc:BusinessmanJanSimulationElement x:Name="_simStrategyCustom" Title="Custom strategy" />
                     </UniformGrid>
                 </ScrollViewer>

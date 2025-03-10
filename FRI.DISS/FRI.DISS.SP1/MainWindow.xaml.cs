@@ -55,12 +55,14 @@ namespace FRI.DISS.SP1
             _simulationElements[(int)SimulationsType.KostorStrategies] = new List<BusinessmanJanSimulationElement>(){
                 _simStrategyKostorA,
                 _simStrategyKostorB,
-                _simStrategyKostorC
+                _simStrategyKostorC,
+                _simStrategyKostorD
             };
 
-            _simStrategyKostorA.Simulation = new BusinessmanJanStrategyKostor();
-            _simStrategyKostorB.Simulation = new BusinessmanJanStrategyKostor();
-            _simStrategyKostorC.Simulation = new BusinessmanJanStrategyKostor();
+            _simStrategyKostorA.Simulation = new BusinessmanJanStrategyKostorA();
+            _simStrategyKostorB.Simulation = new BusinessmanJanStrategyKostorB();
+            _simStrategyKostorC.Simulation = new BusinessmanJanStrategyKostorC();
+            _simStrategyKostorD.Simulation = new BusinessmanJanStrategyKostorD();
 
             // init custom strategy
             _simulationElements[(int)SimulationsType.CustomStrategy] = new List<BusinessmanJanSimulationElement>(){

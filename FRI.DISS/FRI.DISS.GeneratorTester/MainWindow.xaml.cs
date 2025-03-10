@@ -149,8 +149,8 @@ namespace FRI.DISS.GeneratorTester
                         generatorType == GeneratorType.EmpiricalDiscrete 
                             ? GenerationMode.Discrete
                             : GenerationMode.Continuous,
-                        [5, 10, 50, 70, 80, 95],
-                        [0.4, 0.3, 0.2, 0.06, 0.04],
+                        [30, 60, 100, 140, 160],
+                        [0.2, 0.4, 0.3, 0.1],
                         seedGenerator
                     );
                 default:
