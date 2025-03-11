@@ -68,6 +68,11 @@ namespace FRI.DISS.Libs.MonteCarlo
             ResultWarehouseCosts = new Statistics();
         }
 
+        protected override void _beforeExperiment()
+        {
+            _warehouse = new Warehouse();
+        }
+
         protected override double _doExperiment()
         {
             var totalPenalty = 0.0;
@@ -165,8 +170,6 @@ namespace FRI.DISS.Libs.MonteCarlo
 
         protected override void _initialize()
         {
-            _warehouse = new Warehouse();
-
             _rndSupplyProbability = new UniformGenerator(GenerationMode.Continuous, SeedGenerator) { Min = 0, Max = 100};
             _rndSupplier1Reliability =
             [
