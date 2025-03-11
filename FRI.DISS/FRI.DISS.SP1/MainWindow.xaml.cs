@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using FRI.DISS.Libs.Generators;
@@ -140,7 +140,6 @@ namespace FRI.DISS.SP1
                     {
                         continue;
                     }
-
                     simElement.StopSimulation();
                 }
                 catch (Exception ex)
