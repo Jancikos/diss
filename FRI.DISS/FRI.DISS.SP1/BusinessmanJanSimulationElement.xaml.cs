@@ -189,7 +189,7 @@ namespace FRI.DISS.SP1
         {
             try
             {
-                StartSimulation();
+                Task.Run(StartSimulation);
             } catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -200,7 +200,7 @@ namespace FRI.DISS.SP1
         {
             try
             {
-                StopSimulation();
+                Task.Run(StopSimulation);
             } catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
