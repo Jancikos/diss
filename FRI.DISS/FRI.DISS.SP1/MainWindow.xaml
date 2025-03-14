@@ -35,46 +35,53 @@
             
             <!-- simulation params -->
             <StackPanel Orientation="Horizontal">
+                <GroupBox Header="Simulations" HorizontalAlignment="Left" MinWidth="200" Margin="0 0 5 0" VerticalAlignment="Top">
+                    <ComboBox x:Name="_cmbx_SimulationType" SelectionChanged="_cmbx_SimulationType_SelectionChanged" />
+                </GroupBox>
+
                 <GroupBox Header="Simulation parameters" HorizontalAlignment="Left" MinWidth="200">
                     <StackPanel Orientation="Vertical">
                         <libsuc:InlineTextBox x:Name="_txtbx_SimulationSeed" Title="Seed:" Value="0" />
                         <Rectangle Height="5" />
-                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRepliations" Title="Repliations:" Value="100" />
+                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRepliations" Title="Repliations:" Value="1000000" />
                         <Rectangle Height="5" />
-                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRenderInterval" Title="Render interval:" Value="1" />
+                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRenderInterval" Title="Render interval:" Value="1000" />
                         <Rectangle Height="5" />
-                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRenderSkipFirst" Title="Render skip first:" Value="0" />
+                        <libsuc:InlineTextBox x:Name="_txtbx_SimulationRenderSkipFirst" Title="Render skip first:" Value="100000" />
                     </StackPanel>
                 </GroupBox>
 
+                <GroupBox x:Name="_grbx_SupplierStrategyConfigFile" Header="Suppliers strategy configuration file" MinWidth="150" Padding="5">
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+                        <TextBlock x:Name="_txt_SupplierStrategyConfigFile" Text="No file selected" />
+                        <Button Content="Load file" Click="_btn_LoadSuppliersStrategyConfig_Click" Margin="0 5 0 0" />
+                    </StackPanel>
+                </GroupBox>
+                
                 <GroupBox Header="Simulation actions" MinWidth="150">
                     <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                         <Button Content="Start" Click="_btn_Simulation_Start_Click" Margin="5" />
                         <Button Content="Stop" Click="_btn_Simulation_Stop_Click" Margin="5" />
                     </StackPanel>
                 </GroupBox>
+
             </StackPanel>
 
             <!-- simulations -->
-            <GroupBox Header="Simulations" Grid.Row="2" Padding="5">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="10" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyA" Title="Strategy A" />
-                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyB" Grid.Column="2" Title="Strategy B" />
-
-                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyC" Grid.Row="2" Title="Strategy C" />
-                    <uc:BusinessmanJanSimulationElement x:Name="_simStrategyD" Grid.Row="2" Grid.Column="2" Title="Strategy D" />
-                </Grid>
+            <GroupBox Header="Simulations" Grid.Row="2">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
+                    <UniformGrid Rows="1">
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyA" Title="Strategy A" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyB" Title="Strategy B" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyC" Title="Strategy C" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyD" Title="Strategy D" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorA" Title="Strategy Kostor A" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorB" Title="Strategy Kostor B" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorC" Title="Strategy Kostor C" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyKostorD" Title="Strategy Kostor D" />
+                        <uc:BusinessmanJanSimulationElement x:Name="_simStrategyCustom" Title="Custom strategy" />
+                    </UniformGrid>
+                </ScrollViewer>
             </GroupBox>
         </Grid>
     </Grid>

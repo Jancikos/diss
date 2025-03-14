@@ -30,14 +30,11 @@ namespace FRI.DISS.SP1
         public BusinessmanJan? Simulation { get; set; }
 
         public int SkipFirstCount = 0;
-        protected DataLogger? _dataLoggerCosts;
-        protected IYAxis? _yAxisCosts;
-        protected DataLogger? _dataLoggerSuppliersReliability;
-        protected IYAxis? _yAxisSuppliersReliability;
-        protected DataLogger? _dataLoggerWerehousesItemsLeft;
-        protected IYAxis? _yAxisWerehousesItemsLeft;
-        protected DataLogger? _dataLoggerMissingDemandItemsCount;
-        protected IYAxis? _yAxisMissingDemandItemsCount;
+        protected DataLogger? _dataLoggerTotalCosts;
+        protected IYAxis? _yAxisTotalCosts;
+
+        protected DataLogger? _dataDailyCosts;
+        protected IYAxis? _yAxisDailyCosts;
 
         protected Stopwatch _stopwatch = new();
 
@@ -63,25 +60,19 @@ namespace FRI.DISS.SP1
 
         private void _initializePlot()
         {
-            _yAxisCosts = _plot.Plot.Axes.Left;
-            _yAxisCosts.Label.Text = "Total costs";
-            _yAxisCosts.Label.FontSize = 12;
-            _yAxisCosts.Label.ForeColor = ScottPlot.Color.FromColor(System.Drawing.Color.Black);
+            _plotTotal.Plot.Title("Avg. total costs through replications");
+            _plotTotal.Plot.XLabel("Replications done", 12);
+            _yAxisTotalCosts = _plotTotal.Plot.Axes.Left;
+            _yAxisTotalCosts.Label.Text = "Total costs";
+            _yAxisTotalCosts.Label.FontSize = 12;
+            _yAxisTotalCosts.Label.ForeColor = ScottPlot.Color.FromColor(System.Drawing.Color.Red);
 
-            _yAxisSuppliersReliability = _plot.Plot.Axes.AddLeftAxis();
-            _yAxisSuppliersReliability.Label.Text = "Suppliers Reliability";
-            _yAxisSuppliersReliability.Label.FontSize = 12;
-            _yAxisSuppliersReliability.Label.ForeColor = ScottPlot.Color.FromColor(System.Drawing.Color.Blue);
-
-            _yAxisWerehousesItemsLeft = _plot.Plot.Axes.AddRightAxis();
-            _yAxisWerehousesItemsLeft.Label.Text = "Werehouses Items Left";
-            _yAxisWerehousesItemsLeft.Label.FontSize = 12;
-            _yAxisWerehousesItemsLeft.Label.ForeColor = ScottPlot.Color.FromColor(System.Drawing.Color.Orange);
-
-            _yAxisMissingDemandItemsCount = _plot.Plot.Axes.AddRightAxis();
-            _yAxisMissingDemandItemsCount.Label.Text = "Missing Demand Items";
-            _yAxisMissingDemandItemsCount.Label.FontSize = 12;
-            _yAxisMissingDemandItemsCount.Label.ForeColor = ScottPlot.Color.FromColor(System.Drawing.Color.Red);
+            _plotDaily.Plot.Title("Cumulated daily costs of the first replication");
+            _plotDaily.Plot.XLabel("Day", 12);
+            _yAxisDailyCosts = _plotDaily.Plot.Axes.Left;
+            _yAxisDailyCosts.Label.Text = "Daily costs";
+            _yAxisDailyCosts.Label.FontSize = 12;
+            _yAxisDailyCosts.Label.ForeColor = ScottPlot.Color.FromColor(System.Drawing.Color.Blue);
         }
 
         public void StartSimulation()
@@ -92,26 +83,23 @@ namespace FRI.DISS.SP1
             }
             Dispatcher.Invoke(_clearGUI);
 
-            _plot.Plot.Clear();
+            _plotTotal.Plot.Clear();
 
-            _dataLoggerCosts = _plot.Plot.Add.DataLogger();
-            _dataLoggerCosts.Axes.YAxis = _yAxisCosts!;
-            _dataLoggerCosts.Color = _yAxisCosts!.Label.ForeColor;
+            _dataLoggerTotalCosts = _plotTotal.Plot.Add.DataLogger();
+            _dataLoggerTotalCosts.Axes.YAxis = _yAxisTotalCosts!;
+            _dataLoggerTotalCosts.Color = _yAxisTotalCosts!.Label.ForeColor;
 
-            _dataLoggerSuppliersReliability = _plot.Plot.Add.DataLogger();
-            _dataLoggerSuppliersReliability.Axes.YAxis = _yAxisSuppliersReliability!;
-            _dataLoggerSuppliersReliability.Color = _yAxisSuppliersReliability!.Label.ForeColor;
+            var axis = (RightAxis)_plotTotal.Plot.Axes.Right;
+            axis.Color(_dataLoggerTotalCosts.Color);
 
-            _dataLoggerWerehousesItemsLeft = _plot.Plot.Add.DataLogger();
-            _dataLoggerWerehousesItemsLeft.Axes.YAxis = _yAxisWerehousesItemsLeft!;
-            _dataLoggerWerehousesItemsLeft.Color = _yAxisWerehousesItemsLeft!.Label.ForeColor;
+            _plotDaily.Plot.Clear();
 
-            _dataLoggerMissingDemandItemsCount = _plot.Plot.Add.DataLogger();
-            _dataLoggerMissingDemandItemsCount.Axes.YAxis = _yAxisMissingDemandItemsCount!;
-            _dataLoggerMissingDemandItemsCount.Color = _yAxisMissingDemandItemsCount!.Label.ForeColor;
+            _dataDailyCosts = _plotDaily.Plot.Add.DataLogger();
+            _dataDailyCosts.Axes.YAxis = _yAxisDailyCosts!;
+            _dataDailyCosts.Color = _yAxisDailyCosts!.Label.ForeColor;
 
-            var axis = (RightAxis)_plot.Plot.Axes.Right;
-            axis.Color(_dataLoggerCosts.Color);
+            var axisDaily = (RightAxis)_plotDaily.Plot.Axes.Right;
+            axisDaily.Color(_dataDailyCosts.Color);
 
             Simulation.UpdateStatsCallback = (mc, repDone, resultRaw) =>
             {
@@ -125,12 +113,17 @@ namespace FRI.DISS.SP1
                     _updateStats();
 
                     // update plot
-                    _dataLoggerCosts!.Add(repDone, Simulation.ProcessExperimentResult());
-                    _dataLoggerSuppliersReliability!.Add(repDone, Simulation.ResultSuplliersReliability!.Mean);
-                    _dataLoggerWerehousesItemsLeft!.Add(repDone, Simulation.ResultWarehouseItemsLeftCount!.Mean);
-                    _dataLoggerMissingDemandItemsCount!.Add(repDone, Simulation.ResultMissingDemandItemsCount!.Mean);
+                    _dataLoggerTotalCosts!.Add(repDone, Simulation.ProcessExperimentResult());
+                    _plotTotal.Refresh();
+                });
+            };
 
-                    _plot.Refresh();
+            Simulation.UpdateStatsDailyCallback = (week, day, totalCost) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    _dataDailyCosts!.Add(week * 7 + day + 1, totalCost);
+                    _plotDaily.Refresh();
                 });
             };
 
@@ -163,31 +156,26 @@ namespace FRI.DISS.SP1
 
         private void _clearGUI()
         {
-            // clear plot
-            _plot.Plot.Clear();
+            // clear plots
+            _plotTotal.Plot.Clear();
+            _plotDaily.Plot.Clear();
 
             // clear stats
             _txt_TimeElapsed.Value = "00:00:000";
             _txt_RepDone.Value = "0";
-            _txt_StatsMean.Value = "0";
-            _txt_StatsVariance.Value = "0";
-            _txt_StatsMax.Value = "0";
-            _txt_StatsMin.Value = "0";
+            _txt_StatsMeanTotalCost.Value = "0";
+            _txt_StatsMeanItemsLeftInStock.Value = "0";
+            _txt_StatsMeanMissingDemand.Value = "0";
+            _txt_StatsMeanSuppliersReliabily.Value = "0";
         }
 
         private void _updateStats()
         {
-            var stats = Simulation?.ResultRaw;
-            if (stats == null)
-            {
-                return;
-            }
-
-            _txt_RepDone.Value = stats.Count.ToString();
-            _txt_StatsMean.Value = stats.Mean.ToString("0.####");
-            _txt_StatsVariance.Value = stats.Variance.ToString("0.####");
-            _txt_StatsMax.Value = stats.Max.ToString("0.##");
-            _txt_StatsMin.Value = stats.Min.ToString("0.##");
+            _txt_RepDone.Value = Simulation?.ResultRaw?.Count.ToString() ?? "0";
+            _txt_StatsMeanTotalCost.Value = Simulation?.ResultRaw?.MeanToString(true) ?? "0";
+            _txt_StatsMeanItemsLeftInStock.Value = Simulation?.ResultWarehouseCosts?.MeanToString(true) ?? "0";
+            _txt_StatsMeanMissingDemand.Value = Simulation?.ResultMissingDemandPenalty?.MeanToString(true) ?? "0";
+            _txt_StatsMeanSuppliersReliabily.Value = Simulation?.ResultSuplliersReliability?.MeanToString(true) ?? "0";
         }
 
         public void StopSimulation()
@@ -201,7 +189,7 @@ namespace FRI.DISS.SP1
         {
             try
             {
-                StartSimulation();
+                Task.Run(StartSimulation);
             } catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -212,7 +200,7 @@ namespace FRI.DISS.SP1
         {
             try
             {
-                StopSimulation();
+                Task.Run(StopSimulation);
             } catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
