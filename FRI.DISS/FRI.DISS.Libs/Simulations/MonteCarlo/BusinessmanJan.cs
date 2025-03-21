@@ -40,6 +40,8 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
         protected const double DailyStorageCostBrakes = 0.3;
         protected const double DailyStorageCostLights = 0.25;
 
+        protected Warehouse? _warehouse;
+
         protected AbstractGenerator? _rndSupplyProbability;
         protected AbstractGenerator[]? _rndSupplier1Reliability;
         protected AbstractGenerator[]? _rndSupplier2Reliability;
@@ -49,20 +51,32 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
         protected AbstractGenerator? _rndBuyerLights;
 
         public Statistics? ResultSuplliersReliability { get; protected set; }
-        public Statistics? ResultMissingDemandItemsCount { get; protected set; }
-        public Statistics? ResultWarehouseItemsLeftCount { get; protected set; }
+        public Statistics? ResultMissingDemandPenalty { get; protected set; }
+        public Statistics? ResultWarehouseCosts { get; protected set; }
+
+        /// <summary>
+        /// week, day, totalCost
+        /// 
+        /// called only in first replication
+        /// </summary>
+        public Action<int, int, double>? UpdateStatsDailyCallback { get; set; }
 
         protected override void _beforeSimulation()
         {
             ResultSuplliersReliability = new Statistics();
-            ResultMissingDemandItemsCount = new Statistics();
-            ResultWarehouseItemsLeftCount = new Statistics();
+            ResultMissingDemandPenalty = new Statistics();
+            ResultWarehouseCosts = new Statistics();
+        }
+
+        protected override void _beforeExperiment()
+        {
+            _warehouse = new Warehouse();
         }
 
         protected override double _doExperiment()
         {
-            var warehouse = new Warehouse();
-            var totalCost = 0.0;
+            var totalPenalty = 0.0;
+            var totalWarehouseCost = 0.0;
 
             for (int w = 0; w < Weeks; w++)
             {
@@ -76,7 +90,11 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
 
                         if (supplyProbability < supplierReliability)
                         {
-                            warehouse.Supply();
+                            _warehouse!.Supply(
+                                _getSupplyDampers(w),
+                                _getSupplyBrakes(w),
+                                _getSupplyLights(w)
+                            );
                             ResultSuplliersReliability!.AddSample(1);
                         }
                         else
@@ -87,24 +105,30 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
 
                     if (d == DayOfSell)
                     {
-                        var missingDemand = warehouse.Sell(
+                        var missingDemand = _warehouse!.Sell(
                             _rndBuyerDampers!.GetSampleInt(),
                             _rndBuyerBrakes!.GetSampleInt(),
                             _rndBuyerLights!.GetSampleInt()
                         );
 
-                        ResultMissingDemandItemsCount!.AddSample(missingDemand);
 
-                        totalCost += missingDemand * MissingDemandPenalty;
+                        totalPenalty += missingDemand * MissingDemandPenalty;
                     }
 
-                    totalCost += warehouse.GetDailyCost();
+                    totalWarehouseCost += _warehouse!.GetDailyCost();
+
+                    if (ReplicationsDone == 0) 
+                    {
+                        UpdateStatsDailyCallback?.Invoke(w, d, totalPenalty + totalWarehouseCost);
+                    }
                 }
 
-                ResultWarehouseItemsLeftCount!.AddSample(warehouse.TotalItemsCount);
             }
 
-            return totalCost;
+            ResultMissingDemandPenalty!.AddSample(totalPenalty);
+            ResultWarehouseCosts!.AddSample(totalWarehouseCost);
+
+            return totalPenalty + totalWarehouseCost;
         }
 
         /// <summary>
@@ -141,6 +165,10 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
         /// <param name="w"></param>
         /// <returns></returns>
         protected abstract int _getSupplierIndex(int w);
+
+        protected virtual int _getSupplyDampers(int w) => 100;
+        protected virtual int _getSupplyBrakes(int w) => 200;
+        protected virtual int _getSupplyLights(int w) => 150;
 
         protected override void _initialize()
         {
@@ -184,11 +212,11 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
 
             public int TotalItemsCount => Dampers + Brakes + Lights;
 
-            public void Supply()
+            public void Supply(int dampers, int brakes, int lights)
             {
-                _dampers += 100;
-                _brakes += 200;
-                _lights += 150;
+                _dampers += dampers;
+                _brakes += brakes;
+                _lights += lights;
             }
 
             public int Sell(int dampers, int brakes, int lights)
@@ -238,5 +266,117 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
     public class BusinessmanJanStrategyD : BusinessmanJan
     {
         protected override int _getSupplierIndex(int w) => (w + 1) % 2;
+    }
+
+    /// <summary>
+    /// Strategy Kostor A - objednavanie len ak kapaicta skladu je pod priemernou velkostou objednavok, dodavatel 0
+    /// </summary>
+    public class BusinessmanJanStrategyKostorA : BusinessmanJan
+    {
+        protected override int _getSupplierIndex(int w) => 0;
+
+        protected override int _getSupplyDampers(int w) => _warehouse!.Dampers > 75 ? 0 : base._getSupplyDampers(w);
+        protected override int _getSupplyBrakes(int w) => _warehouse!.Brakes > 155 ? 0 : base._getSupplyBrakes(w);
+        protected override int _getSupplyLights(int w) => _warehouse!.Lights > 95 ? 0 : base._getSupplyLights(w);
+    }
+
+    /// <summary>
+    /// Strategy Kostor B - objednavanie len ak kapaicta skladu je pod priemernou velkostou objednavok, dodavatel 1
+    /// </summary>
+    public class BusinessmanJanStrategyKostorB : BusinessmanJanStrategyKostorA
+    {
+        protected override int _getSupplierIndex(int w) => 1;
+    } 
+
+    /// <summary>
+    /// Strategy Kostor C - objednavanie podla priemernej velkosti objednavok, dodavatel 0
+    /// </summary>
+    public class BusinessmanJanStrategyKostorC : BusinessmanJan
+    {
+        protected override int _getSupplierIndex(int w) => 0;
+
+        protected override int _getSupplyDampers(int w) => 75; // 100 + 50 / 2
+        protected override int _getSupplyBrakes(int w) => 155; //  60 + 250 / 2
+        protected override int _getSupplyLights(int w) => 92; // 45*0.2 + 80*0.4 + 120*0.3 + 150*0.1 = 92
+    }
+
+    /// <summary>
+    /// Strategy Kostor D - objednavanie podla priemernej velkosti objednavok, dodavatel 1
+    /// </summary>
+    public class BusinessmanJanStrategyKostorD : BusinessmanJanStrategyKostorC 
+    {
+        protected override int _getSupplierIndex(int w) => 1;
+    }
+
+    public class BusinessmanJanCustomStrategy : BusinessmanJan
+    {
+        /// <summary>
+        /// csv subor s konfiguraciou strategie 
+        /// 
+        /// obsahuje strukturu: Week, SupplierIndex, DamperSupply, BrakeSupply, LightSupply
+        /// </summary>
+        /// <value></value>
+        public FileInfo? SuppliersStrategyConfig { get; set; }
+
+        protected int[]? _supplierIndexes { get; set; }
+        protected int[]? _dampersSupplies { get; set; }
+        protected int[]? _brakesSupplies { get; set; }
+        protected int[]? _lightsSupplies { get; set; }
+
+        protected override void _initialize()
+        {
+            base._initialize();
+
+            if (SuppliersStrategyConfig == null)
+            {
+                throw new InvalidOperationException("SuppliersStrategyConfig not set");
+            }
+
+            var lines = File.ReadAllLines(SuppliersStrategyConfig.FullName);
+            if (lines.Length != Weeks)
+            {
+                throw new InvalidOperationException($"Invalid SuppliersStrategyConfig file. Must have {Weeks} lines (weeks).");
+            }
+
+            _supplierIndexes = new int[lines.Length];
+            _dampersSupplies = new int[lines.Length];
+            _brakesSupplies = new int[lines.Length];
+            _lightsSupplies = new int[lines.Length];
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var parts = lines[i].Split(';');
+                if (parts.Length != 5)
+                {
+                    throw new InvalidOperationException($"Invalid SuppliersStrategyConfig file. Line {i + 1} must have 5 parts.");
+                }
+
+                if (!int.TryParse(parts[1], out _supplierIndexes[i]))
+                {
+                    throw new InvalidOperationException($"Invalid SuppliersStrategyConfig file. Line {i + 1} must have integer as first part.");
+                }
+
+                if (!int.TryParse(parts[2], out _dampersSupplies[i]))
+                {
+                    throw new InvalidOperationException($"Invalid SuppliersStrategyConfig file. Line {i + 1} must have integer as second part.");
+                }
+
+                if (!int.TryParse(parts[3], out _brakesSupplies[i]))
+                {
+                    throw new InvalidOperationException($"Invalid SuppliersStrategyConfig file. Line {i + 1} must have integer as third part.");
+                }
+
+                if (!int.TryParse(parts[4], out _lightsSupplies[i]))
+                {
+                    throw new InvalidOperationException($"Invalid SuppliersStrategyConfig file. Line {i + 1} must have integer as fourth part.");
+                }
+            }
+
+        }
+
+        protected override int _getSupplierIndex(int w) => _supplierIndexes![w];
+        protected override int _getSupplyDampers(int w) => _dampersSupplies![w];
+        protected override int _getSupplyBrakes(int w) => _brakesSupplies![w];
+        protected override int _getSupplyLights(int w) => _lightsSupplies![w];
     }
 }
