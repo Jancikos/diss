@@ -5,48 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 using FRI.DISS.Libs.Generators;
 
-namespace FRI.DISS.Libs.MonteCarlo
+namespace FRI.DISS.Libs.Simulations.MonteCarlo
 {
-    public enum MonteCarloState
+    public abstract class MonteCarlo : Simulation
     {
-        Created,
-        Running,
-        Stopping,
-        Done
-    }
-
-    public abstract class MonteCarlo
-    {
-        public MonteCarloState State { get; protected set; } = MonteCarloState.Created;
-
-        public int ReplicationsCount { get; set; } = 1000;
         public int UpdateStatsInterval { get; set; } = 100;
         public Action<MonteCarlo, int, double>? UpdateStatsCallback { get; set; }
-        public SeedGenerator SeedGenerator { get; set; } = SeedGenerator.Global;
 
-        
         public Statistics? ResultRaw { get; protected set; }
-        public int ReplicationsDone => ResultRaw?.Count ?? 0;
+        public override int ReplicationsDone => ResultRaw?.Count ?? 0;
 
-
-
-        protected abstract void _initialize();
-        protected abstract double _doExperiment();
         public virtual double ProcessExperimentResult() { return ResultRaw?.Mean ?? throw new InvalidOperationException("Simulation not run yet"); }
 
-        protected virtual void _beforeSimulation() { }
-        protected virtual void _afterSimulation() { }
-
-        protected virtual void _beforeExperiment() { }
-        protected virtual void _afterExperiment(int replication, double result) { }
-
-        public void RunSimulation()
+        public override void RunSimulation()
         {
-            if (State == MonteCarloState.Running)
+            if (State == SimulationState.Running)
             {
                 throw new InvalidOperationException("Simulation already running");
             }
-            State = MonteCarloState.Running;
+            State = SimulationState.Running;
 
             _initialize();
 
@@ -55,7 +32,7 @@ namespace FRI.DISS.Libs.MonteCarlo
             ResultRaw = new Statistics();
             for (int repDone = 0; repDone < ReplicationsCount; repDone++)
             {
-                if (State == MonteCarloState.Stopping)
+                if (State == SimulationState.Stopping)
                 {
                     break;
                 }
@@ -73,17 +50,7 @@ namespace FRI.DISS.Libs.MonteCarlo
 
             _afterSimulation();
 
-            State = MonteCarloState.Done;
-        }
-
-        public void StopSimulation()
-        {
-            if (State != MonteCarloState.Running)
-            {
-                throw new InvalidOperationException("Simulation is not running");
-            }
-
-            State = MonteCarloState.Stopping;
+            State = SimulationState.Done;
         }
     }
 }

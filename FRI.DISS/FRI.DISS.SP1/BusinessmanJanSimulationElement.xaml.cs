@@ -15,7 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using FRI.DISS.Libs.MonteCarlo;
+using FRI.DISS.Libs.Simulations;
+using FRI.DISS.Libs.Simulations.MonteCarlo;
 using ScottPlot;
 using ScottPlot.AxisPanels;
 using ScottPlot.Plottables;
@@ -146,7 +147,7 @@ namespace FRI.DISS.SP1
             {
                 while (true)
                 {
-                    if (Simulation?.State == MonteCarloState.Done)
+                    if (Simulation?.State == SimulationState.Done)
                     {
                         break;
                     }

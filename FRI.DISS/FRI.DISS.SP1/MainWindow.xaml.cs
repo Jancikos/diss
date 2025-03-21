@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using FRI.DISS.Libs.Generators;
-using FRI.DISS.Libs.MonteCarlo;
+using FRI.DISS.Libs.Simulations.MonteCarlo;
 
 namespace FRI.DISS.SP1
 {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FRI.DISS.Libs.Generators;
 
-namespace FRI.DISS.Libs.MonteCarlo
+namespace FRI.DISS.Libs.Simulations.MonteCarlo
 {
     public class BuffonNeedle : MonteCarlo
     {

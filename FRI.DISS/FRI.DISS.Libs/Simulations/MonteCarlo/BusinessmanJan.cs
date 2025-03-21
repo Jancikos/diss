@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FRI.DISS.Libs.Generators;
 
-namespace FRI.DISS.Libs.MonteCarlo
+namespace FRI.DISS.Libs.Simulations.MonteCarlo
 {
     // jan prevadzkuje sklad
     // 3 typy tovaru, kt. skladuje - tlmice, brzdy, svetla
@@ -78,7 +78,9 @@ namespace FRI.DISS.Libs.MonteCarlo
                         {
                             warehouse.Supply();
                             ResultSuplliersReliability!.AddSample(1);
-                        } else {
+                        }
+                        else
+                        {
                             ResultSuplliersReliability!.AddSample(0);
                         }
                     }
@@ -142,7 +144,7 @@ namespace FRI.DISS.Libs.MonteCarlo
 
         protected override void _initialize()
         {
-            _rndSupplyProbability = new UniformGenerator(GenerationMode.Continuous, SeedGenerator) { Min = 0, Max = 100};
+            _rndSupplyProbability = new UniformGenerator(GenerationMode.Continuous, SeedGenerator) { Min = 0, Max = 100 };
             _rndSupplier1Reliability =
             [
                 new UniformGenerator(GenerationMode.Continuous, SeedGenerator) {Min = 10, Max = 70},

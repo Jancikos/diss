@@ -1,4 +1,4 @@
-﻿using FRI.DISS.Libs.MonteCarlo;
+﻿using FRI.DISS.Libs.Simulations.MonteCarlo;
 using ScottPlot;
 using ScottPlot.Plottables;
 using ScottPlot.WPF;
