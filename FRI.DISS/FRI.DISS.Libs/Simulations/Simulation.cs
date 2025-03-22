@@ -26,10 +26,6 @@ namespace FRI.DISS.Libs.Simulations
 
         public abstract int ReplicationsDone { get; }
 
-
-        protected abstract void _initialize();
-        protected abstract double _doExperiment();
-
         protected virtual void _beforeSimulation() { }
         protected virtual void _afterSimulation() { }
 

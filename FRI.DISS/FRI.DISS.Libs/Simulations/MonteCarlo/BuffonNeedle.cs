@@ -34,7 +34,7 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
             return 2 * L / (p * D);
         }
 
-        protected override void _initialize()
+        protected override void _beforeSimulation()
         {
             _randY = new UniformGenerator(GenerationMode.Continuous, SeedGenerator) { Min = 0, Max = D };
             _randAngle = new UniformGenerator(GenerationMode.Continuous, SeedGenerator) { Min = 0, Max = 180 };

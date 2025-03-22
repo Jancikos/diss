@@ -17,6 +17,8 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
 
         public virtual double ProcessExperimentResult() { return ResultRaw?.Mean ?? throw new InvalidOperationException("Simulation not run yet"); }
 
+        protected abstract double _doExperiment();
+
         public override void RunSimulation()
         {
             if (State == SimulationState.Running)
@@ -24,8 +26,6 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
                 throw new InvalidOperationException("Simulation already running");
             }
             State = SimulationState.Running;
-
-            _initialize();
 
             _beforeSimulation();
 

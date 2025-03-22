@@ -61,13 +61,6 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
         /// </summary>
         public Action<int, int, double>? UpdateStatsDailyCallback { get; set; }
 
-        protected override void _beforeSimulation()
-        {
-            ResultSuplliersReliability = new Statistics();
-            ResultMissingDemandPenalty = new Statistics();
-            ResultWarehouseCosts = new Statistics();
-        }
-
         protected override void _beforeExperiment()
         {
             _warehouse = new Warehouse();
@@ -170,7 +163,7 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
         protected virtual int _getSupplyBrakes(int w) => 200;
         protected virtual int _getSupplyLights(int w) => 150;
 
-        protected override void _initialize()
+        protected override void _beforeSimulation()
         {
             _rndSupplyProbability = new UniformGenerator(GenerationMode.Continuous, SeedGenerator) { Min = 0, Max = 100 };
             _rndSupplier1Reliability =
@@ -199,6 +192,10 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
                 [0.2, 0.4, 0.3, 0.1],
                 SeedGenerator
             );
+
+            ResultSuplliersReliability = new Statistics();
+            ResultMissingDemandPenalty = new Statistics();
+            ResultWarehouseCosts = new Statistics();
         }
 
         protected class Warehouse
@@ -323,9 +320,9 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
         protected int[]? _brakesSupplies { get; set; }
         protected int[]? _lightsSupplies { get; set; }
 
-        protected override void _initialize()
+        protected override void _beforeSimulation()
         {
-            base._initialize();
+            base._beforeSimulation();
 
             if (SuppliersStrategyConfig == null)
             {
