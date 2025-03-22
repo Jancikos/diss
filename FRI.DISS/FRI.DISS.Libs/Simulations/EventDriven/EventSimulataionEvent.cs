@@ -14,22 +14,15 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         Low = 100,
         Lowest = 1000
     }
-    public abstract class EventSimulataionEvent<TSimulation> :  IComparable<EventSimulataionEvent<TSimulation>> where TSimulation : EventSimulation
+    public abstract class EventSimulataionEvent :  IComparable<EventSimulataionEvent>
     {
-        public TSimulation Simulation { get; init; }
-        public double StartTime { get; init; }
-        public EventSimulationEventPriority Priority { get; init; } = EventSimulationEventPriority.Low;
-
-        public EventSimulataionEvent(TSimulation simulation, double startTime)
-        {
-            Simulation = simulation;
-            StartTime = startTime;
-        }
+        public double StartTime { get; set; }
+        public EventSimulationEventPriority Priority { get; set; } = EventSimulationEventPriority.Low;
 
         public abstract void Execute();
         public abstract void PlanNextEvents();
 
-        public int CompareTo(EventSimulataionEvent<TSimulation>? other)
+        public int CompareTo(EventSimulataionEvent? other)
         {
             if (other is null)
             {
@@ -50,7 +43,17 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         }
     }
 
-    public class SystemEvent : EventSimulataionEvent<EventSimulation>
+    public abstract class GenericEventSimulataionEvent : EventSimulataionEvent
+    {
+        public EventSimulation Simulation { get; set; }
+
+        public GenericEventSimulataionEvent(EventSimulation simulation)
+        {
+            Simulation = simulation;
+        }
+    }
+
+    public class SystemEvent : GenericEventSimulataionEvent
     {
         /// <summary>
         /// in miliseconds
@@ -64,7 +67,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         /// <value></value>
         public double Gap { get; set; } = 100.0;
 
-        public SystemEvent(EventSimulation simulation, double startTime) : base(simulation, startTime)
+        public SystemEvent(EventSimulation simulation) : base(simulation)
         {
         }
 
@@ -79,8 +82,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             if (Simulation.TimeMode == EventDrivenSimulationTimeMode.RealTime)
             {
-                // Simulation.PlanEvent(new SystemEvent(Simulation, StartTime + Gap) {SleepTime = SleepTime, Gap = Gap});
-                Simulation.PlanEvent<SystemEvent>(Gap);
+                Simulation.PlanEvent(new SystemEvent(Simulation) {SleepTime = SleepTime, Gap = Gap}, Gap);
+                // Simulation.PlanEvent<SystemEvent>(Gap);
             }
         }
     }

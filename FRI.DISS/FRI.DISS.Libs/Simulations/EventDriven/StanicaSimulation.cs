@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             // plan first events
             PlanEvent<PrichodZakaznikaEvent>(Generators.PrichodZakaznika.GetSampleDouble());
+
+            Debug.WriteLine("event planned");
         }
 
         #region Generators
@@ -62,15 +65,19 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         #endregion
 
         #region Events
-        public abstract class StanicaSimulationEvent : EventSimulataionEvent<StanicaSimulation>
+        public abstract class StanicaSimulationEvent : EventSimulataionEvent
         {
-            public StanicaSimulationEvent(StanicaSimulation simulation, double time) : base(simulation, time)
-            { }
+            public StanicaSimulation Simulation { get; init; }
+
+            public StanicaSimulationEvent(StanicaSimulation simulation) : base()
+            { 
+                Simulation = simulation;
+            }
         }
 
         public class PrichodZakaznikaEvent : StanicaSimulationEvent
         {
-            public PrichodZakaznikaEvent(StanicaSimulation simulation, double startTime) : base(simulation, startTime)
+            public PrichodZakaznikaEvent(StanicaSimulation simulation) : base(simulation)
             { }
 
             public override void Execute()
@@ -96,7 +103,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
         public class ZaciatokObsluhyEvent : StanicaSimulationEvent
         {
-            public ZaciatokObsluhyEvent(StanicaSimulation simulation, double startTime) : base(simulation, startTime)
+            public ZaciatokObsluhyEvent(StanicaSimulation simulation) : base(simulation)
             { }
 
             public override void Execute()
@@ -117,7 +124,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
         public class KoniecObsluhyEvent : StanicaSimulationEvent
         {
-            public KoniecObsluhyEvent(StanicaSimulation simulation, double startTime) : base(simulation, startTime)
+            public KoniecObsluhyEvent(StanicaSimulation simulation) : base(simulation)
             { }
 
             public override void Execute()

@@ -20,11 +20,15 @@ namespace FRI.DISS.SP2
         public MainWindow()
         {
             InitializeComponent();
+
+            _mnitem_File_Click(null, null);
         }
 
         private void _mnitem_File_Click(object sender, RoutedEventArgs e)
         {
             var sim = new StanicaSimulation();
+
+            sim.RunSimulation();
         }
 
         private void _mnitem_Close_Click(object sender, RoutedEventArgs e)

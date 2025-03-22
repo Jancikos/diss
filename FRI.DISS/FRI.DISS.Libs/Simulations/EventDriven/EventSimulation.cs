@@ -45,7 +45,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         
 
         protected EventSimulationEventsCalendar? _eventsStack;
-        public EventSimulationEventsCalendar EventsStack => _eventsStack ?? throw new InvalidOperationException("Events stack not initialized");
+        public EventSimulationEventsCalendar EventsCalendar => _eventsStack ?? throw new InvalidOperationException("Events stack not initialized");
 
         public override void RunSimulation()
         {
@@ -64,7 +64,11 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 _currentTime = 0;
 
                 _beforeExperiment();
-                _planSystemEvent();
+                
+                if (TimeMode == EventDrivenSimulationTimeMode.RealTime)
+                {
+                    _planSystemEvent();
+                }
 
                 while (!_eventsStack.IsEmpty && !_checkStopCondition())
                 {
@@ -106,10 +110,19 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
         private void _planSystemEvent()
         {
-            if (TimeMode == EventDrivenSimulationTimeMode.RealTime)
+            PlanEvent<SystemEvent>();
+        }
+
+        public void PlanEvent<TEvent>(double inTime = 0) where TEvent : EventSimulataionEvent
+        {
+            var eveObject = Activator.CreateInstance(typeof(TEvent), this);
+
+            if (eveObject is not EventSimulataionEvent simulationEvent)
             {
-                PlanEvent<SystemEvent>();
+                throw new InvalidOperationException("Event must be of type EventSimulataionEvent");
             }
+
+            PlanEvent(simulationEvent, inTime);
         }
         
         /// <summary>
@@ -117,21 +130,17 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         /// </summary>
         /// <param name="inTime">o kolko posunut zaciatok planovanej udalosti</param>
         /// <typeparam name="SimulationEvent"></typeparam>
-        public void PlanEvent<SimulationEvent>(double inTime = 0)
+        public void PlanEvent(EventSimulataionEvent eve, double inTime = 0)
         {
             if (inTime < 0)
             {
                 throw new InvalidOperationException("Cannot plan event in the past");
             }
 
-            var obj = Activator.CreateInstance(typeof(EventSimulataionEvent<EventSimulation>), this, CurrentTime + inTime);
+            eve.StartTime = CurrentTime + inTime;
 
-            if (obj is not EventSimulataionEvent<EventSimulation> simEvent)
-            {
-                throw new InvalidOperationException("Cannot plan event because of type mismatch");
-            }
-
-            EventsStack.PlanEvent(simEvent);
+            // Add the event to the events stack
+            EventsCalendar.PlanEvent(eve);
         }
 
         /// <summary>

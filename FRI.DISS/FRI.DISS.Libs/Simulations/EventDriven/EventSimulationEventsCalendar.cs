@@ -8,10 +8,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 {
     public class EventSimulationEventsCalendar
     {
-        protected PriorityQueue<EventSimulataionEvent<EventSimulation>, EventSimulataionEvent<EventSimulation>> _events = new();
+        protected PriorityQueue<EventSimulataionEvent, EventSimulataionEvent> _events = new();
         public bool IsEmpty => _events.Count == 0;
 
-        public void PlanEvent(EventSimulataionEvent<EventSimulation> newEvent)
+        public void PlanEvent(EventSimulataionEvent newEvent)
         {
             _events.Enqueue(newEvent, newEvent);
         }
@@ -21,7 +21,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         /// </summary>
         /// <throws>InvalidOperationException`</throws>
         /// <returns></returns>
-        public EventSimulataionEvent<EventSimulation> PopEvent()
+        public EventSimulataionEvent PopEvent()
         {
             return _events.Dequeue();
         }
