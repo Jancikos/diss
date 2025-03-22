@@ -79,7 +79,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             if (Simulation.TimeMode == EventDrivenSimulationTimeMode.RealTime)
             {
-                Simulation.PlanEvent(new SystemEvent(Simulation, StartTime + Gap) {SleepTime = SleepTime, Gap = Gap});
+                // Simulation.PlanEvent(new SystemEvent(Simulation, StartTime + Gap) {SleepTime = SleepTime, Gap = Gap});
+                Simulation.PlanEvent<SystemEvent>(Gap);
             }
         }
     }

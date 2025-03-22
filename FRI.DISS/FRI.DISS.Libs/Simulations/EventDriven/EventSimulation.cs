@@ -46,12 +46,6 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
         protected EventSimulationEventsCalendar? _eventsStack;
         public EventSimulationEventsCalendar EventsStack => _eventsStack ?? throw new InvalidOperationException("Events stack not initialized");
-        
-        /// <summary>
-        /// sluzi pre inicializaciu kalendara udalosti na zaciatku simulacie
-        /// </summary>
-        /// <returns></returns>
-        protected abstract EventSimulationEventsCalendar _initializeEventsStack();
 
         public override void RunSimulation()
         {
@@ -66,7 +60,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             for (int repDone = 0; repDone < ReplicationsCount; repDone++)
             {
 
-                _eventsStack = _initializeEventsStack();
+                _eventsStack = new EventSimulationEventsCalendar();
                 _currentTime = 0;
 
                 _beforeExperiment();
@@ -114,18 +108,30 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             if (TimeMode == EventDrivenSimulationTimeMode.RealTime)
             {
-                PlanEvent(new SystemEvent(this, CurrentTime));
+                PlanEvent<SystemEvent>();
             }
         }
-
-        public void PlanEvent(EventSimulataionEvent<EventSimulation> newEvent)
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inTime">o kolko posunut zaciatok planovanej udalosti</param>
+        /// <typeparam name="SimulationEvent"></typeparam>
+        public void PlanEvent<SimulationEvent>(double inTime = 0)
         {
-            if (newEvent.StartTime < CurrentTime)
+            if (inTime < 0)
             {
                 throw new InvalidOperationException("Cannot plan event in the past");
             }
 
-            EventsStack.PlanEvent(newEvent);
+            var obj = Activator.CreateInstance(typeof(EventSimulataionEvent<EventSimulation>), this, CurrentTime + inTime);
+
+            if (obj is not EventSimulataionEvent<EventSimulation> simEvent)
+            {
+                throw new InvalidOperationException("Cannot plan event because of type mismatch");
+            }
+
+            EventsStack.PlanEvent(simEvent);
         }
 
         /// <summary>
