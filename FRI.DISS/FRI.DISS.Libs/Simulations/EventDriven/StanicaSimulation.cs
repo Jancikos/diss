@@ -17,6 +17,9 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         protected StanicaSimulationExperimentData? _experimentData;
         public StanicaSimulationExperimentData ExperimentData => _experimentData ?? throw new InvalidOperationException("Experiment data not initialized");
 
+        protected StanicaSimulationExperimentStatistics? _experimentStatistics;
+        public StanicaSimulationExperimentStatistics ExperimentStatistics => _experimentStatistics ?? throw new InvalidOperationException("Experiment statistics not initialized");
+
         protected override void _beforeSimulation()
         {
             base._beforeSimulation();
@@ -32,23 +35,22 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             base._beforeExperiment();
 
             _experimentData = new StanicaSimulationExperimentData();
+            _experimentStatistics = new StanicaSimulationExperimentStatistics();
 
             // plan first events
             PlanEvent<PrichodZakaznikaEvent>(Generators.PrichodZakaznika.GetSampleDouble());
-
-            Debug.WriteLine("event planned");
         }
 
         #region Generators
         public class StanicaSimulationGenerators
         {
-            public ExponentialGenerator PrichodZakaznika { get; set; }
-            public TriangularGenerator ObsluhaZakaznika { get; set; }
+            public AbstractGenerator PrichodZakaznika { get; set; }
+            public AbstractGenerator ObsluhaZakaznika { get; set; }
 
             public StanicaSimulationGenerators()
             {
-                PrichodZakaznika = new ExponentialGenerator(10.0 / 60.0, SeedGenerator.Global);
-                ObsluhaZakaznika = new TriangularGenerator(1, 5, 3, SeedGenerator.Global);
+                PrichodZakaznika = new ExponentialGenerator(1 / 5.0   , SeedGenerator.Global);
+                ObsluhaZakaznika = new ExponentialGenerator(1 / 4.0, SeedGenerator.Global);
             }
         }
         #endregion
@@ -58,9 +60,34 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             public int VisitedCustomers { get; set; } = 0;
 
-            public Queue<int> CustomersQueue { get; set; } = new Queue<int>();
+            public Queue<StanicaSimulationCustomer> CustomersQueue { get; set; } = new();
 
             public bool IsCustomerBeingServed { get; set; } = false;
+        }
+
+        public class StanicaSimulationCustomer
+        {
+            public int Id { get; init; }
+
+            public double ArrivalTime { get; init; }
+            public double? EndTime { get; set; }
+            public double? TotalTime => EndTime - ArrivalTime;
+
+            public double? ServiceStartTime { get; set; }
+            public double? ServiceTime => ServiceStartTime.HasValue ? EndTime - ServiceStartTime : null;
+
+            public bool QueueEntered { get; set; } = false;
+            public double? QueueTime => (QueueEntered && ServiceStartTime.HasValue) ? ServiceStartTime - ArrivalTime : null;
+        }
+
+        #endregion
+
+        #region ExperimentStatistics
+        public class StanicaSimulationExperimentStatistics
+        {
+            public Statistics CustomerWaitingTime { get; set; } = new Statistics();
+            public Statistics CustomersInQueueCount { get; set; } = new Statistics();
+            public Statistics CustomersInSystemTime { get; set; } = new Statistics();
         }
         #endregion
 
@@ -68,6 +95,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         public abstract class StanicaSimulationEvent : EventSimulataionEvent
         {
             public StanicaSimulation Simulation { get; init; }
+
+            public StanicaSimulationCustomer? Customer { get; set; }
 
             public StanicaSimulationEvent(StanicaSimulation simulation) : base()
             { 
@@ -84,9 +113,17 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             {
                 Simulation.ExperimentData.VisitedCustomers++;
 
+                Customer = new StanicaSimulationCustomer
+                {
+                    Id = Simulation.ExperimentData.VisitedCustomers,
+                    ArrivalTime = Simulation.CurrentTime
+                };
+
                 if (Simulation.ExperimentData.IsCustomerBeingServed)
                 {
-                    Simulation.ExperimentData.CustomersQueue.Enqueue(Simulation.ExperimentData.VisitedCustomers);
+                    Customer.QueueEntered = true;
+                    Simulation.ExperimentData.CustomersQueue.Enqueue(Customer);
+                    Simulation.ExperimentStatistics.CustomersInQueueCount.AddSample(Simulation.ExperimentData.CustomersQueue.Count);
                 }
             }
 
@@ -94,10 +131,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             {
                 if (!Simulation.ExperimentData.IsCustomerBeingServed)
                 {
-                    Simulation.PlanEvent<ZaciatokObsluhyEvent>();
+                    Simulation.PlanEvent(new ZaciatokObsluhyEvent(Simulation) { Customer = Customer });
                 }
 
-                Simulation.PlanEvent<PrichodZakaznikaEvent>(Simulation.Generators.PrichodZakaznika.GetSampleDouble());
+                Simulation.PlanEvent(new PrichodZakaznikaEvent(Simulation) { Customer = Customer }, Simulation.Generators.PrichodZakaznika.GetSampleDouble());
             }
         }
 
@@ -110,7 +147,18 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             {
                 if (Simulation.ExperimentData.IsCustomerBeingServed)
                 {
-                    throw new InvalidOperationException("Customer is already being served");
+                    throw new InvalidOperationException("Some customer is already being served");
+                }
+
+                if (Customer is null)
+                {
+                    throw new InvalidOperationException("No customer to serve");
+                }
+                Customer.ServiceStartTime = Simulation.CurrentTime;
+
+                if (Customer.QueueEntered)
+                {
+                    Simulation.ExperimentStatistics.CustomerWaitingTime.AddSample(Customer.QueueTime!.Value);
                 }
 
                 Simulation.ExperimentData.IsCustomerBeingServed = true;
@@ -118,7 +166,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             public override void PlanNextEvents()
             {
-                Simulation.PlanEvent<KoniecObsluhyEvent>(Simulation.Generators.ObsluhaZakaznika.GetSampleDouble());
+                Simulation.PlanEvent(new KoniecObsluhyEvent(Simulation) { Customer = Customer }, Simulation.Generators.ObsluhaZakaznika.GetSampleDouble());
             }
         }
 
@@ -134,6 +182,14 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                     throw new InvalidOperationException("No customer is being served");
                 }
 
+                if (Customer is null)
+                {
+                    throw new InvalidOperationException("No customer to end serve");
+                }
+                Customer.EndTime = Simulation.CurrentTime;
+
+                Simulation.ExperimentStatistics.CustomersInSystemTime.AddSample(Customer.TotalTime!.Value);
+
                 Simulation.ExperimentData.IsCustomerBeingServed = false;
             }
 
@@ -141,8 +197,9 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             {
                 if (Simulation.ExperimentData.CustomersQueue.Count > 0)
                 {
-                    Simulation.PlanEvent<ZaciatokObsluhyEvent>();
-                    Simulation.ExperimentData.CustomersQueue.Dequeue();
+                    var nextCustomer = Simulation.ExperimentData.CustomersQueue.Dequeue();
+                    Simulation.PlanEvent(new ZaciatokObsluhyEvent(Simulation) { Customer = nextCustomer });
+                    Simulation.ExperimentStatistics.CustomersInQueueCount.AddSample(Simulation.ExperimentData.CustomersQueue.Count);
                 }
             }
         }

@@ -1,4 +1,5 @@
 ﻿using FRI.DISS.Libs.Simulations.EventDriven;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,9 +27,18 @@ namespace FRI.DISS.SP2
 
         private void _mnitem_File_Click(object sender, RoutedEventArgs e)
         {
-            var sim = new StanicaSimulation();
+            var sim = new StanicaSimulation()
+            {
+                ReplicationsCount = 1
+            };
 
             sim.RunSimulation();
+
+            Debug.WriteLine("Simulation done:");
+            Debug.WriteLine("Customers served: " + sim.ExperimentStatistics.CustomersInSystemTime.Count);
+            Debug.WriteLine("Avg. Queue Count: " + sim.ExperimentStatistics.CustomersInQueueCount.Mean);
+            Debug.WriteLine("Avg. Queue Time: " + sim.ExperimentStatistics.CustomerWaitingTime.Mean);
+            Debug.WriteLine("Avg. Total Time: " + sim.ExperimentStatistics.CustomersInSystemTime.Mean);
         }
 
         private void _mnitem_Close_Click(object sender, RoutedEventArgs e)
