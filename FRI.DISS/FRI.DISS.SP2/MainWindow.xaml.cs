@@ -35,7 +35,7 @@ namespace FRI.DISS.SP2
 
             Debug.WriteLine("Simulation done:");
             Debug.WriteLine("Replications done: " + sim.ReplicationsDone);
-            Debug.WriteLine("Customers served: " + sim.ReplicationsStatistics.CustomersCount.MeanToString(true));
+            Debug.WriteLine("Customers served: " + sim.ReplicationsStatistics.ServedCustomersCount.MeanToString(true));
             Debug.WriteLine("Avg. Queue Count: " + sim.ReplicationsStatistics.CustomersInQueueCount.MeanToString(true));
             Debug.WriteLine("Avg. Queue Time: " + sim.ReplicationsStatistics.CustomerWaitingTime.MeanToString(true));
             Debug.WriteLine("Avg. Service Time: " + sim.ReplicationsStatistics.CustomersServiceTime.MeanToString(true));

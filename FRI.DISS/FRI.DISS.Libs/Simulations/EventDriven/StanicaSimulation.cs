@@ -52,7 +52,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             base._afterExperiment(rep, d);
 
-            ReplicationsStatistics.CustomersCount.AddSample(ExperimentData.VisitedCustomers);
+            ReplicationsStatistics.ServedCustomersCount.AddSample(ExperimentData.ServicedCustomers);
             ReplicationsStatistics.CustomerWaitingTime.AddSample(ExperimentStatistics.CustomerWaitingTime.Mean);
             ReplicationsStatistics.CustomersInQueueCount.AddSample(ExperimentStatistics.CustomersInQueueCount.Mean);
             ReplicationsStatistics.CustomersServiceTime.AddSample(ExperimentStatistics.CustomersServiceTime.Mean);
@@ -74,6 +74,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         public class StanicaSimulationExperimentData
         {
             public int VisitedCustomers { get; set; } = 0;
+            public int ServicedCustomers { get; set; } = 0;
 
             public Queue<StanicaSimulationCustomer> CustomersQueue { get; set; } = new();
 
@@ -92,7 +93,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             public double? ServiceTime => ServiceStartTime.HasValue ? EndTime - ServiceStartTime : null;
 
             public bool QueueEntered { get; set; } = false;
-            public double? QueueTime => (QueueEntered && ServiceStartTime.HasValue) ? ServiceStartTime - ArrivalTime : null;
+            public double QueueTime => (QueueEntered && ServiceStartTime.HasValue) ? ServiceStartTime.Value - ArrivalTime : 0.0;
         }
 
         #endregion
@@ -109,7 +110,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         #region ReplicationsStatistics
         public class StanicaSimulationReplicationsStatistics
         {
-            public Statistics CustomersCount { get; set; } = new Statistics();
+            public Statistics ServedCustomersCount { get; set; } = new Statistics();
             public Statistics CustomerWaitingTime { get; set; } = new Statistics();
             public Statistics CustomersInQueueCount { get; set; } = new Statistics();
             public Statistics CustomersServiceTime { get; set; } = new Statistics();
@@ -182,17 +183,14 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 }
                 Customer.ServiceStartTime = Simulation.CurrentTime;
 
-                if (Customer.QueueEntered)
-                {
-                    Simulation.ExperimentStatistics.CustomerWaitingTime.AddSample(Customer.QueueTime!.Value);
-                }
+                Simulation.ExperimentStatistics.CustomerWaitingTime.AddSample(Customer.QueueTime);
 
                 Simulation.ExperimentData.IsCustomerBeingServed = true;
             }
 
             public override void PlanNextEvents()
             {
-                Simulation.PlanEvent(new KoniecObsluhyEvent(Simulation) { Customer = Customer }, Simulation.Generators.ObsluhaZakaznika.GetSampleDouble());
+                Simulation.PlanEvent(new KoniecObsluhyEvent(Simulation) { Customer = Customer, Priority = EventSimulationEventPriority.High }, Simulation.Generators.ObsluhaZakaznika.GetSampleDouble());
             }
         }
 
@@ -214,6 +212,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 }
                 Customer.EndTime = Simulation.CurrentTime;
 
+                Simulation.ExperimentData.ServicedCustomers++;
                 Simulation.ExperimentStatistics.CustomersServiceTime.AddSample(Customer.ServiceTime!.Value);
                 Simulation.ExperimentStatistics.CustomersInSystemTime.AddSample(Customer.TotalTime!.Value);
 
