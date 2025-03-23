@@ -35,10 +35,11 @@ namespace FRI.DISS.SP2
 
             Debug.WriteLine("Simulation done:");
             Debug.WriteLine("Replications done: " + sim.ReplicationsDone);
-            Debug.WriteLine("Customers served: " + sim.ReplicationsStatistics.CustomersCount.Mean);
-            Debug.WriteLine("Avg. Queue Count: " + sim.ReplicationsStatistics.CustomersInQueueCount.Mean);
-            Debug.WriteLine("Avg. Queue Time: " + sim.ReplicationsStatistics.CustomerWaitingTime.Mean);
-            Debug.WriteLine("Avg. Total Time: " + sim.ReplicationsStatistics.CustomersInSystemTime.Mean);
+            Debug.WriteLine("Customers served: " + sim.ReplicationsStatistics.CustomersCount.MeanToString(true));
+            Debug.WriteLine("Avg. Queue Count: " + sim.ReplicationsStatistics.CustomersInQueueCount.MeanToString(true));
+            Debug.WriteLine("Avg. Queue Time: " + sim.ReplicationsStatistics.CustomerWaitingTime.MeanToString(true));
+            Debug.WriteLine("Avg. Service Time: " + sim.ReplicationsStatistics.CustomersServiceTime.MeanToString(true));
+            Debug.WriteLine("Avg. Total Time: " + sim.ReplicationsStatistics.CustomersInSystemTime.MeanToString(true));
         }
 
         private void _mnitem_Close_Click(object sender, RoutedEventArgs e)

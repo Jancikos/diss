@@ -84,11 +84,11 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                         throw new InvalidOperationException("Trying to execute event in the past!!!");
                     }
 
-                    // vykonaj event
-                    currentEvent.Execute();
-
                     // zmen systemovy cas
                     _currentTime = currentEvent.StartTime;
+
+                    // vykonaj event
+                    currentEvent.Execute();
 
                     // naplanuj dalsie eventy
                     currentEvent.PlanNextEvents();

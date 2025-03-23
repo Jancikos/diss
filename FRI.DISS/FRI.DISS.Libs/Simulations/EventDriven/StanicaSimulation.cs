@@ -55,20 +55,18 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             ReplicationsStatistics.CustomersCount.AddSample(ExperimentData.VisitedCustomers);
             ReplicationsStatistics.CustomerWaitingTime.AddSample(ExperimentStatistics.CustomerWaitingTime.Mean);
             ReplicationsStatistics.CustomersInQueueCount.AddSample(ExperimentStatistics.CustomersInQueueCount.Mean);
+            ReplicationsStatistics.CustomersServiceTime.AddSample(ExperimentStatistics.CustomersServiceTime.Mean);
             ReplicationsStatistics.CustomersInSystemTime.AddSample(ExperimentStatistics.CustomersInSystemTime.Mean);
         }
 
         #region Generators
         public class StanicaSimulationGenerators
         {
-            public AbstractGenerator PrichodZakaznika { get; set; }
-            public AbstractGenerator ObsluhaZakaznika { get; set; }
-
-            public StanicaSimulationGenerators()
-            {
-                PrichodZakaznika = new ExponentialGenerator(1 / 5.0   , SeedGenerator.Global);
-                ObsluhaZakaznika = new ExponentialGenerator(1 / 4.0, SeedGenerator.Global);
-            }
+            // toto je spravne (sedi pocet zakaznikov za 8 hodin prevazdky)
+            public AbstractGenerator PrichodZakaznika { get; init; } = new ExponentialGenerator(1 / 5.0, SeedGenerator.Global);
+            
+            // toto sa mi nezda - malo by byt exponencialne so strednou dobou 4 minuty 
+            public AbstractGenerator ObsluhaZakaznika { get; init; } = new ExponentialGenerator(1 / 4.0, SeedGenerator.Global);
         }
         #endregion
 
@@ -104,6 +102,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             public Statistics CustomerWaitingTime { get; set; } = new Statistics();
             public Statistics CustomersInQueueCount { get; set; } = new Statistics();
+            public Statistics CustomersServiceTime { get; set; } = new Statistics();
             public Statistics CustomersInSystemTime { get; set; } = new Statistics();
         }
         #endregion
@@ -113,6 +112,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             public Statistics CustomersCount { get; set; } = new Statistics();
             public Statistics CustomerWaitingTime { get; set; } = new Statistics();
             public Statistics CustomersInQueueCount { get; set; } = new Statistics();
+            public Statistics CustomersServiceTime { get; set; } = new Statistics();
             public Statistics CustomersInSystemTime { get; set; } = new Statistics();
         }
         #endregion
@@ -125,7 +125,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             public StanicaSimulationCustomer? Customer { get; set; }
 
             public StanicaSimulationEvent(StanicaSimulation simulation) : base()
-            { 
+            {
                 Simulation = simulation;
             }
         }
@@ -160,7 +160,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                     Simulation.PlanEvent(new ZaciatokObsluhyEvent(Simulation) { Customer = Customer });
                 }
 
-                Simulation.PlanEvent(new PrichodZakaznikaEvent(Simulation) { Customer = Customer }, Simulation.Generators.PrichodZakaznika.GetSampleDouble());
+                Simulation.PlanEvent<PrichodZakaznikaEvent>(Simulation.Generators.PrichodZakaznika.GetSampleDouble());
             }
         }
 
@@ -214,6 +214,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 }
                 Customer.EndTime = Simulation.CurrentTime;
 
+                Simulation.ExperimentStatistics.CustomersServiceTime.AddSample(Customer.ServiceTime!.Value);
                 Simulation.ExperimentStatistics.CustomersInSystemTime.AddSample(Customer.TotalTime!.Value);
 
                 Simulation.ExperimentData.IsCustomerBeingServed = false;
