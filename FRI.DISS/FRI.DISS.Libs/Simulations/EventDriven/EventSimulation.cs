@@ -27,6 +27,20 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         RealTime,
         FastForward
     }
+    
+    public enum EventDrivenSimulationRealTimeRatios
+    {   
+        Slower10x = -10,
+        Slower5x = -5,
+        Slower2x = -2,
+        Regular = 1,
+        Fatster2x = 2,
+        Faster5x = 5,
+        Faster10x = 10,
+        Faster100x = 100,
+        Faster1000x = 1000,
+        Faster10000x = 10000
+    }
 
     public abstract class EventSimulation : Simulation
     {
@@ -49,6 +63,17 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
         protected EventSimulationEventsCalendar? _eventsStack;
         public EventSimulationEventsCalendar EventsCalendar => _eventsStack ?? throw new InvalidOperationException("Events stack not initialized");
+        protected SystemEvent _systemEvent;
+        public EventDrivenSimulationRealTimeRatios RealTimeRatio 
+        {
+            get => _systemEvent.Ratio;
+            set => _systemEvent.Ratio = value;
+        }
+
+        protected EventSimulation()
+        {
+            _systemEvent = new SystemEvent(this);
+        }
 
         public override void RunSimulation()
         {
@@ -118,7 +143,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
         private void _planSystemEvent()
         {
-            PlanEvent<SystemEvent>();
+            PlanEvent(_systemEvent);
         }
 
         public void PlanEvent<TEvent>(double inTime = 0) where TEvent : EventSimulataionEvent

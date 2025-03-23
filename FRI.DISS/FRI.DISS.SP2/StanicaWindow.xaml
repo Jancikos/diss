@@ -20,6 +20,9 @@
             <Menu>
                 <MenuItem Header="Run simulation" Click="_mnitem_Run_Click">
                 </MenuItem>
+                
+                <MenuItem Header="Stop simulation" Click="_mnitem_Stop_Click">
+                </MenuItem>
 
                 <MenuItem x:Name="_mnitem_Close" Header="Close" Click="_mnitem_Close_Click" />
             </Menu>
@@ -29,6 +32,13 @@
             <StackPanel Orientation="Vertical">
                 <GroupBox Header="Simulations stats">
                     <StackPanel Orientation="Horizontal">
+                        <GroupBox Header="Time">
+                            <StackPanel Orientation="Vertical">
+                                <GroupBox Header="RealTime ratio">
+                                    <ComboBox x:Name="_cmbx_repRealTimeRatio" />
+                                </GroupBox>
+                            </StackPanel>
+                        </GroupBox>
                         <GroupBox Header="Basic stats">
                             <StackPanel Orientation="Vertical">
                                 <libsuc:InlineText x:Name="_txt_expTime" Title="Experiment time:" />

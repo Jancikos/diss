@@ -28,6 +28,9 @@ namespace FRI.DISS.SP2
         {
             InitializeComponent();
 
+            _cmbx_repRealTimeRatio.ItemsSource = Enum.GetValues(typeof(EventDrivenSimulationRealTimeRatios)).Cast<EventDrivenSimulationRealTimeRatios>();
+            _cmbx_repRealTimeRatio.SelectedIndex = 0;
+
             _simulation = new StanicaSimulation();
 
             _simulation.GUIEventHappened += _simulation_GUIEventHappened;
@@ -80,6 +83,7 @@ namespace FRI.DISS.SP2
         private void _mnitem_Run_Click(object sender, RoutedEventArgs e)
         {
             _simulation.ReplicationsCount = 100;
+            _simulation.RealTimeRatio = (EventDrivenSimulationRealTimeRatios)_cmbx_repRealTimeRatio.SelectedItem;
             
 
             Task.Run(() =>
@@ -94,6 +98,11 @@ namespace FRI.DISS.SP2
                 Debug.WriteLine("Avg. Service Time: " + _simulation.ReplicationsStatistics.CustomersServiceTime.MeanToString(true));
                 Debug.WriteLine("Avg. Total Time: " + _simulation.ReplicationsStatistics.CustomersInSystemTime.MeanToString(true));
             });
+        }
+
+        private void _mnitem_Stop_Click(object sender, RoutedEventArgs e)
+        {
+            _simulation.StopSimulation();
         }
 
         private void _mnitem_Close_Click(object sender, RoutedEventArgs e)

@@ -14,7 +14,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         Low = 100,
         Lowest = 1000
     }
-    public abstract class EventSimulataionEvent :  IComparable<EventSimulataionEvent>
+    public abstract class EventSimulataionEvent : IComparable<EventSimulataionEvent>
     {
         public double StartTime { get; set; }
         public EventSimulationEventPriority Priority { get; set; } = EventSimulationEventPriority.Low;
@@ -55,17 +55,47 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
     public class SystemEvent : GenericEventSimulataionEvent
     {
+        public EventDrivenSimulationRealTimeRatios Ratio { get; set; } = EventDrivenSimulationRealTimeRatios.Regular;
+
         /// <summary>
         /// in miliseconds
         /// </summary>
         /// <value></value>
-        public int SleepTime { get; set; } = 247;
+        public int SleepTime
+        {
+            get
+            {
+                int multiplier = 1;
+
+                return DefaultSleepTime * multiplier;
+            }
+        }
+        protected int DefaultSleepTime => 1000 / FPS;
 
         /// <summary>
-        /// in Simulation time units
+        /// in Simulation time units (seconds)
         /// </summary>
         /// <value></value>
-        public double Gap { get; set; } = 47.0;
+        public double Gap
+        {
+            get
+            {
+                int multiplier = (int)Ratio;
+
+                if (multiplier < 0)
+                {
+                    return DefaultGap / Math.Abs(multiplier);
+                }
+
+                return DefaultGap * multiplier;
+            }
+        }
+        public double DefaultGap => 1 / (double)FPS;
+
+        /// <summary>
+        /// how many times per second the event should be executed (screen refresh rate)
+        /// </summary>
+        public int FPS => 4;
 
         public SystemEvent(EventSimulation simulation) : base(simulation)
         {
@@ -82,8 +112,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             if (Simulation.TimeMode == EventDrivenSimulationTimeMode.RealTime)
             {
-                Simulation.PlanEvent(new SystemEvent(Simulation) {SleepTime = SleepTime, Gap = Gap}, Gap);
-                // Simulation.PlanEvent<SystemEvent>(Gap);
+                Simulation.PlanEvent(this, Gap);
             }
         }
     }
