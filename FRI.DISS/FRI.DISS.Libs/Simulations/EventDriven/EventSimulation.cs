@@ -34,7 +34,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         /// </summary>
         public event EventHandler<EventDrivenSimulationGUIEventArgs>? GUIEventHappened;
 
-        public override int ReplicationsDone => throw new NotImplementedException();
+        protected int _replicationsDone = 0;
+        public override int ReplicationsDone => _replicationsDone;
 
         public EventDrivenSimulationTimeMode TimeMode { get; set; } = EventDrivenSimulationTimeMode.RealTime;
 
@@ -99,6 +100,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 if (State != SimulationState.Pausing)
                 {
                     _afterExperiment(repDone, 0);
+
+                    _replicationsDone++;
                 }
             }
             

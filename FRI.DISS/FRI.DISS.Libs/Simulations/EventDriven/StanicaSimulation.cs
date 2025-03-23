@@ -20,14 +20,21 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         protected StanicaSimulationExperimentStatistics? _experimentStatistics;
         public StanicaSimulationExperimentStatistics ExperimentStatistics => _experimentStatistics ?? throw new InvalidOperationException("Experiment statistics not initialized");
 
+        protected StanicaSimulationReplicationsStatistics? _replicationsStatistics;
+        public StanicaSimulationReplicationsStatistics ReplicationsStatistics => _replicationsStatistics ?? throw new InvalidOperationException("Replications statistics not initialized");
+
         protected override void _beforeSimulation()
         {
             base._beforeSimulation();
 
+            _replicationsStatistics = new StanicaSimulationReplicationsStatistics();
             _generators = new StanicaSimulationGenerators();
+
 
             // 8 hours
             _endTime = 8 * 60;
+
+            _replicationsDone = 0;
         }
 
         protected override void _beforeExperiment()
@@ -39,6 +46,16 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             // plan first events
             PlanEvent<PrichodZakaznikaEvent>(Generators.PrichodZakaznika.GetSampleDouble());
+        }
+
+        protected override void _afterExperiment(int rep, double d)
+        {
+            base._afterExperiment(rep, d);
+
+            ReplicationsStatistics.CustomersCount.AddSample(ExperimentData.VisitedCustomers);
+            ReplicationsStatistics.CustomerWaitingTime.AddSample(ExperimentStatistics.CustomerWaitingTime.Mean);
+            ReplicationsStatistics.CustomersInQueueCount.AddSample(ExperimentStatistics.CustomersInQueueCount.Mean);
+            ReplicationsStatistics.CustomersInSystemTime.AddSample(ExperimentStatistics.CustomersInSystemTime.Mean);
         }
 
         #region Generators
@@ -85,6 +102,15 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         #region ExperimentStatistics
         public class StanicaSimulationExperimentStatistics
         {
+            public Statistics CustomerWaitingTime { get; set; } = new Statistics();
+            public Statistics CustomersInQueueCount { get; set; } = new Statistics();
+            public Statistics CustomersInSystemTime { get; set; } = new Statistics();
+        }
+        #endregion
+        #region ReplicationsStatistics
+        public class StanicaSimulationReplicationsStatistics
+        {
+            public Statistics CustomersCount { get; set; } = new Statistics();
             public Statistics CustomerWaitingTime { get; set; } = new Statistics();
             public Statistics CustomersInQueueCount { get; set; } = new Statistics();
             public Statistics CustomersInSystemTime { get; set; } = new Statistics();
