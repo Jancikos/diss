@@ -59,13 +59,13 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         /// in miliseconds
         /// </summary>
         /// <value></value>
-        public int SleepTime { get; set; } = 497;
+        public int SleepTime { get; set; } = 247;
 
         /// <summary>
         /// in Simulation time units
         /// </summary>
         /// <value></value>
-        public double Gap { get; set; } = 100.0;
+        public double Gap { get; set; } = 47.0;
 
         public SystemEvent(EventSimulation simulation) : base(simulation)
         {

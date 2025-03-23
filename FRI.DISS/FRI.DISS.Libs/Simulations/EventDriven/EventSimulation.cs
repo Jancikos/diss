@@ -9,6 +9,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
     public enum EventDrivenSimulationEventArgsType
     {
         SimulationEventDone,
+        SimulationExperimentDone,
         RefreshGUI,
         RefreshTime
     }
@@ -41,6 +42,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
         private double _currentTime;
         public double CurrentTime => _currentTime;
+        public abstract string CurrentTimeFormatted { get; }
         protected double? _endTime = null;
         public double? EndTime => _endTime;
         
@@ -100,8 +102,11 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 if (State != SimulationState.Pausing)
                 {
                     _afterExperiment(repDone, 0);
-
+                    
                     _replicationsDone++;
+
+                    // notifikuj GUI
+                    OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationExperimentDone);
                 }
             }
             

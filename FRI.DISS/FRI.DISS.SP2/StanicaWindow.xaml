@@ -1,0 +1,56 @@
+﻿<Window x:Class="FRI.DISS.SP2.StanicaWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:libsuc="clr-namespace:FRI.DISS.Libs.GUI.Controls;assembly=FRI.DISS.Libs.GUI"
+        xmlns:local="clr-namespace:FRI.DISS.SP2"
+        mc:Ignorable="d"
+        Title="SP2 - Stanica simulation" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <Menu>
+                <MenuItem Header="Run simulation" Click="_mnitem_Run_Click">
+                </MenuItem>
+
+                <MenuItem x:Name="_mnitem_Close" Header="Close" Click="_mnitem_Close_Click" />
+            </Menu>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="5">
+            <StackPanel Orientation="Vertical">
+                <GroupBox Header="Simulations stats">
+                    <StackPanel Orientation="Horizontal">
+                        <GroupBox Header="Basic stats">
+                            <StackPanel Orientation="Vertical">
+                                <libsuc:InlineText x:Name="_txt_expTime" Title="Experiment time:" />
+                                <libsuc:InlineText x:Name="_txt_expTotalCustomers" Title="Customers served:" />
+                                <libsuc:InlineText x:Name="_txt_expCustomersServed" Title="Customers served:" />
+                            </StackPanel>
+                        </GroupBox>
+                        <libsuc:DicreteStatistic x:Name="_expStatsCustomersWaitingTime" Title="Customers waiting time" />
+                        <libsuc:DicreteStatistic x:Name="_expStatsCustomersServiceTime" Title="Customers service time" />
+                        <libsuc:DicreteStatistic x:Name="_expStatsCustomersTotalTime" Title="Customers total time" />
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Replications stats">
+                    <StackPanel Orientation="Horizontal">
+                        <libsuc:DicreteStatistic x:Name="_repStatsServedCustomers" Title="Served customers count" />
+                        <libsuc:DicreteStatistic x:Name="_repStatsCustomersWaitingTime" Title="Customers waiting time" />
+                        <libsuc:DicreteStatistic x:Name="_repStatsCustomersServiceTime" Title="Customers service time" />
+                        <libsuc:DicreteStatistic x:Name="_repStatsCustomersTotalTime" Title="Customers total time" />
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

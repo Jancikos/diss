@@ -3,11 +3,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:libsuc="clr-namespace:FRI.DISS.Libs.GUI.Controls;assembly=FRI.DISS.Libs.GUI"
     xmlns:uc="clr-namespace:FRI.DISS.SP2"
     xmlns:local="clr-namespace:FRI.DISS.SP2"
     mc:Ignorable="d"
     Title="DISS SP2" Height="450" Width="800">
-    <!-- xmlns:libsuc="clr-namespace:FRI.DISS.Libs.GUI.Controls; assembly=FRI.DISS.Libs.GUI" -->
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -19,7 +19,7 @@
 
         <StackPanel>
             <Menu>
-                <MenuItem Header="File" Click="_mnitem_File_Click">
+                <MenuItem Header="Stanica simulation" Click="_mnitem_StanicaSimWindow_Click">
                 </MenuItem>
 
                 <MenuItem x:Name="_mnitem_Close" Header="Close" Click="_mnitem_Close_Click" />
@@ -27,12 +27,6 @@
         </StackPanel>
 
         <Grid Grid.Row="1" Margin="5">
-            <StackPanel Orientation="Vertical">
-                <!-- <libsuc:InlineTextBox x:Name="_txtbx_VisitedCustomers" Title="Visited Customers" />
-                <libsuc:InlineTextBox x:Name="_txtbx_QueueCount" Title="Avg. Queue Count" />
-                <libsuc:InlineTextBox x:Name="_txtbx_AvgQueueTime" Title="Avg. Queue Time" />
-                <libsuc:InlineTextBox x:Name="_txtbx_AvgTotalTime" Title="Avg. Total Time" /> -->
-            </StackPanel>
         </Grid>
     </Grid>
 </Window>

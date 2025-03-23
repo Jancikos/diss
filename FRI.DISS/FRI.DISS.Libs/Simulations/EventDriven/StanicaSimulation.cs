@@ -23,6 +23,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         protected StanicaSimulationReplicationsStatistics? _replicationsStatistics;
         public StanicaSimulationReplicationsStatistics ReplicationsStatistics => _replicationsStatistics ?? throw new InvalidOperationException("Replications statistics not initialized");
 
+        public override string CurrentTimeFormatted => TimeSpan.FromMinutes(8 * 60 + CurrentTime).ToString(@"hh\:mm");
+
         protected override void _beforeSimulation()
         {
             base._beforeSimulation();

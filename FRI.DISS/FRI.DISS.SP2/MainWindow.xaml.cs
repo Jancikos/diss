@@ -21,25 +21,14 @@ namespace FRI.DISS.SP2
         public MainWindow()
         {
             InitializeComponent();
+
+            _mnitem_StanicaSimWindow_Click(null, null);
         }
 
-        private void _mnitem_File_Click(object sender, RoutedEventArgs e)
+        private void _mnitem_StanicaSimWindow_Click(object sender, RoutedEventArgs e)
         {
-            var sim = new StanicaSimulation()
-            {
-                ReplicationsCount = 1000,
-                TimeMode = EventDrivenSimulationTimeMode.FastForward
-            };
-
-            sim.RunSimulation();
-
-            Debug.WriteLine("Simulation done:");
-            Debug.WriteLine("Replications done: " + sim.ReplicationsDone);
-            Debug.WriteLine("Customers served: " + sim.ReplicationsStatistics.ServedCustomersCount.MeanToString(true));
-            Debug.WriteLine("Avg. Queue Count: " + sim.ReplicationsStatistics.CustomersInQueueCount.MeanToString(true));
-            Debug.WriteLine("Avg. Queue Time: " + sim.ReplicationsStatistics.CustomerWaitingTime.MeanToString(true));
-            Debug.WriteLine("Avg. Service Time: " + sim.ReplicationsStatistics.CustomersServiceTime.MeanToString(true));
-            Debug.WriteLine("Avg. Total Time: " + sim.ReplicationsStatistics.CustomersInSystemTime.MeanToString(true));
+            var window = new StanicaWindow();
+            window.Show();
         }
 
         private void _mnitem_Close_Click(object sender, RoutedEventArgs e)
