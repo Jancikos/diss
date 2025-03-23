@@ -23,7 +23,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         protected StanicaSimulationReplicationsStatistics? _replicationsStatistics;
         public StanicaSimulationReplicationsStatistics ReplicationsStatistics => _replicationsStatistics ?? throw new InvalidOperationException("Replications statistics not initialized");
 
-        public override string CurrentTimeFormatted => TimeSpan.FromMinutes(8 * 60 + CurrentTime).ToString(@"hh\:mm");
+        public override string CurrentTimeFormatted => TimeSpan.FromSeconds(8 * 60 * 60 + CurrentTime).ToString(@"hh\:mm\:ss");
 
         protected override void _beforeSimulation()
         {
@@ -32,9 +32,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             _replicationsStatistics = new StanicaSimulationReplicationsStatistics();
             _generators = new StanicaSimulationGenerators();
 
-
             // 8 hours
-            _endTime = 8 * 60;
+            _endTime = 8 * 60 * 60;
 
             _replicationsDone = 0;
         }
@@ -64,11 +63,11 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         #region Generators
         public class StanicaSimulationGenerators
         {
-            // toto je spravne (sedi pocet zakaznikov za 8 hodin prevazdky)
-            public AbstractGenerator PrichodZakaznika { get; init; } = new ExponentialGenerator(1 / 5.0, SeedGenerator.Global);
+            // prichod 12 zakaznikov za hodinu, teda 1 zakaznik za 5 minut
+            public AbstractGenerator PrichodZakaznika { get; init; } = new ExponentialGenerator(1 / (5.0 * 60), SeedGenerator.Global);
             
-            // toto sa mi nezda - malo by byt exponencialne so strednou dobou 4 minuty 
-            public AbstractGenerator ObsluhaZakaznika { get; init; } = new ExponentialGenerator(1 / 4.0, SeedGenerator.Global);
+            // exponencialne so strednou dobou 4 minuty 
+            public AbstractGenerator ObsluhaZakaznika { get; init; } = new ExponentialGenerator(1 / (4.0 * 60), SeedGenerator.Global);
         }
         #endregion
 
