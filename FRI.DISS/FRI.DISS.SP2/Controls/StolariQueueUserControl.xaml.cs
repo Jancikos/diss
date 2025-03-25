@@ -47,11 +47,11 @@ namespace FRI.DISS.SP2.Controls
 
                 if (_lst.Items.Count <= i)
                 {
-                    _lst.Items.Add(new WorkPlaceUserControl());
+                    _lst.Items.Add(new WorkPlaceUserControl() { IsShowingNextOperation = false });
                 }
 
                 var workplaceUc = (WorkPlaceUserControl)_lst.Items[i];
-                workplaceUc.Id = i + 1;
+                workplaceUc.Id = objednavka.Workplace + 1;
                 workplaceUc.Objednavka = objednavka;
             }
 

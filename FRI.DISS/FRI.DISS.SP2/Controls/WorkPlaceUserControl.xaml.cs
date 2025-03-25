@@ -26,7 +26,13 @@ namespace FRI.DISS.SP2.Controls
             set => _grb_Header.Header = $"Workplace #{value}";
         }
 
-        public  NabytokSimulation.Objednavka? Objednavka
+        public bool IsShowingNextOperation
+        {
+            get => _uc_Objednavka.IsShowingNextOperation;
+            set => _uc_Objednavka.IsShowingNextOperation = value;
+        }
+
+        public NabytokSimulation.Objednavka? Objednavka
         {
             get => _uc_Objednavka.Objednavka;
             set
@@ -46,6 +52,8 @@ namespace FRI.DISS.SP2.Controls
         public WorkPlaceUserControl()
         {
             InitializeComponent();
+
+            _uc_Objednavka.IsShowingNextOperation = true;
         }
     }
 }

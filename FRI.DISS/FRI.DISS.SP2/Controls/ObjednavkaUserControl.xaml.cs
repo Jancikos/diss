@@ -32,6 +32,9 @@ namespace FRI.DISS.SP2.Controls
                 _updateGUI();
             }
         }
+
+        public bool IsShowingNextOperation { get; set; } = false;
+
         public ObjednavkaUserControl()
         {
             InitializeComponent();
@@ -49,7 +52,13 @@ namespace FRI.DISS.SP2.Controls
 
             _txt_Id.Text = $"#{Objednavka.Id}";
             _txt_Nabytok.Text = Objednavka.Nabytok.ToString();
-            _txt_Status.Text = $"[{Objednavka.Status}]";
+
+            string status = Objednavka.Status.ToString();
+            if (IsShowingNextOperation && Objednavka.Status < NabytokSimulation.ObjednavkaStatus.Poskladana)
+            {
+                status += $" -> {Objednavka.MapStatusToNectOperation()}";
+            }
+            _txt_Status.Text = $"[{status}]";
         }
     }
 }
