@@ -78,16 +78,14 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         public override void RunSimulation()
         {
             if (State == SimulationState.Running)
-            {
                 throw new InvalidOperationException("Simulation already running");
-            }
+
+            if (State == SimulationState.Starting)
+                _beforeSimulation();
+
             State = SimulationState.Running;
-
-            _beforeSimulation();
-
-            for (int repDone = 0; repDone < ReplicationsCount; repDone++)
+            for (int repDone = _replicationsDone; repDone < ReplicationsCount; repDone++)
             {
-
                 _eventsStack = new EventSimulationEventsCalendar();
                 _currentTime = 0;
 
@@ -124,7 +122,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                     OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationEventDone);
                 }
 
-                if (State != SimulationState.Pausing)
+                if (State == SimulationState.Running)
                 {
                     _afterExperiment(repDone, 0);
                     
@@ -133,11 +131,14 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                     // notifikuj GUI
                     OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationExperimentDone);
                 }
+
+                _replicationsDone++;
             }
             
             if (State != SimulationState.Pausing)
             {
                 _afterSimulation();
+                State = SimulationState.Done;
             }
         }
 
@@ -198,6 +199,5 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             GUIEventHappened?.Invoke(this, eventArgs);
         }
-
     }
 }

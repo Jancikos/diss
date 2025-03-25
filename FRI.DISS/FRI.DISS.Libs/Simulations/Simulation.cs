@@ -10,6 +10,8 @@ namespace FRI.DISS.Libs.Simulations
     public enum SimulationState
     {
         Created,
+        Starting,
+        Resuming,
         Running,
         Stopping,
         Pausing,
@@ -34,11 +36,22 @@ namespace FRI.DISS.Libs.Simulations
 
         public abstract void RunSimulation();
 
+        public void StartSimulation()
+        {
+            if (State != SimulationState.Created && State != SimulationState.Done)
+            {
+                throw new InvalidOperationException("Simulation is not is state created or done");
+            }
+
+            State = SimulationState.Starting;
+            RunSimulation();
+        }
+
         public void StopSimulation()
         {
             if (State != SimulationState.Running)
             {
-                throw new InvalidOperationException("Simulation is not running");
+                throw new InvalidOperationException("Simulation is not is state running");
             }
 
             State = SimulationState.Stopping;
@@ -48,10 +61,21 @@ namespace FRI.DISS.Libs.Simulations
         {
             if (State != SimulationState.Running)
             {
-                throw new InvalidOperationException("Simulation is not running");
+                throw new InvalidOperationException("Simulation is not is state running");
             }
 
-            State = SimulationState.Paused;
+            State = SimulationState.Pausing;
+        }
+        
+        public void ResumeSimulation()
+        {
+            if (State != SimulationState.Pausing)
+            {
+                throw new InvalidOperationException("Simulation is not is state paused");
+            }
+
+            State = SimulationState.Resuming;
+            RunSimulation();
         }
     }
 }
