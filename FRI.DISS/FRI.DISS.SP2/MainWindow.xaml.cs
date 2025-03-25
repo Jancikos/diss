@@ -1,5 +1,6 @@
 ﻿using FRI.DISS.Libs.Generators;
 using FRI.DISS.Libs.Simulations.EventDriven;
+using FRI.DISS.SP2.Controls;
 using System.Diagnostics;
 using System.Text;
 using System.Windows;
@@ -93,6 +94,27 @@ namespace FRI.DISS.SP2
 
             _refreshTime();
             _refreshEventsCalendar();
+            _refreshWorkplaces();
+        }
+
+        private void _refreshWorkplaces()
+        {
+            _txt_expWorkplacesCount.Value = _simulation.ExperimentData.Workplaces.Count.ToString();
+            _txt_expWorkplacesOccupiedCount.Value = _simulation.ExperimentData.ObjednavkyInSystem.ToString();
+
+            for (int i = 0; i < _simulation.ExperimentData.Workplaces.Count; i++)
+            {
+                var objednavka = _simulation.ExperimentData.Workplaces[i];
+
+                if (_lst_expWorkplaces.Items.Count <= i)
+                {
+                    _lst_expWorkplaces.Items.Add(new WorkPlaceUserControl() {Id = i + 1});
+                }
+
+                var ucWorkplace = (WorkPlaceUserControl)_lst_expWorkplaces.Items[i];
+
+                ucWorkplace.Objednavka = objednavka;
+            }
         }
 
         private void _refreshEventsCalendar()
@@ -117,6 +139,7 @@ namespace FRI.DISS.SP2
                     {
                         Header = $"O: {nabytokEvent.Objednavka}"
                     });
+
 
                     item.Items.Add(new TreeViewItem()
                     {

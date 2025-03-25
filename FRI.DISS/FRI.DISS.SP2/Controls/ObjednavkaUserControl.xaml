@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="FRI.DISS.SP2.Controls.ObjednavkaUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FRI.DISS.SP2.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="100">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="_txt_Id" Text="#1" />
+        <TextBlock Grid.Column="1" x:Name="_txt_Nabytok" Text="Stol" Margin="5 0 0 0" />
+
+        <TextBlock Grid.Row="0" Grid.Column="2" x:Name="_txt_Status" Text="[Namorena]" Margin="5 0 0 0" FontSize="10"  TextAlignment="Right"/>
+
+    </Grid>
+</UserControl>

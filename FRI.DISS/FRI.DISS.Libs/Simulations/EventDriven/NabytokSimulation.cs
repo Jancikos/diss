@@ -180,6 +180,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             public int ObjednavkyRecieved { get; set; } = 0;
             public int ObjednavkyDone { get; set; } = 0;
+            public int ObjednavkyInSystem => ObjednavkyRecieved - ObjednavkyDone;
 
             public List<Objednavka?> Workplaces { get; set; } = new();
 
@@ -229,6 +230,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                     freeWorkplaceIndex = Workplaces.Count - 1;
                 }
 
+                Workplaces[freeWorkplaceIndex] = objednavka;
                 objednavka.Workplace = freeWorkplaceIndex;
             }
 
@@ -685,7 +687,11 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                         return;
                     }
                     Simulation.PlanEvent(new MontazKovaniZaciatok(Simulation) { Objednavka = Objednavka, Stolar = freeStolarC });
+                    return;
                 }
+
+                // plan end of objednavka
+                Simulation.PlanEvent(new ObjednavkaFinishedEvent(Simulation) { Objednavka = Objednavka });
             }
         }
 
