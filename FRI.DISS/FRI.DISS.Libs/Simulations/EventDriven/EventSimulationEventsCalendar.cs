@@ -25,5 +25,13 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             return _events.Dequeue();
         }
+
+        public IEnumerable<EventSimulataionEvent> GetOrderedEvents()
+        {
+            return _events.UnorderedItems
+                            .Select(item => item.Element)
+                            .OrderBy(e => e)  // Adjust this if EventSimulataionEvent has a custom ordering logic
+            ;
+        }
     }
 }

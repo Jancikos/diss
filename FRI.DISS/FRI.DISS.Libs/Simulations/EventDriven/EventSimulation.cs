@@ -61,7 +61,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         public double? EndTime => _endTime;
         
 
-        protected EventSimulationEventsCalendar? _eventsStack;
+        public EventSimulationEventsCalendar? _eventsStack; // public only for debugging purposes
         public EventSimulationEventsCalendar EventsCalendar => _eventsStack ?? throw new InvalidOperationException("Events stack not initialized");
         protected SystemEvent _systemEvent;
         public EventDrivenSimulationRealTimeRatios RealTimeRatio 

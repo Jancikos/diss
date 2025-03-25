@@ -35,7 +35,8 @@ namespace FRI.DISS.SP2
         {
             // cmbx timeRatio
             _cmbx_simRealTimeRatio.ItemsSource = Enum.GetValues(typeof(EventDrivenSimulationRealTimeRatios)).Cast<EventDrivenSimulationRealTimeRatios>();
-            _cmbx_simRealTimeRatio.SelectedIndex = 0;
+            // _cmbx_simRealTimeRatio.SelectedIndex = 0;
+            _cmbx_simRealTimeRatio.SelectedIndex = 6;
 
         }
 
@@ -78,8 +79,44 @@ namespace FRI.DISS.SP2
                     case EventDrivenSimulationEventArgsType.RefreshTime:
                         _refreshTime();
                         break;
+                    case EventDrivenSimulationEventArgsType.SimulationEventDone:
+                        _refreshEventsCalendar();
+                        break;
                 }
             });
+        }
+
+        private void _refreshEventsCalendar()
+        {
+            _trv_expEventsCalendar.Items.Clear();
+
+            if (_chk_repEventsCalendarRender.IsChecked != true) 
+                return;
+
+            var i = 0;
+            foreach (var e in _simulation.EventsCalendar.GetOrderedEvents())
+            {
+                var item = new TreeViewItem()
+                {
+                    Header = $"{++i}. {e}",
+                    IsExpanded = true
+                };
+
+                if (e is NabytokSimulation.NabytokSimulationEvent nabytokEvent)
+                {
+                    item.Items.Add(new TreeViewItem()
+                    {
+                        Header = $"O: {nabytokEvent.Objednavka}"
+                    });
+
+                    item.Items.Add(new TreeViewItem()
+                    {
+                        Header = $"S: {nabytokEvent.Stolar}"
+                    });
+                }
+
+                _trv_expEventsCalendar.Items.Add(item);
+            }
         }
 
         private void _refreshTime()

@@ -41,6 +41,11 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             return Priority.CompareTo(other.Priority);
         }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name} at {StartTime:F2}";
+        }
     }
 
     public abstract class GenericEventSimulataionEvent : EventSimulataionEvent

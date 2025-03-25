@@ -50,12 +50,13 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             _experimentStatistics = new NabytokExperimentStatistics();
 
-
             _experimentData = new NabytokExperimentData();
             Stolar.ResetCounter();
             _experimentData.SetStolariCount(StolarType.A, 2);
             _experimentData.SetStolariCount(StolarType.B, 2);
             _experimentData.SetStolariCount(StolarType.C, 2);
+
+            PlanEvent<ObjednavkaRecievedEvent>(Generators.ObjednavkyInputIntesity.GetSampleDouble());
         }
 
         protected override void _afterExperiment(int replication, double result)
@@ -119,8 +120,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         public class NabytokGenerators(SeedGenerator seedGenerator)
         {
             // objednavky
-            public AbstractGenerator ObjednavkyInputIntesity = new ExponentialGenerator((1 / 30.0)
-             * 60, seedGenerator);
+            public AbstractGenerator ObjednavkyInputIntesity = new ExponentialGenerator(1.0 / 
+        (30.0 * 60.0), seedGenerator);
             protected AbstractGenerator ObjednavkyNabytokType = new UniformGenerator(GenerationMode.Continuous, seedGenerator);
             public Nabytok GenerateObjednavkaNabytokType()
             {
@@ -234,7 +235,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             public Stolar? GetFreeStolar(StolarType type) => GetFreeStolar(Stolari[type]);
             public Stolar? GetFreeStolar(List<Stolar> stolari)
             {
-                return stolari.First(s => !s.IsWorking);
+                return stolari.FirstOrDefault(s => !s!.IsWorking, null);
             }
 
             public Objednavka? GetWaitingObjednavka(StolarType type) => GetWaitingObjednavka(StolariQueues[type]);
@@ -309,6 +310,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             public double CreationTime { get; init; }
             public double? EndTime { get; set; }
+
+            public override string ToString() => $"{Id} - {Nabytok} [{Status}]";
         }
 
         public enum ObjednavkaStatus
@@ -368,6 +371,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 TimeInWork += time - _lastWorkStartTime.Value;
                 _lastWorkStartTime = null;
             }
+
+            public override string ToString() => $"{Id} - Stolar{Type}";
         }
 
         public enum StolarType

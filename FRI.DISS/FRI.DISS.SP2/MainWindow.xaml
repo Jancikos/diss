@@ -83,6 +83,18 @@
                             <libsuc:InlineText x:Name="_txt_expDay" Title="Day:" Value="0" />
                         </StackPanel> 
                     </GroupBox>
+                    
+                    <GroupBox Header="Events calendar">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <CheckBox x:Name="_chk_repEventsCalendarRender" Content="Render" IsChecked="True" />
+                            <TreeView Grid.Row="1" x:Name="_trv_expEventsCalendar" VerticalAlignment="Stretch" />
+                        </Grid>
+                    </GroupBox>
                 </StackPanel>
             </GroupBox>
 
