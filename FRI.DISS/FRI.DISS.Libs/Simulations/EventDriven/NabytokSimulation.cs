@@ -38,15 +38,37 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             base._beforeExperiment();
 
-            _experimentData = new NabytokExperimentData();
             _experimentStatistics = new NabytokExperimentStatistics();
+
+
+            _experimentData = new NabytokExperimentData();
+            Stolar.ResetCounter();
+            _experimentData.SetStolariCount(StolarType.A, 2);
+            _experimentData.SetStolariCount(StolarType.B, 2);
+            _experimentData.SetStolariCount(StolarType.C, 2);
         }
 
         protected override void _afterExperiment(int replication, double result)
         {
             base._afterExperiment(replication, result);
 
-            ReplicationsStatistics.AverageObjednavkaTime.AddSample(ExperimentStatistics.AverageObjednavkaTime.Mean);
+            ReplicationsStatistics.ObjednavkaTime.AddSample(ExperimentStatistics.ObjednavkaTime.Mean);
+
+            // stolari work time ratio
+            foreach (var stolarType in Enum.GetValues<StolarType>())
+            {
+                var stolari = ExperimentData.Stolari[stolarType];
+                var totalWorkTime = EndTime!.Value;
+                var groupWorkTime = stolari.Sum(s => s.TimeInWork);
+
+                ExperimentStatistics.StolariWorkTimeRatio[stolarType].AddSample(groupWorkTime / totalWorkTime);
+
+                foreach (var stolar in stolari)
+                {
+                    ExperimentStatistics.StolarWorkTimeRatio[stolarType]
+                    .AddSample(stolar.TimeInWork / totalWorkTime);
+                }
+            }
         }
 
         #region Generators
@@ -111,7 +133,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
         public class NabytokReplicationsStatistics
         {
-            public Statistics AverageObjednavkaTime { get; set; } = new Statistics();
+            public Statistics ObjednavkaTime { get; set; } = new Statistics();
         }
 
         #endregion
@@ -119,7 +141,14 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
         public class NabytokExperimentStatistics
         {
-            public Statistics AverageObjednavkaTime { get; set; } = new Statistics();
+            public Statistics ObjednavkaTime { get; } = new Statistics();
+
+            public Statistics ObjednavkyRecieved { get; } = new Statistics();
+            public Statistics ObjednavkyDone { get; } = new Statistics();
+            public Statistics ObjednavkyNotDone { get; } = new Statistics();
+
+            public Dictionary<StolarType, Statistics> StolariWorkTimeRatio {get;} = new(); 
+            public Dictionary<StolarType, List<Statistics>> StolarWorkTimeRatio {get;} = new(); 
         }
 
         #endregion
@@ -145,10 +174,32 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 { StolarType.C, new() }
             };
 
+            public void SetStolariCount(StolarType stolarType, int newCount)
+            {
+                if (newCount < 0)
+                    throw new InvalidOperationException("Count of stolari should be greater than 0");
+                
+                var actualCount = Stolari[stolarType].Count;
+                if (newCount == actualCount)
+                    return;
+
+                if (newCount < actualCount)
+                {
+                    Stolari[stolarType].RemoveRange(newCount, actualCount - newCount);
+                    return;
+                }
+
+                for (int i = actualCount; i < newCount; i++)
+                {
+                    Stolari[stolarType].Add(new Stolar { Type = stolarType });
+                }
+            }
+
+
             public void AssignWorkplace(Objednavka objednavka)
             {
                 var freeWorkplaceIndex = Workplaces.IndexOf(null);
-             
+
                 if (freeWorkplaceIndex == -1)
                 {
                     Workplaces.Add(objednavka);
@@ -192,7 +243,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             }
         }
 
-        public class Objednavka
+        public class Objednavka : IComparable<Objednavka>
         {
             public int Id { get; init; }
             public int Workplace { get; set; } // should be init 
@@ -216,6 +267,22 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                         break;
                 }
                 throw new NotImplementedException();
+            }
+
+            public int CompareTo(Objednavka? other)
+            {
+                if (other is null)
+                    return 1;
+
+                if (Status == ObjednavkaStatus.Poskladana && Nabytok == Nabytok.Skrina)
+                {
+                    if (other.Nabytok != Nabytok.Skrina || other.Status != ObjednavkaStatus.Poskladana)
+                        return -1;
+
+                    return Id.CompareTo(other.Id);
+                }
+
+                return Id.CompareTo(other.Id);
             }
 
             public double CreationTime { get; init; }
@@ -248,7 +315,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
         public class Stolar
         {
-            public int Id { get; init; }
+            public static int StolarCounter = 0;
+            public int Id { get; init; } = ++StolarCounter;
             public StolarType Type { get; init; }
 
             public const int WarehousePlaceIndex = 0;
@@ -257,6 +325,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             public double TimeInWork { get; protected set; } = 0;
             public bool IsWorking => _lastWorkStartTime is not null;
             protected double? _lastWorkStartTime = null;
+
+            public static void ResetCounter() => StolarCounter = 0;
 
             public void StartWork(double time)
             {
@@ -272,7 +342,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
                 if (time < _lastWorkStartTime.Value)
                     throw new InvalidOperationException("Time is less than last work start time");
-            
+
                 TimeInWork += time - _lastWorkStartTime.Value;
                 _lastWorkStartTime = null;
             }
@@ -304,7 +374,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             {
                 if (Simulation is null)
                     throw new InvalidOperationException("Simulation is not set");
-                
+
                 if (Objednavka is null)
                     throw new InvalidOperationException("Objednavka is not set");
 
@@ -343,7 +413,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
                 // plan RezanieZaciatok
                 var stolarA = Simulation.ExperimentData.GetFreeStolar(StolarType.A);
-                if (stolarA is null) 
+                if (stolarA is null)
                 {
                     Simulation.ExperimentData.EnqueueWaitingObjednavka(StolarType.A, Objednavka!);
                     return;
@@ -413,7 +483,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var nextRezanie = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(StolarType.A);
                 if (nextRezanie is not null)
                 {
-                    Simulation.PlanEvent(new RezanieZaciatokEvent(Simulation) { 
+                    Simulation.PlanEvent(new RezanieZaciatokEvent(Simulation)
+                    {
                         Objednavka = nextRezanie.Value.objednavka,
                         Stolar = nextRezanie.Value.stolar
                     });
@@ -487,7 +558,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 {
                     if (nextObjednavka.Value.objednavka.Status == ObjednavkaStatus.Narezana)
                     {
-                        Simulation.PlanEvent(new MorenieZaciatok(Simulation) { 
+                        Simulation.PlanEvent(new MorenieZaciatok(Simulation)
+                        {
                             Objednavka = nextObjednavka.Value.objednavka,
                             Stolar = nextObjednavka.Value.stolar
                         });
@@ -495,13 +567,14 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
                     if (nextObjednavka.Value.objednavka.Status == ObjednavkaStatus.Poskladana)
                     {
-                        Simulation.PlanEvent(new MontazKovaniZaciatok(Simulation) { 
+                        Simulation.PlanEvent(new MontazKovaniZaciatok(Simulation)
+                        {
                             Objednavka = nextObjednavka.Value.objednavka,
                             Stolar = nextObjednavka.Value.stolar
                         });
                     }
                 }
-            
+
                 // try plan SkladanieZaciatok for this objednavka
                 var freeStolarB = Simulation.ExperimentData.GetFreeStolar(StolarType.B);
                 if (freeStolarB is null)
@@ -568,7 +641,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var nextObjednavka = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(StolarType.B);
                 if (nextObjednavka is not null)
                 {
-                    Simulation.PlanEvent(new SkladanieZaciatok(Simulation) { 
+                    Simulation.PlanEvent(new SkladanieZaciatok(Simulation)
+                    {
                         Objednavka = nextObjednavka.Value.objednavka,
                         Stolar = nextObjednavka.Value.stolar
                     });
@@ -580,7 +654,6 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                     var freeStolarC = Simulation.ExperimentData.GetFreeStolar(StolarType.C);
                     if (freeStolarC is null)
                     {
-                        // !!! TODO - uprednostenie objednavky na montaz kovani pred ostatnymi
                         Simulation.ExperimentData.EnqueueWaitingObjednavka(StolarType.C, Objednavka!);
                         return;
                     }
@@ -646,7 +719,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 {
                     if (nextObjednavka.Value.objednavka.Status == ObjednavkaStatus.Narezana)
                     {
-                        Simulation.PlanEvent(new MorenieZaciatok(Simulation) { 
+                        Simulation.PlanEvent(new MorenieZaciatok(Simulation)
+                        {
                             Objednavka = nextObjednavka.Value.objednavka,
                             Stolar = nextObjednavka.Value.stolar
                         });
@@ -654,7 +728,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
                     if (nextObjednavka.Value.objednavka.Status == ObjednavkaStatus.Poskladana)
                     {
-                        Simulation.PlanEvent(new MontazKovaniZaciatok(Simulation) { 
+                        Simulation.PlanEvent(new MontazKovaniZaciatok(Simulation)
+                        {
                             Objednavka = nextObjednavka.Value.objednavka,
                             Stolar = nextObjednavka.Value.stolar
                         });
@@ -679,6 +754,9 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
                 Objednavka.EndTime = Simulation.CurrentTime;
                 Simulation.ExperimentData.ObjednavkyDone++;
+
+                // uvolni workplace
+                Simulation.ExperimentData.Workplaces[Objednavka.Workplace] = null;
             }
 
             public override void PlanNextEvents()
