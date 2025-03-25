@@ -39,6 +39,17 @@ namespace FRI.DISS.SP2
             // _cmbx_simRealTimeRatio.SelectedIndex = 0;
             _cmbx_simRealTimeRatio.SelectedIndex = 6;
 
+
+            // stolari types
+            Enum.GetValues(typeof(NabytokSimulation.StolarType)).Cast<NabytokSimulation.StolarType>().ToList().ForEach(stolarType =>
+            {
+                var stolarUC = new StolariUserControl() { StolarType = stolarType };
+                _lst_StolariTypes.Children.Add(stolarUC);
+
+                var stolariQueueUC = new StolariQueueUserControl() { StolarType = stolarType };
+                _lst_StolariTypesQueues.Children.Add(stolariQueueUC);
+            });
+
         }
 
         private void _initializeSimulationFromGUI()
@@ -95,6 +106,26 @@ namespace FRI.DISS.SP2
             _refreshTime();
             _refreshEventsCalendar();
             _refreshWorkplaces();
+            _refreshWorkers();
+        }
+
+        private void _refreshWorkers()
+        {
+            _lst_StolariTypes.Children.Cast<StolariUserControl>().ToList().ForEach(stolarUC =>
+            {
+                var stolarType = stolarUC.StolarType;
+                var stolari = _simulation.ExperimentData.Stolari[stolarType];
+
+                stolarUC._updateGUI(stolari);
+            });
+
+            _lst_StolariTypesQueues.Children.Cast<StolariQueueUserControl>().ToList().ForEach(stolariQueueUC =>
+            {
+                var stolarType = stolariQueueUC.StolarType;
+                var objednavky = _simulation.ExperimentData.StolariQueues[stolarType];
+
+                stolariQueueUC._updateGUI(objednavky.ToList());
+            });
         }
 
         private void _refreshWorkplaces()

@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:libsuc="clr-namespace:FRI.DISS.Libs.GUI.Controls;assembly=FRI.DISS.Libs.GUI"
-    xmlns:uc="clr-namespace:FRI.DISS.SP2"
+    xmlns:uc="clr-namespace:FRI.DISS.SP2.Controls"
     xmlns:local="clr-namespace:FRI.DISS.SP2"
     mc:Ignorable="d"
     Title="DISS SP2" Height="450" Width="800">
@@ -111,6 +111,18 @@
                             </UniformGrid>
                             <ListView Grid.Row="1" x:Name="_lst_expWorkplaces" VerticalAlignment="Stretch" />
                         </Grid>
+                    </GroupBox>
+
+                    <GroupBox Header="Stolari">
+                        <StackPanel x:Name="_lst_StolariTypes" Orientation="Horizontal">
+                            
+                        </StackPanel>
+                    </GroupBox>
+                    
+                    <GroupBox Header="Stolari queues">
+                        <StackPanel x:Name="_lst_StolariTypesQueues" Orientation="Horizontal">
+                            
+                        </StackPanel>
                     </GroupBox>
                 </StackPanel>
             </GroupBox>
