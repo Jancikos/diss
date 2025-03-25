@@ -12,7 +12,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
     public class NabytokSimulation : EventSimulation
     {
         // pracovna doba je denne od 6:00 do 14:00
-        public override string CurrentTimeFormatted => throw new NotImplementedException();
+        public override string CurrentTimeFormatted => TimeSpan.FromSeconds(6 * 60 * 60 + CurrentTime).ToString(@"hh\:mm\:ss");
+        public string CurrentTimeDayFormatted => TimeSpan.FromSeconds(CurrentTime).Days.ToString();
 
         protected NabytokGenerators? _generators;
         protected NabytokGenerators Generators => _generators ?? throw new InvalidOperationException("Generators are not initialized");
@@ -20,6 +21,12 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         protected NabytokExperimentStatistics? _experimentStatistics;
         public NabytokExperimentStatistics ExperimentStatistics => _experimentStatistics ?? throw new InvalidOperationException("Experiment statistics are not initialized");
 
+        public Dictionary<StolarType, int> StolariCount {get;} = new()
+        {
+            { StolarType.A, 2 },
+            { StolarType.B, 2 },
+            { StolarType.C, 2 }
+        };
         protected NabytokExperimentData? _experimentData;
         public NabytokExperimentData ExperimentData => _experimentData ?? throw new InvalidOperationException("Experiment data are not initialized");
 

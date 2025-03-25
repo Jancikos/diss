@@ -27,6 +27,70 @@
         </StackPanel>
 
         <Grid Grid.Row="1" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <GroupBox Header="Simulation parameters">
+                <StackPanel Orientation="Horizontal">
+                    <GroupBox Header="General">
+                        <StackPanel Orientation="Vertical">
+                            <libsuc:InlineTextBox x:Name="_txt_simSeed" Title="Seed:" Value="" />
+                            <libsuc:InlineTextBox x:Name="_txt_simReplicationsCount" Title="Replications:" Value="100" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button Content="Start" Click="_btn_simStart_Click" />
+                                <Button Content="Stop" Click="_btn_simStop_Click" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button Content="Resume" Click="_btn_simResume_Click" />
+                                <Button Content="Pause" Click="_btn_simPause_Click" />
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox Header="Time">
+                        <StackPanel Orientation="Vertical">
+                            <CheckBox x:Name="_chk_simMaxSpeed" Content="Max speed" />
+                            <GroupBox Header="RealTime ratio">
+                                <ComboBox x:Name="_cmbx_simRealTimeRatio" />
+                            </GroupBox>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox Header="Stolari">
+                        <StackPanel Orientation="Vertical">
+                            <libsuc:InlineTextBox x:Name="_txt_simStolariACount" Title="A count:" Value="2" />
+                            <libsuc:InlineTextBox x:Name="_txt_simStolariBCount" Title="B count:" Value="2" />
+                            <libsuc:InlineTextBox x:Name="_txt_simStolariCCount" Title="C count:" Value="2" />
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Grid.Row="1" Header="Current experiment">
+                <StackPanel Orientation="Horizontal">
+                    <GroupBox Header="Basic">
+                        <StackPanel Orientation="Vertical">
+                            <libsuc:InlineText x:Name="_txt_expReplication" Title="Replication:" Value="0" />
+                        </StackPanel> 
+                    </GroupBox>
+
+                    <GroupBox Header="Time">
+                        <StackPanel Orientation="Vertical">
+                            <libsuc:InlineText x:Name="_txt_expTime" Title="Time:" Value="00:00:00" />
+                            <libsuc:InlineText x:Name="_txt_expDay" Title="Day:" Value="0" />
+                        </StackPanel> 
+                    </GroupBox>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Grid.Row="2" Header="Replications statistics">
+                <StackPanel Orientation="Horizontal">
+                    
+                </StackPanel>
+            </GroupBox>            
         </Grid>
     </Grid>
 </Window>
