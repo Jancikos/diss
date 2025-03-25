@@ -138,6 +138,16 @@ namespace FRI.DISS.SP2
         {
             _manipulateSimulation(_simulation.PauseSimulation);
         }
+
+        private void _cmbx_simRealTimeRatio_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _setSimulationTimeFromGUI();
+        }
+
+        private void _chk_simMaxSpeed_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            _setSimulationTimeFromGUI();
+        }
     }
     #endregion
 }

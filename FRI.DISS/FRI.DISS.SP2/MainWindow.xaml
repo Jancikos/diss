@@ -52,9 +52,9 @@
 
                     <GroupBox Header="Time">
                         <StackPanel Orientation="Vertical">
-                            <CheckBox x:Name="_chk_simMaxSpeed" Content="Max speed" />
+                            <CheckBox x:Name="_chk_simMaxSpeed" Content="Max speed" Checked="_chk_simMaxSpeed_SelectionChanged" Unchecked="_chk_simMaxSpeed_SelectionChanged" />
                             <GroupBox Header="RealTime ratio">
-                                <ComboBox x:Name="_cmbx_simRealTimeRatio" />
+                                <ComboBox x:Name="_cmbx_simRealTimeRatio" SelectionChanged="_cmbx_simRealTimeRatio_SelectionChanged" />
                             </GroupBox>
                         </StackPanel>
                     </GroupBox>

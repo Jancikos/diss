@@ -6,14 +6,15 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using FRI.DISS.Libs.Generators;
+using FRI.DISS.Libs.Helpers;
 
 namespace FRI.DISS.Libs.Simulations.EventDriven
 {
     public class NabytokSimulation : EventSimulation
     {
         // pracovna doba je denne od 6:00 do 14:00
-        public override string CurrentTimeFormatted => TimeSpan.FromSeconds(6 * 60 * 60 + CurrentTime).ToString(@"hh\:mm\:ss");
-        public string CurrentTimeDayFormatted => TimeSpan.FromSeconds(CurrentTime).Days.ToString();
+        public override string CurrentTimeFormatted => TimeSpan.FromSeconds(TimeHelper.HoursToSeconds(6) + (CurrentTime % TimeHelper.HoursToSeconds(8))).ToString(@"hh\:mm\:ss");
+        public string CurrentTimeDayFormatted => ((int)CurrentTime / TimeHelper.HoursToSeconds(8)).ToString();
 
         protected NabytokGenerators? _generators;
         protected NabytokGenerators Generators => _generators ?? throw new InvalidOperationException("Generators are not initialized");
@@ -39,6 +40,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             _generators = new NabytokGenerators(SeedGenerator);
             _replicationsStatistics = new NabytokReplicationsStatistics();
+
+            _endTime = TimeHelper.HoursToSeconds(8) * 249; // 6:00 az 14:00 * 249 dni
         }
 
         protected override void _beforeExperiment()
@@ -97,8 +100,18 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             public Statistics ObjednavkyDone { get; } = new Statistics();
             public Statistics ObjednavkyNotDone { get; } = new Statistics();
 
-            public Dictionary<StolarType, Statistics> StolariWorkTimeRatio { get; } = new();
-            public Dictionary<StolarType, List<Statistics>> StolarWorkTimeRatio { get; } = new();
+            public Dictionary<StolarType, Statistics> StolariWorkTimeRatio { get; } = new()
+            {
+                { StolarType.A, new() },
+                { StolarType.B, new() },
+                { StolarType.C, new() }
+            };
+            public Dictionary<StolarType, List<Statistics>> StolarWorkTimeRatio { get; } = new()
+            {
+                { StolarType.A, new() },
+                { StolarType.B, new() },
+                { StolarType.C, new() }
+            };
         }
         #endregion
 
