@@ -52,9 +52,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             _experimentData = new NabytokExperimentData();
             Stolar.ResetCounter();
-            _experimentData.SetStolariCount(StolarType.A, 2);
-            _experimentData.SetStolariCount(StolarType.B, 2);
-            _experimentData.SetStolariCount(StolarType.C, 2);
+            foreach (var stolarType in StolariCount.Keys)
+            {
+                _experimentData.SetStolariCount(stolarType, StolariCount[stolarType]); 
+            }
 
             PlanEvent<ObjednavkaRecievedEvent>(Generators.ObjednavkyInputIntesity.GetSampleDouble());
         }
@@ -127,10 +128,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             {
                 var p = ObjednavkyNabytokType.GetSampleDouble();
 
-                if (p <= 50)
+                if (p <= 0.50)
                     return Nabytok.Stol;
 
-                if (p <= 65)
+                if (p <= 0.65)
                     return Nabytok.Stolicka;
 
                 return Nabytok.Skrina;
