@@ -80,17 +80,26 @@ namespace FRI.DISS.SP2
                         _refreshTime();
                         break;
                     case EventDrivenSimulationEventArgsType.SimulationEventDone:
-                        _refreshEventsCalendar();
+                    case EventDrivenSimulationEventArgsType.RefreshGUI:
+                        _refreshGUI();
                         break;
                 }
             });
+        }
+
+        private void _refreshGUI()
+        {
+            _txt_expStatus.Value = _simulation.State.ToString();
+
+            _refreshTime();
+            _refreshEventsCalendar();
         }
 
         private void _refreshEventsCalendar()
         {
             _trv_expEventsCalendar.Items.Clear();
 
-            if (_chk_repEventsCalendarRender.IsChecked != true) 
+            if (_chk_repEventsCalendarRender.IsChecked != true)
                 return;
 
             var i = 0;
@@ -123,20 +132,25 @@ namespace FRI.DISS.SP2
         {
             _txt_expTime.Value = _simulation.CurrentTimeFormatted;
             _txt_expDay.Value = _simulation.CurrentTimeDayFormatted.ToString();
+            _txt_expTimeRaw.Value = _simulation.CurrentTime.ToString("F2");
         }
 
         private void _manipulateSimulation(Action action)
         {
-            try
+            Task.Run(() =>
             {
-                Task.Run(action);
-            }
-            catch (Exception ex)
-            {
-                Dispatcher.Invoke(() =>
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error));
-            }
+                try
+                {
+                    action();
+                }
+                catch (Exception ex)
+                {
+                    Dispatcher.Invoke(() =>
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error));
+                }
+            });
         }
+
         #region  GUI Event Handlers
         private void _mnitem_StanicaSimWindow_Click(object sender, RoutedEventArgs e)
         {
@@ -166,6 +180,7 @@ namespace FRI.DISS.SP2
             _manipulateSimulation(_simulation.StopSimulation);
         }
 
+        // TOOD - make it works correctly
         private void _btn_simResume_Click(object sender, RoutedEventArgs e)
         {
             _manipulateSimulation(_simulation.ResumeSimulation);

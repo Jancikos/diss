@@ -69,7 +69,7 @@ namespace FRI.DISS.Libs.Simulations
         
         public void ResumeSimulation()
         {
-            if (State != SimulationState.Pausing)
+            if (State != SimulationState.Paused)
             {
                 throw new InvalidOperationException("Simulation is not is state paused");
             }

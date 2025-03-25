@@ -74,9 +74,20 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             _systemEvent = new SystemEvent(this);
         }
+        protected override void _beforeSimulation() 
+        {
+            _replicationsDone = 0;
+         }
+
+        protected override void _beforeExperiment() 
+        {
+            _eventsStack = new EventSimulationEventsCalendar();
+            _currentTime = 0;
+         }
 
         public override void RunSimulation()
         {
+            var initialState = State;
             if (State == SimulationState.Running)
                 throw new InvalidOperationException("Simulation already running");
 
@@ -84,19 +95,17 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 _beforeSimulation();
 
             State = SimulationState.Running;
-            for (int repDone = _replicationsDone; repDone < ReplicationsCount; repDone++)
+            for (int repDone = _replicationsDone; repDone < ReplicationsCount && State == SimulationState.Running; repDone++)
             {
-                _eventsStack = new EventSimulationEventsCalendar();
-                _currentTime = 0;
-
-                _beforeExperiment();
+                if (initialState == SimulationState.Starting)
+                    _beforeExperiment();
                 
                 if (TimeMode == EventDrivenSimulationTimeMode.RealTime)
                 {
                     _planSystemEvent();
                 }
 
-                while (!_eventsStack.IsEmpty && !_checkStopCondition())
+                while (!_eventsStack!.IsEmpty && !_checkStopCondition())
                 {
                     if (State == SimulationState.Stopping || State == SimulationState.Pausing)
                     {
@@ -131,8 +140,6 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                     // notifikuj GUI
                     OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationExperimentDone);
                 }
-
-                _replicationsDone++;
             }
             
             if (State != SimulationState.Pausing)
@@ -140,6 +147,14 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 _afterSimulation();
                 State = SimulationState.Done;
             }
+
+            if (State == SimulationState.Pausing)
+            {
+                State = SimulationState.Paused;
+            }
+
+            OnGUIEventHappened(EventDrivenSimulationEventArgsType.RefreshGUI);
+
         }
 
         private void _planSystemEvent()
