@@ -63,13 +63,37 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
                 ExperimentStatistics.StolariWorkTimeRatio[stolarType].AddSample(groupWorkTime / totalWorkTime);
 
-                foreach (var stolar in stolari)
+                for (int i = 0; i < stolari.Count; i++)
                 {
-                    ExperimentStatistics.StolarWorkTimeRatio[stolarType]
-                    .AddSample(stolar.TimeInWork / totalWorkTime);
+                    if (ExperimentStatistics.StolarWorkTimeRatio[stolarType].Count <= i)
+                        ExperimentStatistics.StolarWorkTimeRatio[stolarType].Add(new Statistics());
+
+                    ExperimentStatistics.StolarWorkTimeRatio[stolarType][i].AddSample(stolari[i].TimeInWork / totalWorkTime);
                 }
             }
         }
+        #region ReplicationsStatistics
+
+        public class NabytokReplicationsStatistics
+        {
+            public Statistics ObjednavkaTime { get; set; } = new Statistics();
+        }
+
+        #endregion
+        #region ReplicationsStatistics
+
+        public class NabytokExperimentStatistics
+        {
+            public Statistics ObjednavkaTime { get; } = new Statistics();
+
+            public Statistics ObjednavkyRecieved { get; } = new Statistics();
+            public Statistics ObjednavkyDone { get; } = new Statistics();
+            public Statistics ObjednavkyNotDone { get; } = new Statistics();
+
+            public Dictionary<StolarType, Statistics> StolariWorkTimeRatio { get; } = new();
+            public Dictionary<StolarType, List<Statistics>> StolarWorkTimeRatio { get; } = new();
+        }
+        #endregion
 
         #region Generators
         public class NabytokGenerators(SeedGenerator seedGenerator)
@@ -129,29 +153,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             }
         }
         #endregion
-        #region ReplicationsStatistics
 
-        public class NabytokReplicationsStatistics
-        {
-            public Statistics ObjednavkaTime { get; set; } = new Statistics();
-        }
-
-        #endregion
-        #region ReplicationsStatistics
-
-        public class NabytokExperimentStatistics
-        {
-            public Statistics ObjednavkaTime { get; } = new Statistics();
-
-            public Statistics ObjednavkyRecieved { get; } = new Statistics();
-            public Statistics ObjednavkyDone { get; } = new Statistics();
-            public Statistics ObjednavkyNotDone { get; } = new Statistics();
-
-            public Dictionary<StolarType, Statistics> StolariWorkTimeRatio {get;} = new(); 
-            public Dictionary<StolarType, List<Statistics>> StolarWorkTimeRatio {get;} = new(); 
-        }
-
-        #endregion
         #region ExperimentData
         public class NabytokExperimentData
         {
@@ -178,7 +180,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             {
                 if (newCount < 0)
                     throw new InvalidOperationException("Count of stolari should be greater than 0");
-                
+
                 var actualCount = Stolari[stolarType].Count;
                 if (newCount == actualCount)
                     return;
