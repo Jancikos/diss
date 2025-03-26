@@ -115,7 +115,7 @@ namespace FRI.DISS.SP2
 
         private void _refreshExperimentStats()
         {
-            _sts_repObjednavkaTime.Stats = _simulation.ExperimentStatistics.ObjednavkaTime;
+            _sts_repObjednavkaTime.Update(_simulation.ExperimentStatistics.ObjednavkaTime);
         }
 
         private void _refreshWorkers()

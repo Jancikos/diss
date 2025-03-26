@@ -100,7 +100,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         /// <summary>
         /// how many times per second the event should be executed (screen refresh rate)
         /// </summary>
-        public int FPS => 4;
+        public int FPS => 10;
 
         public SystemEvent(EventSimulation simulation) : base(simulation)
         {

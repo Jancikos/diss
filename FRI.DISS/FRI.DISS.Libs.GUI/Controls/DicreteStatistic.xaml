@@ -16,11 +16,11 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" MinHeight="200" />
+                <RowDefinition Height="*" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
 
-            <ScottPlot:WpfPlot x:Name="_plot" Grid.ColumnSpan="3" Margin="0 0 0 10" />
+            <ScottPlot:WpfPlot x:Name="_plot" Grid.ColumnSpan="3" Margin="0 0 0 10" Visibility="Collapsed" MinHeight="200" />
 
             <StackPanel Orientation="Vertical" Grid.Row="1">
                 <uc:InlineText x:Name="_txt_Count" Title="Count:" />

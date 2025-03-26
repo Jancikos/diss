@@ -67,36 +67,45 @@ namespace FRI.DISS.SP2
             _txt_expTotalCustomers.Value = _simulation.ExperimentData.VisitedCustomers.ToString();
             _txt_expCustomersServed.Value = _simulation.ExperimentData.ServicedCustomers.ToString();
 
-            _expStatsCustomersServiceTime.Stats = _simulation.ExperimentStatistics.CustomersServiceTime;
-            _expStatsCustomersWaitingTime.Stats = _simulation.ExperimentStatistics.CustomerWaitingTime;
-            _expStatsCustomersTotalTime.Stats = _simulation.ExperimentStatistics.CustomersInSystemTime;
+            _expStatsCustomersServiceTime.Update(_simulation.ExperimentStatistics.CustomersServiceTime);
+
+            _expStatsCustomersWaitingTime.Update(_simulation.ExperimentStatistics.CustomerWaitingTime);
+            _expStatsCustomersTotalTime.Update(_simulation.ExperimentStatistics.CustomersInSystemTime);
         }
 
         private void _refreshReplicationsStats()
         {
-            _repStatsServedCustomers.Stats = _simulation.ReplicationsStatistics.ServedCustomersCount;
-            _repStatsCustomersWaitingTime.Stats = _simulation.ReplicationsStatistics.CustomerWaitingTime;
-            _repStatsCustomersServiceTime.Stats = _simulation.ReplicationsStatistics.CustomersServiceTime;
-            _repStatsCustomersTotalTime.Stats = _simulation.ReplicationsStatistics.CustomersInSystemTime;
+            _repStatsServedCustomers.Update(_simulation.ReplicationsStatistics.ServedCustomersCount);
+            _repStatsCustomersWaitingTime.Update(_simulation.ReplicationsStatistics.CustomerWaitingTime);
+            _repStatsCustomersServiceTime.Update(_simulation.ReplicationsStatistics.CustomersServiceTime);
+            _repStatsCustomersTotalTime.Update(_simulation.ReplicationsStatistics.CustomersInSystemTime);
         }
 
         private void _mnitem_Run_Click(object sender, RoutedEventArgs e)
         {
             _simulation.ReplicationsCount = 100;
             _simulation.RealTimeRatio = (EventDrivenSimulationRealTimeRatios)_cmbx_repRealTimeRatio.SelectedItem;
-            
+
 
             Task.Run(() =>
             {
-                _simulation.RunSimulation();
+                try
+                {
+                    _simulation.StartSimulation();
 
-                Debug.WriteLine("Simulation done:");
-                Debug.WriteLine("Replications done: " + _simulation.ReplicationsDone);
-                Debug.WriteLine("Customers served: " + _simulation.ReplicationsStatistics.ServedCustomersCount.MeanToString(true));
-                Debug.WriteLine("Avg. Queue Count: " + _simulation.ReplicationsStatistics.CustomersInQueueCount.MeanToString(true));
-                Debug.WriteLine("Avg. Queue Time: " + _simulation.ReplicationsStatistics.CustomerWaitingTime.MeanToString(true));
-                Debug.WriteLine("Avg. Service Time: " + _simulation.ReplicationsStatistics.CustomersServiceTime.MeanToString(true));
-                Debug.WriteLine("Avg. Total Time: " + _simulation.ReplicationsStatistics.CustomersInSystemTime.MeanToString(true));
+                    Debug.WriteLine("Simulation done:");
+                    Debug.WriteLine("Replications done: " + _simulation.ReplicationsDone);
+                    Debug.WriteLine("Customers served: " + _simulation.ReplicationsStatistics.ServedCustomersCount.MeanToString(true));
+                    Debug.WriteLine("Avg. Queue Count: " + _simulation.ReplicationsStatistics.CustomersInQueueCount.MeanToString(true));
+                    Debug.WriteLine("Avg. Queue Time: " + _simulation.ReplicationsStatistics.CustomerWaitingTime.MeanToString(true));
+                    Debug.WriteLine("Avg. Service Time: " + _simulation.ReplicationsStatistics.CustomersServiceTime.MeanToString(true));
+                    Debug.WriteLine("Avg. Total Time: " + _simulation.ReplicationsStatistics.CustomersInSystemTime.MeanToString(true));
+
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error: " + ex.Message);
+                }
             });
         }
 

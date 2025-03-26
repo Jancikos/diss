@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using ScottPlot;
 using ScottPlot.AxisPanels;
 using ScottPlot.Plottables;
+using System.Diagnostics;
 
 namespace FRI.DISS.Libs.GUI.Controls
 {
@@ -30,37 +31,44 @@ namespace FRI.DISS.Libs.GUI.Controls
             set { _grbx_Header.Header = value; }
         }
 
-        public bool ShowPlot {get; protected set; }  = false;
+        public bool ShowPlot {get; set; }  = false;
 
         public int SkipFirstCount = 0;
         protected DataLogger? _dataLoggerMean;
-        protected IYAxis? _yAxisMean;
+        protected Statistics? _plotStatsMean;
 
-        protected Statistics? _stats;
-        public Statistics? Stats
+        public int LastRenderedCount { get; protected set; } = 0;
+
+
+        public DicreteStatistic()
         {
-            get => _stats;
-            set
-            {
-                _stats = value;
-                Reload();
+            InitializeComponent();
 
-                if (ShowPlot && value is not null)
-                {
-                    _addPlotSample(value);
-                }
-            }
+            Loaded += DicreteStatistic_Loaded;
         }
 
-        private void _addPlotSample(Statistics value)
+        private void DicreteStatistic_Loaded(object sender, RoutedEventArgs e)
         {
-            if (_dataLoggerMean is null)
+            if (ShowPlot)
+            {
+                InitializePlot();
+            }
+        }
+        
+        private void _addPlotSample(Statistics value)
+        {  
+            if (_dataLoggerMean is null || value.Count < LastRenderedCount)
             {
                 _reinitializePlot();
             }
 
+            _plotStatsMean!.AddSample(value.Mean);
 
-            _dataLoggerMean!.Add(value.Count, value.Mean);
+            _dataLoggerMean!.Add(_plotStatsMean.Count, value.Mean);
+
+            _plot.Plot.Axes.SetLimitsX(0, _plotStatsMean.Count);
+            _plot.Plot.Axes.SetLimitsY(0, _plotStatsMean.Max);
+
             _plot.Refresh();
         }
 
@@ -69,46 +77,38 @@ namespace FRI.DISS.Libs.GUI.Controls
             _plot.Plot.Clear();
 
             _dataLoggerMean = _plot.Plot.Add.DataLogger();
-            _plot.Plot.Axes.AutoScale();
-
-            _dataLoggerMean.Axes.YAxis = _yAxisMean!;
-            _dataLoggerMean.Color = _yAxisMean!.Label.ForeColor;
-
-
-            var axis = (RightAxis)_plot.Plot.Axes.Right;
-            axis.Color(_dataLoggerMean.Color);
+            _plotStatsMean = new Statistics();
         }
 
-        public DicreteStatistic()
-        {
-            InitializeComponent();
-        }
-        
         public void InitializePlot()
         {
-            _plot.Plot.Title(Title);
-            // _plot.Plot.XLabel("Replications done", 12);
-            _yAxisMean = _plot.Plot.Axes.Left;
-            _yAxisMean.Label.ForeColor = ScottPlot.Color.FromColor(System.Drawing.Color.Red);
-
+            _plot.Visibility = Visibility.Visible;
             ShowPlot = true;
         }
 
-        public void Reload()
+        public void Update(Statistics stats)
         {
-            if (Stats is null)
-                throw new InvalidOperationException("Stats is not set");
+            if (LastRenderedCount == stats.Count)
+                return;
 
-            _txt_Count.Value = Stats.Count.ToString();
-            _txt_Min.Value = Stats.Min.ToString("F2");
-            _txt_Max.Value = Stats.Max.ToString("F2");
-            _txt_Avg.Value = Stats.Mean.ToString("F2");
-            _txt_StdDev.Value = Stats.StandardDeviation.ToString("F2");
-            _txt_Variance.Value = Stats.Variance.ToString("F2");
+            _txt_Count.Value = stats.Count.ToString();
+            _txt_Min.Value = stats.Min.ToString("F2");
+            _txt_Max.Value = stats.Max.ToString("F2");
+            _txt_Avg.Value = stats.Mean.ToString("F2");
+            _txt_StdDev.Value = stats.StandardDeviation.ToString("F2");
+            _txt_Variance.Value = stats.Variance.ToString("F2");
+            
+            if (ShowPlot)
+            {
+                _addPlotSample(stats);
+            }
+
+            LastRenderedCount = stats.Count;
         }
 
         public void Clear()
         {
+            LastRenderedCount = 0;
             _txt_Count.Value = "0";
             _txt_Min.Value = "0";
             _txt_Max.Value = "0";
