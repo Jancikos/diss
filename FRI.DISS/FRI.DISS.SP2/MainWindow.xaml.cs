@@ -37,7 +37,7 @@ namespace FRI.DISS.SP2
             // cmbx timeRatio
             _cmbx_simRealTimeRatio.ItemsSource = Enum.GetValues(typeof(EventDrivenSimulationRealTimeRatios)).Cast<EventDrivenSimulationRealTimeRatios>();
             // _cmbx_simRealTimeRatio.SelectedIndex = 0;
-            _cmbx_simRealTimeRatio.SelectedIndex = 6;
+            _cmbx_simRealTimeRatio.SelectedIndex = 8;
 
 
             // stolari types
@@ -50,6 +50,8 @@ namespace FRI.DISS.SP2
                 _lst_StolariTypesQueues.Children.Add(stolariQueueUC);
             });
 
+            // stats
+            _sts_repObjednavkaTime.InitializePlot();
         }
 
         private void _initializeSimulationFromGUI()
@@ -108,6 +110,12 @@ namespace FRI.DISS.SP2
             _refreshEventsCalendar();
             _refreshWorkplaces();
             _refreshWorkers();
+            _refreshExperimentStats();
+        }
+
+        private void _refreshExperimentStats()
+        {
+            _sts_repObjednavkaTime.Stats = _simulation.ExperimentStatistics.ObjednavkaTime;
         }
 
         private void _refreshWorkers()

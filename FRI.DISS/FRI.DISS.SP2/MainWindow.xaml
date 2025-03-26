@@ -7,7 +7,7 @@
     xmlns:uc="clr-namespace:FRI.DISS.SP2.Controls"
     xmlns:local="clr-namespace:FRI.DISS.SP2"
     mc:Ignorable="d"
-    Title="DISS SP2" Height="450" Width="800"
+    Title="DISS SP2" Height="850" Width="1600"
     WindowState="Maximized">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -72,60 +72,71 @@
 
             <GroupBox Grid.Row="1" Header="Current experiment">
                 <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
-                    <StackPanel Orientation="Horizontal">
-                        <GroupBox Header="Basic" MinWidth="150">
-                            <StackPanel Orientation="Vertical">
-                                <libsuc:InlineText x:Name="_txt_expStatus" Title="Status:" Value="" />
-                                <libsuc:InlineText x:Name="_txt_expReplication" Title="Replication:" Value="0" />
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        
+                        <StackPanel Orientation="Horizontal">
+                            <GroupBox Header="Basic" MinWidth="150">
+                                <StackPanel Orientation="Vertical">
+                                    <libsuc:InlineText x:Name="_txt_expStatus" Title="Status:" Value="" />
+                                    <libsuc:InlineText x:Name="_txt_expReplication" Title="Replication:" Value="0" />
 
-                                <GroupBox Header="Time">
-                                    <StackPanel Orientation="Vertical">
-                                        <libsuc:InlineText x:Name="_txt_expTime" Title="Time:" Value="00:00:00" />
-                                        <libsuc:InlineText x:Name="_txt_expDay" Title="Day:" Value="0" />
-                                        <libsuc:InlineText x:Name="_txt_expTimeRaw" Title="Raw Time:" Value="0" />
-                                    </StackPanel>
-                                </GroupBox>
-                            </StackPanel>
-                        </GroupBox>
+                                    <GroupBox Header="Time">
+                                        <StackPanel Orientation="Vertical">
+                                            <libsuc:InlineText x:Name="_txt_expTime" Title="Time:" Value="00:00:00" />
+                                            <libsuc:InlineText x:Name="_txt_expDay" Title="Day:" Value="0" />
+                                            <libsuc:InlineText x:Name="_txt_expTimeRaw" Title="Raw Time:" Value="0" />
+                                        </StackPanel>
+                                    </GroupBox>
+                                </StackPanel>
+                            </GroupBox>
 
-                        <GroupBox Header="Events calendar" MinWidth="250">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
+                            <GroupBox Header="Events calendar" MinWidth="250">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
 
-                                <CheckBox x:Name="_chk_repEventsCalendarRender" Content="Render" IsChecked="True" />
-                                <TreeView Grid.Row="1" x:Name="_trv_expEventsCalendar" VerticalAlignment="Stretch" />
-                            </Grid>
-                        </GroupBox>
+                                    <CheckBox x:Name="_chk_repEventsCalendarRender" Content="Render" IsChecked="True" />
+                                    <TreeView Grid.Row="1" x:Name="_trv_expEventsCalendar" VerticalAlignment="Stretch" />
+                                </Grid>
+                            </GroupBox>
 
-                        <GroupBox Header="Workplaces" MinWidth="250">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
+                            <GroupBox Header="Workplaces" MinWidth="250">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
 
-                                <UniformGrid Rows="1">
-                                    <libsuc:InlineText x:Name="_txt_expWorkplacesCount" Title="Count:" Value="0" Margin="0 0 5 0"/>
-                                    <libsuc:InlineText x:Name="_txt_expWorkplacesOccupiedCount" Title="Occupied:" Value="0" Margin="5 0 0 0" />
+                                    <UniformGrid Rows="1">
+                                        <libsuc:InlineText x:Name="_txt_expWorkplacesCount" Title="Count:" Value="0" Margin="0 0 5 0"/>
+                                        <libsuc:InlineText x:Name="_txt_expWorkplacesOccupiedCount" Title="Occupied:" Value="0" Margin="5 0 0 0" />
+                                    </UniformGrid>
+                                    <ListView Grid.Row="1" x:Name="_lst_expWorkplaces" VerticalAlignment="Stretch" />
+                                </Grid>
+                            </GroupBox>
+
+                            <GroupBox Header="Stolari" MinWidth="500">
+                                <UniformGrid x:Name="_lst_StolariTypes" Rows="1">
                                 </UniformGrid>
-                                <ListView Grid.Row="1" x:Name="_lst_expWorkplaces" VerticalAlignment="Stretch" />
-                            </Grid>
-                        </GroupBox>
+                            </GroupBox>
 
-                        <GroupBox Header="Stolari" MinWidth="500">
-                            <UniformGrid x:Name="_lst_StolariTypes" Rows="1">
-                            </UniformGrid>
-                        </GroupBox>
+                            <GroupBox Header="Stolari queues" MinWidth="550">
+                                <UniformGrid x:Name="_lst_StolariTypesQueues" Rows="1">
 
-                        <GroupBox Header="Stolari queues" MinWidth="550">
-                            <UniformGrid x:Name="_lst_StolariTypesQueues" Rows="1">
+                                </UniformGrid>
+                            </GroupBox>
+                        </StackPanel>
 
-                            </UniformGrid>
-                        </GroupBox>
-                    </StackPanel>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal">
+                            <libsuc:DicreteStatistic x:Name="_sts_repObjednavkaTime" Title="Objednavka TimeInSystem" MinWidth="500"/>
+                        </StackPanel>
+                    </Grid>
                 </ScrollViewer>
             </GroupBox>
 

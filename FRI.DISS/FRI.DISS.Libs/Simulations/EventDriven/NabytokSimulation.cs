@@ -313,6 +313,9 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             public double CreationTime { get; init; }
             public double? EndTime { get; set; }
+            public double TimeInSystem => EndTime is not null 
+                ? EndTime.Value - CreationTime 
+                : throw new InvalidOperationException("End time is not set");
 
             public override string ToString() => $"{Id} - {Nabytok} [{Status}]";
         }
@@ -788,6 +791,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
                 Objednavka.EndTime = Simulation.CurrentTime;
                 Simulation.ExperimentData.ObjednavkyDone++;
+
+                Simulation.ExperimentStatistics.ObjednavkaTime.AddSample(Objednavka.TimeInSystem);
 
                 // uvolni workplace
                 Simulation.ExperimentData.Workplaces[Objednavka.Workplace] = null;
