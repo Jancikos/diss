@@ -36,6 +36,27 @@ namespace FRI.DISS.SP2.Controls
             }
         }
 
+        public bool ShowWorkplace
+        {
+            get => _txt_Workplace.Visibility == Visibility.Visible;
+            set => _txt_Workplace.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
+        }
+        public bool ShowIsWorking
+        {
+            get => _elp_IsWorking.Visibility == Visibility.Visible;
+            set => _elp_IsWorking.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
+        }
+        public bool ShowRatio 
+        {
+            get => _txt_WorkRatio.Visibility == Visibility.Visible;
+            set => _txt_WorkRatio.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
+        }
+        public string Ratio
+        {
+            get => _txt_WorkRatio.Text;
+            set => _txt_WorkRatio.Text = value;
+        }
+
         public StolarUserControl()
         {
             InitializeComponent();
@@ -44,13 +65,18 @@ namespace FRI.DISS.SP2.Controls
         private void _updateGUI()
         {
             _txt_Id.Text = $"#{Stolar.Id}";
-            _txt_Workplace.Text = $"WP{Stolar.CurrentPlace}";
 
-            _elp_IsWorking.Fill = Stolar.IsWorking
-                ? Brushes.Red
-                : Brushes.Green;
+            if (ShowWorkplace)
+            {
+                _txt_Workplace.Text = $"WP{Stolar.CurrentPlace}";
+            }
 
-            // _txt_WorkRatio.Text = $"{Stolar.WorkRatio:P2}";
+            if (ShowIsWorking) 
+            {
+                _elp_IsWorking.Fill = Stolar.IsWorking
+                    ? Brushes.Red
+                    : Brushes.Green;
+            }
         }
 
     }

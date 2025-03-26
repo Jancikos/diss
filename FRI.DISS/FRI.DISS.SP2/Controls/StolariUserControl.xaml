@@ -20,6 +20,7 @@
             <UniformGrid Rows="1">
                 <libsuc:InlineText x:Name="_txt_TotalCount" Title="Count:" Value="10" Padding="0 0 5 0" />
                 <libsuc:InlineText x:Name="_txt_FreeCount" Title="Free:" Value="1" Padding="5 0 0 0" />
+                <libsuc:InlineText x:Name="_txt_TotalRatio" Title="Ratio:" Value="11,00 %" Padding="5 0 0 0" Visibility="Collapsed" />
             </UniformGrid>
 
             <ListView Grid.Row="1" x:Name="_lst" VerticalAlignment="Stretch" />

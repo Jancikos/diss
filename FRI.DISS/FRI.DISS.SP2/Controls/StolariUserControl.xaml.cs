@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using FRI.DISS.Libs.Generators;
 using FRI.DISS.Libs.Simulations.EventDriven;
 
 namespace FRI.DISS.SP2.Controls
@@ -38,7 +39,7 @@ namespace FRI.DISS.SP2.Controls
             InitializeComponent();
         }
 
-        public void _updateGUI(List<NabytokSimulation.Stolar> stolari)
+        public void UpdateGUI(List<NabytokSimulation.Stolar> stolari)
         {
             _txt_TotalCount.Value = stolari.Count.ToString();
 
@@ -62,6 +63,36 @@ namespace FRI.DISS.SP2.Controls
             }
 
             _txt_FreeCount.Value = (stolari.Count - workingCount).ToString();
+        }
+
+        public void UpdateGUI(List<NabytokSimulation.Stolar> stolari, List<Statistics> ratios, Statistics totalRatio)
+        {
+            _txt_FreeCount.Visibility = Visibility.Collapsed;
+
+            _txt_TotalRatio.Visibility = Visibility.Visible;
+            _txt_TotalRatio.Value = totalRatio.MeanToString(true);
+
+            if (ratios.Count != stolari.Count)
+            {
+                throw new Exception("ratios.Count != stolari.Count");
+            }
+
+            _txt_TotalCount.Value = stolari.Count.ToString();
+
+            for (int i = 0; i < stolari.Count; i++)
+            {
+                var stolar = stolari[i];
+                var ratio = ratios[i];
+
+                if (_lst.Items.Count <= i)
+                {
+                    _lst.Items.Add(new StolarUserControl() { ShowRatio = true, ShowWorkplace = false, ShowIsWorking = false });
+                }
+
+                var stolarUC = (StolarUserControl)_lst.Items[i];
+                stolarUC.Stolar = stolar;
+                stolarUC.Ratio = ratio.MeanToString(true);
+            }
         }
     }
 }

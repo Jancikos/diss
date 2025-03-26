@@ -1,4 +1,5 @@
 ﻿using FRI.DISS.Libs.Generators;
+using FRI.DISS.Libs.GUI.Controls;
 using FRI.DISS.Libs.Simulations.EventDriven;
 using FRI.DISS.SP2.Controls;
 using System.Diagnostics;
@@ -43,11 +44,11 @@ namespace FRI.DISS.SP2
             // stolari types
             Enum.GetValues(typeof(NabytokSimulation.StolarType)).Cast<NabytokSimulation.StolarType>().ToList().ForEach(stolarType =>
             {
-                var stolarUC = new StolariUserControl() { StolarType = stolarType };
-                _lst_expStolariTypes.Children.Add(stolarUC);
+                _lst_expStolariTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
+                _lst_expStolariTypesQueues.Children.Add(new StolariQueueUserControl() { StolarType = stolarType });
 
-                var stolariQueueUC = new StolariQueueUserControl() { StolarType = stolarType };
-                _lst_expStolariTypesQueues.Children.Add(stolariQueueUC);
+                _lst_repsStolariTypes.Children.Add(new DicreteStatistic() { Title = $"Vyťaženie stolárov {stolarType} (%)", PlotShow = true });
+                _lst_repsStolarTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
             });
         }
 
@@ -92,13 +93,41 @@ namespace FRI.DISS.SP2
                         break;
                     case EventDrivenSimulationEventArgsType.SimulationEventDone:
                     case EventDrivenSimulationEventArgsType.RefreshGUI:
-                        _refreshGUI();
+                        _refreshExperimentGUI();
+                        break;
+                    case EventDrivenSimulationEventArgsType.SimulationExperimentDone:
+                        _refreshReplicationsStats();
                         break;
                 }
             });
         }
 
-        private void _refreshGUI()
+        private void _refreshReplicationsStats()
+        {
+            _txt_repsDone.Value = _simulation.ReplicationsDone.ToString();
+
+            _sts_repsObjednavkaTime.Update(_simulation.ReplicationsStatistics.ObjednavkaTime);
+
+            _sts_repsObjednavkaReceivedCount.Update(_simulation.ReplicationsStatistics.ObjednavkyRecieved);
+            _sts_repsObjednavkaNotDoneCount.Update(_simulation.ReplicationsStatistics.ObjednavkyNotDone);
+
+            var i = 0;
+            var stolariStatsUCs = _lst_repsStolariTypes.Children.Cast<DicreteStatistic>().ToList();
+            _lst_repsStolarTypes.Children.Cast<StolariUserControl>().ToList().ForEach(stolarUC =>
+            {
+                var stolarType = stolarUC.StolarType;
+                var stolari = _simulation.ExperimentData.Stolari[stolarType];
+                var ratios = _simulation.ReplicationsStatistics.StolarWorkTimeRatio[stolarType];
+                var totalRatio = _simulation.ReplicationsStatistics.StolariWorkTimeRatio[stolarType];
+
+                stolarUC.UpdateGUI(stolari, ratios, totalRatio);
+                stolariStatsUCs[i].Update(totalRatio);
+
+                ++i;
+            });
+        }
+
+        private void _refreshExperimentGUI()
         {
             _txt_expStatus.Value = _simulation.State.ToString();
             _txt_expReplication.Value = _simulation.ReplicationsDone.ToString();
@@ -106,23 +135,23 @@ namespace FRI.DISS.SP2
             _refreshTime();
             _refreshEventsCalendar();
             _refreshWorkplaces();
-            _refreshWorkers();
+            _refreshStolariExp();
             _refreshExperimentStats();
         }
 
         private void _refreshExperimentStats()
         {
-            _sts_expObjednavkaTime.Update(_simulation.ExperimentStatistics.ObjednavkaTime);
+            _sts_expObjednavkaTime.Update(_simulation.ExperimentStatistics.ObjednavkaTotalTime);
         }
 
-        private void _refreshWorkers()
+        private void _refreshStolariExp()
         {
             _lst_expStolariTypes.Children.Cast<StolariUserControl>().ToList().ForEach(stolarUC =>
             {
                 var stolarType = stolarUC.StolarType;
                 var stolari = _simulation.ExperimentData.Stolari[stolarType];
 
-                stolarUC._updateGUI(stolari);
+                stolarUC.UpdateGUI(stolari);
             });
 
             _lst_expStolariTypesQueues.Children.Cast<StolariQueueUserControl>().ToList().ForEach(stolariQueueUC =>
@@ -145,7 +174,7 @@ namespace FRI.DISS.SP2
 
                 if (_lst_expWorkplaces.Items.Count <= i)
                 {
-                    _lst_expWorkplaces.Items.Add(new WorkPlaceUserControl() {Id = i + 1});
+                    _lst_expWorkplaces.Items.Add(new WorkPlaceUserControl() { Id = i + 1 });
                 }
 
                 var ucWorkplace = (WorkPlaceUserControl)_lst_expWorkplaces.Items[i];

@@ -41,7 +41,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             _generators = new NabytokGenerators(SeedGenerator);
             _replicationsStatistics = new NabytokReplicationsStatistics();
 
-            _endTime = TimeHelper.HoursToSeconds(8) * 249; // 6:00 az 14:00 * 249 dni
+            // _endTime = TimeHelper.HoursToSeconds(8) * 249; // 6:00 az 14:00 * 249 dni
+            _endTime = TimeHelper.HoursToSeconds(8) * 24; // ONLY FOR TESTING
         }
 
         protected override void _beforeExperiment()
@@ -64,7 +65,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             base._afterExperiment(replication, result);
 
-            ReplicationsStatistics.ObjednavkaTime.AddSample(ExperimentStatistics.ObjednavkaTime.Mean);
+            ReplicationsStatistics.ObjednavkaTime.AddSample(ExperimentStatistics.ObjednavkaTotalTime.Mean);
+
+            ReplicationsStatistics.ObjednavkyRecieved.AddSample(ExperimentData.ObjednavkyRecieved);
+            ReplicationsStatistics.ObjednavkyNotDone.AddSample(ExperimentData.ObjednavkyInSystem);
 
             // stolari work time ratio
             foreach (var stolarType in Enum.GetValues<StolarType>())
@@ -73,14 +77,14 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var totalWorkTime = EndTime!.Value;
                 var groupWorkTime = stolari.Sum(s => s.TimeInWork);
 
-                ExperimentStatistics.StolariWorkTimeRatio[stolarType].AddSample(groupWorkTime / totalWorkTime);
+                ReplicationsStatistics.StolariWorkTimeRatio[stolarType].AddSample(groupWorkTime / totalWorkTime);
 
                 for (int i = 0; i < stolari.Count; i++)
                 {
-                    if (ExperimentStatistics.StolarWorkTimeRatio[stolarType].Count <= i)
-                        ExperimentStatistics.StolarWorkTimeRatio[stolarType].Add(new Statistics());
+                    if (ReplicationsStatistics.StolarWorkTimeRatio[stolarType].Count <= i)
+                        ReplicationsStatistics.StolarWorkTimeRatio[stolarType].Add(new Statistics());
 
-                    ExperimentStatistics.StolarWorkTimeRatio[stolarType][i].AddSample(stolari[i].TimeInWork / totalWorkTime);
+                    ReplicationsStatistics.StolarWorkTimeRatio[stolarType][i].AddSample(stolari[i].TimeInWork / totalWorkTime);
                 }
             }
         }
@@ -89,17 +93,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         public class NabytokReplicationsStatistics
         {
             public Statistics ObjednavkaTime { get; set; } = new Statistics();
-        }
-
-        #endregion
-        #region ReplicationsStatistics
-
-        public class NabytokExperimentStatistics
-        {
-            public Statistics ObjednavkaTime { get; } = new Statistics();
-
             public Statistics ObjednavkyRecieved { get; } = new Statistics();
-            public Statistics ObjednavkyDone { get; } = new Statistics();
             public Statistics ObjednavkyNotDone { get; } = new Statistics();
 
             public Dictionary<StolarType, Statistics> StolariWorkTimeRatio { get; } = new()
@@ -114,6 +108,14 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 { StolarType.B, new() },
                 { StolarType.C, new() }
             };
+        }
+
+        #endregion
+        #region ExperimentStatistics
+
+        public class NabytokExperimentStatistics
+        {
+            public Statistics ObjednavkaTotalTime { get; } = new Statistics();
         }
         #endregion
 
@@ -792,7 +794,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Objednavka.EndTime = Simulation.CurrentTime;
                 Simulation.ExperimentData.ObjednavkyDone++;
 
-                Simulation.ExperimentStatistics.ObjednavkaTime.AddSample(Objednavka.TimeInSystem);
+                Simulation.ExperimentStatistics.ObjednavkaTotalTime.AddSample(Objednavka.TimeInSystem);
 
                 // uvolni workplace
                 Simulation.ExperimentData.Workplaces[Objednavka.Workplace] = null;
