@@ -43,7 +43,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         Faster5000x = 5000,
         Faster10000x = 10000,
         Faster50000x = 50000,
-        Faster100000x = 100000
+        Faster100000x = 100000,
+        Faster250000x = 250000,
+        Faster500000x = 500000,
+        Faster1000000x = 1000000
     }
 
     public abstract class EventSimulation : Simulation
@@ -89,7 +92,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             _currentTime = 0;
          }
 
-        public override void RunSimulation()
+        protected override void RunSimulation()
         {
             var initialState = State;
             if (State == SimulationState.Running)
@@ -99,14 +102,17 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 _beforeSimulation();
 
             State = SimulationState.Running;
+            var firstRun = true;
             for (int repDone = _replicationsDone; repDone < ReplicationsCount && State == SimulationState.Running; repDone++)
             {
-                if (initialState == SimulationState.Starting)
+                if (!firstRun || initialState == SimulationState.Starting)
+                {
                     _beforeExperiment();
                 
-                if (TimeMode == EventDrivenSimulationTimeMode.RealTime)
-                {
-                    _planSystemEvent();
+                    if (TimeMode == EventDrivenSimulationTimeMode.RealTime)
+                    {
+                        _planSystemEvent();
+                    }
                 }
 
                 while (!_eventsStack!.IsEmpty && !_checkStopCondition())
@@ -144,17 +150,16 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                     // notifikuj GUI
                     OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationExperimentDone);
                 }
+
+                firstRun = false;
             }
             
-            if (State != SimulationState.Pausing)
-            {
-                _afterSimulation();
-                State = SimulationState.Done;
-            }
-
             if (State == SimulationState.Pausing)
             {
                 State = SimulationState.Paused;
+            } else {
+                _afterSimulation();
+                State = SimulationState.Done;
             }
 
             OnGUIEventHappened(EventDrivenSimulationEventArgsType.RefreshGUI);

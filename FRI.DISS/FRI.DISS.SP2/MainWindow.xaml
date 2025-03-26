@@ -43,13 +43,13 @@
                                 <StackPanel Orientation="Vertical">
                                     <libsuc:InlineTextBox x:Name="_txt_simSeed" Title="Seed:" Value="" />
                                     <libsuc:InlineTextBox x:Name="_txt_simReplicationsCount" Title="Replications:" Value="100" />
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Button Content="Start" Click="_btn_simStart_Click" />
-                                        <Button Content="Stop" Click="_btn_simStop_Click" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0 5">
+                                        <Button Content="Start" Click="_btn_simStart_Click" Margin="0 0 28 0" Padding="5 3" />
+                                        <Button Content="Stop" Click="_btn_simStop_Click" Padding="5 3" />
                                     </StackPanel>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Button Content="Resume" Click="_btn_simResume_Click" />
-                                        <Button Content="Pause" Click="_btn_simPause_Click" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" >
+                                        <Button Content="Resume" Click="_btn_simResume_Click" Margin="0 0 10 0" Padding="5 3" />
+                                        <Button Content="Pause" Click="_btn_simPause_Click" Padding="5 3" />
                                     </StackPanel>
                                 </StackPanel>
                             </GroupBox>

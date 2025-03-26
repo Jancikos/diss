@@ -34,7 +34,7 @@ namespace FRI.DISS.Libs.Simulations
         protected virtual void _beforeExperiment() { }
         protected virtual void _afterExperiment(int replication, double result) { }
 
-        public abstract void RunSimulation();
+        protected abstract void RunSimulation();
 
         public void StartSimulation()
         {

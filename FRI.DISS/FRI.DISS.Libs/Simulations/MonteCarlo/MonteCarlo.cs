@@ -19,7 +19,7 @@ namespace FRI.DISS.Libs.Simulations.MonteCarlo
 
         protected abstract double _doExperiment();
 
-        public override void RunSimulation()
+        protected override void RunSimulation()
         {
             if (State == SimulationState.Running)
             {
