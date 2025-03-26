@@ -38,8 +38,12 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         Faster5x = 5,
         Faster10x = 10,
         Faster100x = 100,
+        Faster500x = 500,
         Faster1000x = 1000,
-        Faster10000x = 10000
+        Faster5000x = 5000,
+        Faster10000x = 10000,
+        Faster50000x = 50000,
+        Faster100000x = 100000
     }
 
     public abstract class EventSimulation : Simulation

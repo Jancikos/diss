@@ -102,6 +102,7 @@ namespace FRI.DISS.SP2
         private void _refreshGUI()
         {
             _txt_expStatus.Value = _simulation.State.ToString();
+            _txt_expReplication.Value = _simulation.ReplicationsDone.ToString();
 
             _refreshTime();
             _refreshEventsCalendar();
@@ -161,20 +162,23 @@ namespace FRI.DISS.SP2
                 var item = new TreeViewItem()
                 {
                     Header = $"{++i}. {e}",
-                    IsExpanded = true
+                    IsExpanded = true,
+                    VerticalContentAlignment = VerticalAlignment.Center
                 };
 
                 if (e is NabytokSimulation.NabytokSimulationEvent nabytokEvent)
                 {
                     item.Items.Add(new TreeViewItem()
                     {
-                        Header = $"O: {nabytokEvent.Objednavka}"
+                        Header = $"O: {nabytokEvent.Objednavka}",
+                        VerticalContentAlignment = VerticalAlignment.Center
                     });
 
 
                     item.Items.Add(new TreeViewItem()
                     {
-                        Header = $"S: {nabytokEvent.Stolar}"
+                        Header = $"S: {nabytokEvent.Stolar}",
+                        VerticalContentAlignment = VerticalAlignment.Center
                     });
                 }
 

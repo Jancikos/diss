@@ -55,6 +55,13 @@ namespace FRI.DISS.SP2.Controls
                 workplaceUc.Objednavka = objednavka;
             }
 
+            if (_lst.Items.Count > objednavky.Count)
+            {
+                for (int i = _lst.Items.Count - 1; i >= objednavky.Count; i--)
+                {
+                    _lst.Items.RemoveAt(i);
+                }
+            }
         }
 
     }
