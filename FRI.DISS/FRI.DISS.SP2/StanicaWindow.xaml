@@ -46,7 +46,7 @@
                                 <libsuc:InlineText x:Name="_txt_expCustomersServed" Title="Customers served:" />
                             </StackPanel>
                         </GroupBox>
-                        <libsuc:DicreteStatistic x:Name="_expStatsCustomersWaitingTime" Title="Customers waiting time" ShowPlot="true" />
+                        <libsuc:DicreteStatistic x:Name="_expStatsCustomersWaitingTime" Title="Customers waiting time" PlotShow="true" />
                         <libsuc:DicreteStatistic x:Name="_expStatsCustomersServiceTime" Title="Customers service time" MinWidth="350" MinHeight="250" />
                         <libsuc:DicreteStatistic x:Name="_expStatsCustomersTotalTime" Title="Customers total time" />
                     </StackPanel>

@@ -17,6 +17,7 @@ using ScottPlot;
 using ScottPlot.AxisPanels;
 using ScottPlot.Plottables;
 using System.Diagnostics;
+using ScottPlot.Panels;
 
 namespace FRI.DISS.Libs.GUI.Controls
 {
@@ -31,7 +32,10 @@ namespace FRI.DISS.Libs.GUI.Controls
             set { _grbx_Header.Header = value; }
         }
 
-        public bool ShowPlot {get; set; }  = false;
+        public bool PlotShow {get; set; }  = false;
+        public string PlotTitle { get; set; } = "";
+        public string PlotXLabel { get; set; } = "";
+        public string PlotYLabel { get; set; } = "";
 
         public int SkipFirstCount = 0;
         protected DataLogger? _dataLoggerMean;
@@ -50,7 +54,7 @@ namespace FRI.DISS.Libs.GUI.Controls
 
         private void DicreteStatistic_Loaded(object sender, RoutedEventArgs e)
         {
-            if (ShowPlot)
+            if (PlotShow)
             {
                 InitializePlot();
             }
@@ -68,7 +72,7 @@ namespace FRI.DISS.Libs.GUI.Controls
             _dataLoggerMean!.Add(_plotStatsMean.Count, _transformValue(value.Mean));
 
             _plot.Plot.Axes.SetLimitsX(0, _plotStatsMean.Count);
-            _plot.Plot.Axes.SetLimitsY(0, _plotStatsMean.Max);
+            _plot.Plot.Axes.SetLimitsY(_plotStatsMean.Min, _plotStatsMean.Max);
 
             _plot.Refresh();
         }
@@ -84,7 +88,12 @@ namespace FRI.DISS.Libs.GUI.Controls
         public void InitializePlot()
         {
             _plot.Visibility = Visibility.Visible;
-            ShowPlot = true;
+
+            _plot.Plot.Title(PlotTitle);
+            _plot.Plot.XLabel(PlotXLabel);
+            _plot.Plot.YLabel(PlotYLabel);
+
+            PlotShow = true;
         }
 
         public void Update(Statistics stats)
@@ -99,7 +108,7 @@ namespace FRI.DISS.Libs.GUI.Controls
             _txt_StdDev.Value = _transformValue(stats.StandardDeviation).ToString("F2");
             _txt_Variance.Value = _transformValue(stats.Variance).ToString("F2");
             
-            if (ShowPlot)
+            if (PlotShow)
             {
                 _addPlotSample(stats);
             }
