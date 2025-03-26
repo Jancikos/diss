@@ -122,19 +122,19 @@
                             </GroupBox>
 
                             <GroupBox Header="Stolari" MinWidth="500">
-                                <UniformGrid x:Name="_lst_StolariTypes" Rows="1">
+                                <UniformGrid x:Name="_lst_expStolariTypes" Rows="1">
                                 </UniformGrid>
                             </GroupBox>
 
                             <GroupBox Header="Stolari queues" MinWidth="550">
-                                <UniformGrid x:Name="_lst_StolariTypesQueues" Rows="1">
+                                <UniformGrid x:Name="_lst_expStolariTypesQueues" Rows="1">
 
                                 </UniformGrid>
                             </GroupBox>
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Orientation="Horizontal">
-                            <libsuc:DicreteStatistic x:Name="_sts_repObjednavkaTime" Title="Objednavka TimeInSystem" MinWidth="500"/>
+                            <libsuc:DicreteStatistic x:Name="_sts_expObjednavkaTime" Title="Objednavka TimeInSystem" MinWidth="500" TransformFromSecondsToHours="true" ShowPlot="true"/>
                         </StackPanel>
                     </Grid>
                 </ScrollViewer>
@@ -142,9 +142,8 @@
 
             <GroupBox Grid.Row="2" Header="Replications statistics">
                 <StackPanel Orientation="Horizontal">
-                    
                 </StackPanel>
-            </GroupBox>            
+            </GroupBox>
         </Grid>
     </Grid>
 </Window>

@@ -37,21 +37,18 @@ namespace FRI.DISS.SP2
             // cmbx timeRatio
             _cmbx_simRealTimeRatio.ItemsSource = Enum.GetValues(typeof(EventDrivenSimulationRealTimeRatios)).Cast<EventDrivenSimulationRealTimeRatios>();
             // _cmbx_simRealTimeRatio.SelectedIndex = 0;
-            _cmbx_simRealTimeRatio.SelectedIndex = 8;
+            _cmbx_simRealTimeRatio.SelectedIndex = 9;
 
 
             // stolari types
             Enum.GetValues(typeof(NabytokSimulation.StolarType)).Cast<NabytokSimulation.StolarType>().ToList().ForEach(stolarType =>
             {
                 var stolarUC = new StolariUserControl() { StolarType = stolarType };
-                _lst_StolariTypes.Children.Add(stolarUC);
+                _lst_expStolariTypes.Children.Add(stolarUC);
 
                 var stolariQueueUC = new StolariQueueUserControl() { StolarType = stolarType };
-                _lst_StolariTypesQueues.Children.Add(stolariQueueUC);
+                _lst_expStolariTypesQueues.Children.Add(stolariQueueUC);
             });
-
-            // stats
-            _sts_repObjednavkaTime.InitializePlot();
         }
 
         private void _initializeSimulationFromGUI()
@@ -115,12 +112,12 @@ namespace FRI.DISS.SP2
 
         private void _refreshExperimentStats()
         {
-            _sts_repObjednavkaTime.Update(_simulation.ExperimentStatistics.ObjednavkaTime);
+            _sts_expObjednavkaTime.Update(_simulation.ExperimentStatistics.ObjednavkaTime);
         }
 
         private void _refreshWorkers()
         {
-            _lst_StolariTypes.Children.Cast<StolariUserControl>().ToList().ForEach(stolarUC =>
+            _lst_expStolariTypes.Children.Cast<StolariUserControl>().ToList().ForEach(stolarUC =>
             {
                 var stolarType = stolarUC.StolarType;
                 var stolari = _simulation.ExperimentData.Stolari[stolarType];
@@ -128,7 +125,7 @@ namespace FRI.DISS.SP2
                 stolarUC._updateGUI(stolari);
             });
 
-            _lst_StolariTypesQueues.Children.Cast<StolariQueueUserControl>().ToList().ForEach(stolariQueueUC =>
+            _lst_expStolariTypesQueues.Children.Cast<StolariQueueUserControl>().ToList().ForEach(stolariQueueUC =>
             {
                 var stolarType = stolariQueueUC.StolarType;
                 var objednavky = _simulation.ExperimentData.StolariQueues[stolarType];

@@ -39,6 +39,7 @@ namespace FRI.DISS.Libs.GUI.Controls
 
         public int LastRenderedCount { get; protected set; } = 0;
 
+        public bool TransformFromSecondsToHours { get; set; } = false;
 
         public DicreteStatistic()
         {
@@ -62,9 +63,9 @@ namespace FRI.DISS.Libs.GUI.Controls
                 _reinitializePlot();
             }
 
-            _plotStatsMean!.AddSample(value.Mean);
+            _plotStatsMean!.AddSample(_transformValue(value.Mean));
 
-            _dataLoggerMean!.Add(_plotStatsMean.Count, value.Mean);
+            _dataLoggerMean!.Add(_plotStatsMean.Count, _transformValue(value.Mean));
 
             _plot.Plot.Axes.SetLimitsX(0, _plotStatsMean.Count);
             _plot.Plot.Axes.SetLimitsY(0, _plotStatsMean.Max);
@@ -92,11 +93,11 @@ namespace FRI.DISS.Libs.GUI.Controls
                 return;
 
             _txt_Count.Value = stats.Count.ToString();
-            _txt_Min.Value = stats.Min.ToString("F2");
-            _txt_Max.Value = stats.Max.ToString("F2");
-            _txt_Avg.Value = stats.Mean.ToString("F2");
-            _txt_StdDev.Value = stats.StandardDeviation.ToString("F2");
-            _txt_Variance.Value = stats.Variance.ToString("F2");
+            _txt_Min.Value = _transformValue(stats.Min).ToString("F2");
+            _txt_Max.Value = _transformValue(stats.Max).ToString("F2");
+            _txt_Avg.Value = _transformValue(stats.Mean).ToString("F2");
+            _txt_StdDev.Value = _transformValue(stats.StandardDeviation).ToString("F2");
+            _txt_Variance.Value = _transformValue(stats.Variance).ToString("F2");
             
             if (ShowPlot)
             {
@@ -104,6 +105,16 @@ namespace FRI.DISS.Libs.GUI.Controls
             }
 
             LastRenderedCount = stats.Count;
+        }
+
+        private double _transformValue(double value)
+        {
+            if (TransformFromSecondsToHours)
+            {
+                return value / 60.0 / 60.0;
+            }
+
+            return value;
         }
 
         public void Clear()
