@@ -82,8 +82,7 @@ namespace FRI.DISS.Libs.GUI.Controls
 
                 _plotStatsIntervalMin!.AddSample(_transformValue(value.IntervalLowerBound));
                 _plotStatsIntervalMax!.AddSample(_transformValue(value.IntervalUpperBound));
-            } else
-            {
+            } else {
                 _dataLoggerIntervalMin!.Add(_plotStatsMean.Count, transformedValueX);
                 _dataLoggerIntervalMax!.Add(_plotStatsMean.Count, transformedValueX);
 
@@ -92,16 +91,21 @@ namespace FRI.DISS.Libs.GUI.Controls
             }
 
              _plot.Plot.Axes.SetLimitsX(0, _plotStatsMean.Count);
-            // _plot.Plot.Axes.SetLimitsY(
-            //     value.CanCalculateInterval ? _plotStatsIntervalMin!.Min : _plotStatsMean.Min,
-            //     value.CanCalculateInterval ? _plotStatsIntervalMax!.Max : _plotStatsMean.Max
-            // );
             _plot.Plot.Axes.SetLimitsY(
-                _plotStatsMean.Min,
-                _plotStatsMean.Max
+                value.CanCalculateInterval ? _plotStatsIntervalMin!.Min : _plotStatsMean.Min,
+                value.CanCalculateInterval ? _plotStatsIntervalMax!.Max : _plotStatsMean.Max
             );
 
             _plot.Refresh();
+        }
+
+        private void _reinitializePlotInterval()
+        {
+            _dataLoggerIntervalMin = _plot.Plot.Add.DataLogger();
+            _dataLoggerIntervalMax = _plot.Plot.Add.DataLogger();
+
+            _plotStatsIntervalMin = new Statistics();
+            _plotStatsIntervalMax = new Statistics();
         }
 
         private void _reinitializePlot()
@@ -109,12 +113,10 @@ namespace FRI.DISS.Libs.GUI.Controls
             _plot.Plot.Clear();
 
             _dataLoggerMean = _plot.Plot.Add.DataLogger();
-            _dataLoggerIntervalMin = _plot.Plot.Add.DataLogger();
-            _dataLoggerIntervalMax = _plot.Plot.Add.DataLogger();
             
             _plotStatsMean = new Statistics();
-            _plotStatsIntervalMin = new Statistics();
-            _plotStatsIntervalMax = new Statistics();
+
+            _reinitializePlotInterval();
         }
 
         public void InitializePlot()
@@ -169,6 +171,7 @@ namespace FRI.DISS.Libs.GUI.Controls
             _txt_Variance.Value = "0";
 
             _reinitializePlot();
+            _plot.Refresh();
         }
     }
 }
