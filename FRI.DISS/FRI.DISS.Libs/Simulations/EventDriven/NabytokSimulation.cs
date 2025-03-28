@@ -77,6 +77,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var totalWorkTime = EndTime!.Value;
                 var groupWorkTime = stolari.Sum(s => s.TimeInWork);
 
+                // TODO - opravit tento vypocet
                 ReplicationsStatistics.StolariWorkTimeRatio[stolarType].AddSample(groupWorkTime / totalWorkTime);
 
                 for (int i = 0; i < stolari.Count; i++)
@@ -94,6 +95,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             public Statistics ObjednavkaTime { get; set; } = new Statistics();
             public Statistics ObjednavkyRecieved { get; } = new Statistics();
+            // POZOR - podla zadania treba pocet objednavok, na kt. sa ani nezacalo pracovat
             public Statistics ObjednavkyNotDone { get; } = new Statistics();
 
             public Dictionary<StolarType, Statistics> StolariWorkTimeRatio { get; } = new()

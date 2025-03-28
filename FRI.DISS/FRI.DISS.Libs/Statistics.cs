@@ -23,7 +23,9 @@ namespace FRI.DISS.Libs.Generators
         public double Min { get; protected set; }
         public double Max { get; protected set; }
 
-        public double Mean => (double)Sum / Count;
+        public double Mean => Count == 0
+        ? 0
+        : (double)Sum / Count;
         public double Variance => (double)SumOfSquares / Count - Mean * Mean;
         public double StandardDeviation => Math.Sqrt(Variance);
 
