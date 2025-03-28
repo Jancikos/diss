@@ -45,6 +45,7 @@ namespace FRI.DISS.Libs.GUI.Controls
         protected Statistics? _plotStatsIntervalMin;
         protected Statistics? _plotStatsIntervalMax;
 
+        protected bool PlotShowingInterval = false;
         public int LastRenderedCount { get; protected set; } = 0;
 
         public bool TransformFromSecondsToHours { get; set; } = false;
@@ -75,6 +76,11 @@ namespace FRI.DISS.Libs.GUI.Controls
             _plotStatsMean!.AddSample(transformedValueX);
             _dataLoggerMean!.Add(_plotStatsMean.Count, transformedValueX);
 
+            if (value.CanCalculateInterval && !PlotShowingInterval)
+            {
+                _reinitializePlotInterval();
+            }
+
             if (value.CanCalculateInterval)
             {
                 _dataLoggerIntervalMin!.Add(_plotStatsMean.Count, _transformValue(value.IntervalLowerBound));
@@ -82,12 +88,6 @@ namespace FRI.DISS.Libs.GUI.Controls
 
                 _plotStatsIntervalMin!.AddSample(_transformValue(value.IntervalLowerBound));
                 _plotStatsIntervalMax!.AddSample(_transformValue(value.IntervalUpperBound));
-            } else {
-                _dataLoggerIntervalMin!.Add(_plotStatsMean.Count, transformedValueX);
-                _dataLoggerIntervalMax!.Add(_plotStatsMean.Count, transformedValueX);
-
-                _plotStatsIntervalMin!.AddSample(transformedValueX);
-                _plotStatsIntervalMax!.AddSample(transformedValueX);
             }
 
              _plot.Plot.Axes.SetLimitsX(0, _plotStatsMean.Count);
@@ -101,11 +101,15 @@ namespace FRI.DISS.Libs.GUI.Controls
 
         private void _reinitializePlotInterval()
         {
+            _reinitializePlot();
+
             _dataLoggerIntervalMin = _plot.Plot.Add.DataLogger();
             _dataLoggerIntervalMax = _plot.Plot.Add.DataLogger();
 
             _plotStatsIntervalMin = new Statistics();
             _plotStatsIntervalMax = new Statistics();
+
+            PlotShowingInterval = true;
         }
 
         private void _reinitializePlot()
@@ -116,7 +120,7 @@ namespace FRI.DISS.Libs.GUI.Controls
             
             _plotStatsMean = new Statistics();
 
-            _reinitializePlotInterval();
+            PlotShowingInterval = false;
         }
 
         public void InitializePlot()
@@ -163,6 +167,7 @@ namespace FRI.DISS.Libs.GUI.Controls
         public void Clear()
         {
             LastRenderedCount = 0;
+
             _txt_Count.Value = "0";
             _txt_Min.Value = "0";
             _txt_Max.Value = "0";
