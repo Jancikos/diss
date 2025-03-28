@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FRI.DISS.Libs.Generators;
 
-namespace FRI.DISS.Libs.MonteCarlo
+namespace FRI.DISS.Libs.Simulations.MonteCarlo
 {
     // jan prevadzkuje sklad
     // 3 typy tovaru, kt. skladuje - tlmice, brzdy, svetla
@@ -61,13 +61,6 @@ namespace FRI.DISS.Libs.MonteCarlo
         /// </summary>
         public Action<int, int, double>? UpdateStatsDailyCallback { get; set; }
 
-        protected override void _beforeSimulation()
-        {
-            ResultSuplliersReliability = new Statistics();
-            ResultMissingDemandPenalty = new Statistics();
-            ResultWarehouseCosts = new Statistics();
-        }
-
         protected override void _beforeExperiment()
         {
             _warehouse = new Warehouse();
@@ -96,7 +89,9 @@ namespace FRI.DISS.Libs.MonteCarlo
                                 _getSupplyLights(w)
                             );
                             ResultSuplliersReliability!.AddSample(1);
-                        } else {
+                        }
+                        else
+                        {
                             ResultSuplliersReliability!.AddSample(0);
                         }
                     }
@@ -168,9 +163,9 @@ namespace FRI.DISS.Libs.MonteCarlo
         protected virtual int _getSupplyBrakes(int w) => 200;
         protected virtual int _getSupplyLights(int w) => 150;
 
-        protected override void _initialize()
+        protected override void _beforeSimulation()
         {
-            _rndSupplyProbability = new UniformGenerator(GenerationMode.Continuous, SeedGenerator) { Min = 0, Max = 100};
+            _rndSupplyProbability = new UniformGenerator(GenerationMode.Continuous, SeedGenerator) { Min = 0, Max = 100 };
             _rndSupplier1Reliability =
             [
                 new UniformGenerator(GenerationMode.Continuous, SeedGenerator) {Min = 10, Max = 70},
@@ -197,6 +192,10 @@ namespace FRI.DISS.Libs.MonteCarlo
                 [0.2, 0.4, 0.3, 0.1],
                 SeedGenerator
             );
+
+            ResultSuplliersReliability = new Statistics();
+            ResultMissingDemandPenalty = new Statistics();
+            ResultWarehouseCosts = new Statistics();
         }
 
         protected class Warehouse
@@ -321,9 +320,9 @@ namespace FRI.DISS.Libs.MonteCarlo
         protected int[]? _brakesSupplies { get; set; }
         protected int[]? _lightsSupplies { get; set; }
 
-        protected override void _initialize()
+        protected override void _beforeSimulation()
         {
-            base._initialize();
+            base._beforeSimulation();
 
             if (SuppliersStrategyConfig == null)
             {

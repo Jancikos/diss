@@ -2,7 +2,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using FRI.DISS.Libs.Generators;
-using FRI.DISS.Libs.MonteCarlo;
+using FRI.DISS.Libs.Simulations.MonteCarlo;
 using Microsoft.Win32;
 
 namespace FRI.DISS.SP1

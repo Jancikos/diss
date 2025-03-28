@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="FRI.DISS.SP2.Controls.StolariQueueUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:libsuc="clr-namespace:FRI.DISS.Libs.GUI.Controls;assembly=FRI.DISS.Libs.GUI"
+             xmlns:local="clr-namespace:FRI.DISS.SP2.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="150" d:DesignWidth="150">
+    <GroupBox x:Name="_grb_Header" Header="Stolari A queue">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <UniformGrid Rows="1">
+                <libsuc:InlineText x:Name="_txt_TotalCount" Title="Count:" Value="10" Padding="0 0 5 0" />
+            </UniformGrid>
+
+            <ListView Grid.Row="1" x:Name="_lst" VerticalAlignment="Stretch" />
+        </Grid>
+    </GroupBox>
+</UserControl>

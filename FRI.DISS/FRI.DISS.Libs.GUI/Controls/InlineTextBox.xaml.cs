@@ -44,6 +44,14 @@ namespace FRI.DISS.Libs.GUI.Controls
             }
         }
 
+        public bool HasValue
+        {
+            get
+            {
+                return !string.IsNullOrWhiteSpace(Value);
+            }
+        }
+
         public int IntValue => int.Parse(Value);
         public double DoubleValue => double.Parse(Value);
 
@@ -63,7 +71,7 @@ namespace FRI.DISS.Libs.GUI.Controls
         {
             get
             {
-                return _grid.ToolTip.ToString();
+                return _grid.ToolTip.ToString() ?? "";
             }
             set
             {

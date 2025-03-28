@@ -18,7 +18,9 @@ namespace FRI.DISS.GeneratorTester
         UniformDiscrete,
         UniformContinuous,
         EmpiricalDiscrete,
-        EmpiricalContinuous
+        EmpiricalContinuous,
+        Exponential,
+        Triangular
     }
 
     /// <summary>
@@ -49,7 +51,7 @@ namespace FRI.DISS.GeneratorTester
             {
                 _cmbx_GeneratorType.Items.Add(type);
             }
-            _cmbx_GeneratorType.SelectedIndex = 0;
+            _cmbx_GeneratorType.SelectedIndex = 4; // Exponential
         }
 
         private void _mnitem_Close_Click(object sender, RoutedEventArgs e)
@@ -153,6 +155,10 @@ namespace FRI.DISS.GeneratorTester
                         [0.2, 0.4, 0.3, 0.1],
                         seedGenerator
                     );
+                case GeneratorType.Exponential:
+                    return new ExponentialGenerator((double)1/30, seedGenerator);
+                case GeneratorType.Triangular:
+                    return new TriangularGenerator(60, 500, 150, seedGenerator);
                 default:
                     throw new ArgumentException("Invalid generator type");
             }
