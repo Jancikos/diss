@@ -39,7 +39,11 @@ namespace FRI.DISS.Libs.GUI.Controls
 
         public int SkipFirstCount = 0;
         protected DataLogger? _dataLoggerMean;
+        protected DataLogger? _dataLoggerIntervalMin;
+        protected DataLogger? _dataLoggerIntervalMax;
         protected Statistics? _plotStatsMean;
+        protected Statistics? _plotStatsIntervalMin;
+        protected Statistics? _plotStatsIntervalMax;
 
         public int LastRenderedCount { get; protected set; } = 0;
 
@@ -67,12 +71,24 @@ namespace FRI.DISS.Libs.GUI.Controls
                 _reinitializePlot();
             }
 
-            _plotStatsMean!.AddSample(_transformValue(value.Mean));
+            var transformedValueX = _transformValue(value.Mean);
+            _plotStatsMean!.AddSample(transformedValueX);
+            _dataLoggerMean!.Add(_plotStatsMean.Count, transformedValueX);
 
-            _dataLoggerMean!.Add(_plotStatsMean.Count, _transformValue(value.Mean));
+            if (value.CanCalculateInterval)
+            {
+                _dataLoggerIntervalMin!.Add(_plotStatsMean.Count, _transformValue(value.IntervalLowerBound));
+                _dataLoggerIntervalMax!.Add(_plotStatsMean.Count, _transformValue(value.IntervalUpperBound));
+
+                _plotStatsIntervalMin!.AddSample(_transformValue(value.IntervalLowerBound));
+                _plotStatsIntervalMax!.AddSample(_transformValue(value.IntervalUpperBound));
+            }
 
             _plot.Plot.Axes.SetLimitsX(0, _plotStatsMean.Count);
-            _plot.Plot.Axes.SetLimitsY(_plotStatsMean.Min, _plotStatsMean.Max);
+            _plot.Plot.Axes.SetLimitsY(
+                value.CanCalculateInterval ? _plotStatsIntervalMin!.Min : _plotStatsMean.Min,
+                value.CanCalculateInterval ? _plotStatsIntervalMax!.Max : _plotStatsMean.Max
+            );
 
             _plot.Refresh();
         }
@@ -82,7 +98,12 @@ namespace FRI.DISS.Libs.GUI.Controls
             _plot.Plot.Clear();
 
             _dataLoggerMean = _plot.Plot.Add.DataLogger();
+            _dataLoggerIntervalMin = _plot.Plot.Add.DataLogger();
+            _dataLoggerIntervalMax = _plot.Plot.Add.DataLogger();
+            
             _plotStatsMean = new Statistics();
+            _plotStatsIntervalMin = new Statistics();
+            _plotStatsIntervalMax = new Statistics();
         }
 
         public void InitializePlot()
