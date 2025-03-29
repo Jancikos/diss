@@ -72,25 +72,26 @@ namespace FRI.DISS.Libs.GUI.Controls
                 _reinitializePlot();
             }
 
-            double transformedValueX = _transformValue(value.Mean);
-            _plotStatsMean!.AddSample(transformedValueX);
-            _dataLoggerMean!.Add(_plotStatsMean.Count, transformedValueX);
-
             if (value.CanCalculateInterval && !PlotShowingInterval)
             {
                 _reinitializePlotInterval();
             }
 
+            double transformedValueY = _transformValue(value.Mean);
+            double valueX = value.Count;
+            _plotStatsMean!.AddSample(transformedValueY);
+            _dataLoggerMean!.Add(valueX, transformedValueY);
+
             if (value.CanCalculateInterval)
             {
-                _dataLoggerIntervalMin!.Add(_plotStatsMean.Count, _transformValue(value.IntervalLowerBound));
-                _dataLoggerIntervalMax!.Add(_plotStatsMean.Count, _transformValue(value.IntervalUpperBound));
+                _dataLoggerIntervalMin!.Add(valueX, _transformValue(value.IntervalLowerBound));
+                _dataLoggerIntervalMax!.Add(valueX, _transformValue(value.IntervalUpperBound));
 
                 _plotStatsIntervalMin!.AddSample(_transformValue(value.IntervalLowerBound));
                 _plotStatsIntervalMax!.AddSample(_transformValue(value.IntervalUpperBound));
             }
 
-             _plot.Plot.Axes.SetLimitsX(0, _plotStatsMean.Count);
+             _plot.Plot.Axes.SetLimitsX(0, valueX);
             _plot.Plot.Axes.SetLimitsY(
                 value.CanCalculateInterval ? _plotStatsIntervalMin!.Min : _plotStatsMean.Min,
                 value.CanCalculateInterval ? _plotStatsIntervalMax!.Max : _plotStatsMean.Max
