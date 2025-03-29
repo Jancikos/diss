@@ -10,6 +10,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
     public enum EventDrivenSimulationEventArgsType
     {
         SimulationEventDone,
+        SimulationExperimentStarted,
         SimulationExperimentDone,
         RefreshGUI,
         RefreshTime
@@ -45,9 +46,9 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         Faster10000x = 10000,
         Faster50000x = 50000,
         Faster100000x = 100000,
-        Faster250000x = 250000,
-        Faster500000x = 500000,
-        Faster1000000x = 1000000
+        // Faster250000x = 250000,
+        // Faster500000x = 500000,
+        // Faster1000000x = 1000000
     }
 
     public abstract class EventSimulation : Simulation
@@ -100,7 +101,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 throw new InvalidOperationException("Simulation already running");
 
             if (State == SimulationState.Starting)
+            {
                 _beforeSimulation();
+                OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationExperimentStarted);
+            }
 
             State = SimulationState.Running;
             var firstRun = true;

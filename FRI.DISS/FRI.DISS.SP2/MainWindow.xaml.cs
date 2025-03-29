@@ -106,11 +106,20 @@ namespace FRI.DISS.SP2
                     case EventDrivenSimulationEventArgsType.RefreshGUI:
                         _refreshExperimentGUI();
                         break;
+                    case EventDrivenSimulationEventArgsType.SimulationExperimentStarted:
+                        _clearExperimentGUI();
+                        break;
                     case EventDrivenSimulationEventArgsType.SimulationExperimentDone:
                         _refreshReplicationsStats();
                         break;
                 }
             });
+        }
+
+        private void _clearExperimentGUI()
+        {
+            _lst_expWorkplaces.Items.Clear();
+            _sts_expObjednavkaTime.Clear();
         }
 
         private void _refreshReplicationsStats()
@@ -119,7 +128,7 @@ namespace FRI.DISS.SP2
             _txt_expCurrentReplication.Text = _simulation.ReplicationsDone.ToString();
             _txt_expTotalReplications.Text = _simulation.ReplicationsCount.ToString();
 
-            if ((_simulation.ReplicationsDone  % _txt_simReplicationsStatsRefresh.IntValue != 0 && _simulation.ReplicationsDone  != _simulation.ReplicationsCount) && _simulation.State == Libs.Simulations.SimulationState.Running)
+            if (_simulation.ReplicationsDone  % _txt_simReplicationsStatsRefresh.IntValue != 0 && _simulation.ReplicationsDone  != _simulation.ReplicationsCount && _simulation.State == Libs.Simulations.SimulationState.Running)
                 return;
             
             if (_simulation.ReplicationsDone  == _simulation.ReplicationsCount || _simulation.State != Libs.Simulations.SimulationState.Running)
@@ -155,7 +164,6 @@ namespace FRI.DISS.SP2
             switch (_simulation.TimeMode)
             {
                 case EventDrivenSimulationTimeMode.RealTime:
-
                     _txt_expStatus.Value = _simulation.State.ToString();
                     _txt_expReplication.Value = _simulation.ReplicationsDone.ToString();
 
