@@ -181,7 +181,9 @@
                                 
                             <GroupBox Grid.RowSpan="2" Grid.Column="0" Header="Basic" MinWidth="150">
                                 <StackPanel Orientation="Vertical">
-                                    <libsuc:InlineText x:Name="_txt_repsDone" Title="Replications done:" Value="0" />
+                                    <libsuc:InlineText x:Name="_txt_repsDone" Title="Replications done:" Value="0" Margin="0 0 0 10" />
+                                    <libsuc:InlineText x:Name="_txt_repsStartTime" Title="Start time:" Value="--:--:--" />
+                                    <libsuc:InlineText x:Name="_txt_repsEndTime" Title="End time:" Value="--:--:--" Margin="0 0 0 10" />
                                 </StackPanel>
                             </GroupBox>
 

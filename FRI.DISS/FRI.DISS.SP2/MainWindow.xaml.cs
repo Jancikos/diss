@@ -61,6 +61,8 @@ namespace FRI.DISS.SP2
                 : SeedGenerator.Global;
 
             _setSimulationTimeFromGUI();
+            _txt_repsStartTime.Value = DateTime.Now.ToString("HH:mm:ss");
+            _txt_repsEndTime.Value = "--:--:--";
 
             // stolari count
             _simulation.StolariCount[NabytokSimulation.StolarType.A] = _txt_simStolariACount.IntValue;
@@ -117,8 +119,13 @@ namespace FRI.DISS.SP2
             _txt_expCurrentReplication.Text = _simulation.ReplicationsDone.ToString();
             _txt_expTotalReplications.Text = _simulation.ReplicationsCount.ToString();
 
-            if (_simulation.ReplicationsDone  % _txt_simReplicationsStatsRefresh.IntValue != 0 && _simulation.ReplicationsDone  != _simulation.ReplicationsCount)
+            if ((_simulation.ReplicationsDone  % _txt_simReplicationsStatsRefresh.IntValue != 0 && _simulation.ReplicationsDone  != _simulation.ReplicationsCount) && _simulation.State == Libs.Simulations.SimulationState.Running)
                 return;
+            
+            if (_simulation.ReplicationsDone  == _simulation.ReplicationsCount || _simulation.State != Libs.Simulations.SimulationState.Running)
+            {
+                _txt_repsEndTime.Value = DateTime.Now.ToString("HH:mm:ss");
+            }
 
             _txt_repsDone.Value = _simulation.ReplicationsDone.ToString();
 
@@ -292,9 +299,9 @@ namespace FRI.DISS.SP2
         private void _btn_simStop_Click(object sender, RoutedEventArgs e)
         {
             _manipulateSimulation(_simulation.StopSimulation);
+            _refreshReplicationsStats();
         }
 
-        // TOOD - make it works correctly
         private void _btn_simResume_Click(object sender, RoutedEventArgs e)
         {
             _manipulateSimulation(_simulation.ResumeSimulation);
@@ -303,6 +310,7 @@ namespace FRI.DISS.SP2
         private void _btn_simPause_Click(object sender, RoutedEventArgs e)
         {
             _manipulateSimulation(_simulation.PauseSimulation);
+            _refreshReplicationsStats();
         }
 
         private void _cmbx_simRealTimeRatio_SelectionChanged(object sender, SelectionChangedEventArgs e)
