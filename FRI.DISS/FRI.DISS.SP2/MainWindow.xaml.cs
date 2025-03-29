@@ -93,7 +93,7 @@ namespace FRI.DISS.SP2
 
         private void _simulation_GUIEventHappened(object? sender, EventDrivenSimulationGUIEventArgs e)
         {
-            Dispatcher.Invoke(() =>
+            Dispatcher.InvokeAsync(() =>
             {
                 switch (e.Type)
                 {
@@ -117,7 +117,7 @@ namespace FRI.DISS.SP2
             _txt_expCurrentReplication.Text = _simulation.ReplicationsDone.ToString();
             _txt_expTotalReplications.Text = _simulation.ReplicationsCount.ToString();
 
-            if (_simulation.ReplicationsDone  % 10 != 0)
+            if (_simulation.ReplicationsDone  % _txt_simReplicationsStatsRefresh.IntValue != 0 && _simulation.ReplicationsDone  != _simulation.ReplicationsCount)
                 return;
 
             _txt_repsDone.Value = _simulation.ReplicationsDone.ToString();

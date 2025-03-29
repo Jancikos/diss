@@ -39,10 +39,8 @@
 
                     <GroupBox Header="Simulation parameters">
                         <StackPanel Orientation="Horizontal">
-                            <GroupBox Header="General">
+                            <GroupBox Header="Simlation controls">
                                 <StackPanel Orientation="Vertical">
-                                    <libsuc:InlineTextBox x:Name="_txt_simSeed" Title="Seed:" Value="" />
-                                    <libsuc:InlineTextBox x:Name="_txt_simReplicationsCount" Title="Replications:" Value="100" />
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0 5">
                                         <Button Content="Start" Click="_btn_simStart_Click" Margin="0 0 28 0" Padding="5 3" />
                                         <Button Content="Stop" Click="_btn_simStop_Click" Padding="5 3" />
@@ -51,6 +49,14 @@
                                         <Button Content="Resume" Click="_btn_simResume_Click" Margin="0 0 10 0" Padding="5 3" />
                                         <Button Content="Pause" Click="_btn_simPause_Click" Padding="5 3" />
                                     </StackPanel>
+                                </StackPanel>
+                            </GroupBox>
+
+                            <GroupBox Header="General">
+                                <StackPanel Orientation="Vertical">
+                                    <libsuc:InlineTextBox x:Name="_txt_simSeed" Title="Seed:" Value="" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simReplicationsCount" Title="Replications count:" Value="10000" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simReplicationsStatsRefresh" Title="Replications stats refresh interval:" Value="100" />
                                 </StackPanel>
                             </GroupBox>
 

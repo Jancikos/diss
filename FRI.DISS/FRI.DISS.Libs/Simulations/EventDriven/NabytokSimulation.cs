@@ -41,8 +41,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             _generators = new NabytokGenerators(SeedGenerator);
             _replicationsStatistics = new NabytokReplicationsStatistics();
 
-            // _endTime = TimeHelper.HoursToSeconds(8) * 249; // 6:00 az 14:00 * 249 dni
-            _endTime = TimeHelper.HoursToSeconds(8) * 24; // ONLY FOR TESTING
+            _endTime = TimeHelper.HoursToSeconds(8) * 249; // 6:00 az 14:00 * 249 dni
+            // _endTime = TimeHelper.HoursToSeconds(8) * 24; // ONLY FOR TESTING
         }
 
         protected override void _beforeExperiment()
