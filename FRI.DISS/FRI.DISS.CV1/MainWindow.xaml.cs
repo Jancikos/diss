@@ -110,7 +110,7 @@ namespace FRI.DISS.CV1
 
             Task.Run(() =>
             {
-                _simulation.RunSimulation();
+                _simulation.StartSimulation();
                 var piEst =  _simulation.ProcessExperimentResult();
                 Debug.WriteLine($"Runned iterations: {buffonIterations.Last()}");
                 Debug.WriteLine($"Estimated Pi: {piEst}");

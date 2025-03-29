@@ -73,7 +73,8 @@
                         </StackPanel>
                     </GroupBox>
 
-                    <GroupBox Grid.Row="1" Header="Current experiment">
+                    <!-- real time mode  -->
+                    <GroupBox x:Name="_grbx_expRealTimeMode" Visibility="Visible" Grid.Row="1" Header="Current experiment">
                         <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -144,6 +145,19 @@
                                 <libsuc:DicreteStatistic Grid.RowSpan="2" Grid.Column="4" x:Name="_sts_expObjednavkaTime" Title="Objednavka TimeInSystem" MinWidth="500" TransformFromSecondsToHours="true" PlotShow="true" PlotTitle="Objednávky - celkový čas v systéme" PlotXLabel="Počet objednávek" PlotYLabel="Čas v systéme [h]" />
                             </Grid>
                         </ScrollViewer>
+                    </GroupBox>
+
+                    <!-- max speed mode  -->
+                    <GroupBox x:Name="_grbx_expFastForwardMode" Visibility="Collapsed" Grid.Row="1" Header="Current experiment">
+                            <Grid>
+                                <TextBlock Text="Experiment details are not available in fast forward mode." FontSize="24" FontWeight="Bold" Foreground="Red" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 55 0 0" FontSize="20" FontWeight="Bold">
+                                    <Run x:Name="_txt_expCurrentReplication">0</Run>
+                                    <Run Text="/"/>
+                                    <Run x:Name="_txt_expTotalReplications">200</Run>
+                                    <Run Text=" replications done"/>
+                                </TextBlock>
+                            </Grid>
                     </GroupBox>
 
                     <GroupBox Grid.Row="2" Header="Replications statistics">

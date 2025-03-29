@@ -76,9 +76,18 @@ namespace FRI.DISS.SP2
 
             _simulation.TimeMode = mode;
 
-            if (mode == EventDrivenSimulationTimeMode.RealTime)
+            switch (mode)
             {
-                _simulation.RealTimeRatio = (EventDrivenSimulationRealTimeRatios)_cmbx_simRealTimeRatio.SelectedItem;
+                case EventDrivenSimulationTimeMode.RealTime:
+                    _simulation.RealTimeRatio = (EventDrivenSimulationRealTimeRatios)_cmbx_simRealTimeRatio.SelectedItem;
+                    _grbx_expRealTimeMode.Visibility = Visibility.Visible;
+                    _grbx_expFastForwardMode.Visibility = Visibility.Collapsed;
+                    break;
+
+                case EventDrivenSimulationTimeMode.FastForward:
+                    _grbx_expRealTimeMode.Visibility = Visibility.Collapsed;
+                    _grbx_expFastForwardMode.Visibility = Visibility.Visible;
+                    break;
             }
         }
 
@@ -104,6 +113,13 @@ namespace FRI.DISS.SP2
 
         private void _refreshReplicationsStats()
         {
+            // reps fast forward mode stas
+            _txt_expCurrentReplication.Text = _simulation.ReplicationsDone.ToString();
+            _txt_expTotalReplications.Text = _simulation.ReplicationsCount.ToString();
+
+            if (_simulation.ReplicationsDone  % 10 != 0)
+                return;
+
             _txt_repsDone.Value = _simulation.ReplicationsDone.ToString();
 
             _sts_repsObjednavkaTime.Update(_simulation.ReplicationsStatistics.ObjednavkaTime);
@@ -129,14 +145,20 @@ namespace FRI.DISS.SP2
 
         private void _refreshExperimentGUI()
         {
-            _txt_expStatus.Value = _simulation.State.ToString();
-            _txt_expReplication.Value = _simulation.ReplicationsDone.ToString();
+            switch (_simulation.TimeMode)
+            {
+                case EventDrivenSimulationTimeMode.RealTime:
 
-            _refreshTime();
-            _refreshEventsCalendar();
-            _refreshWorkplaces();
-            _refreshStolariExp();
-            _refreshExperimentStats();
+                    _txt_expStatus.Value = _simulation.State.ToString();
+                    _txt_expReplication.Value = _simulation.ReplicationsDone.ToString();
+
+                    _refreshTime();
+                    _refreshEventsCalendar();
+                    _refreshWorkplaces();
+                    _refreshStolariExp();
+                    _refreshExperimentStats();
+                    break;
+            }
         }
 
         private void _refreshExperimentStats()
