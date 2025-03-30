@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -186,7 +186,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             public int ObjednavkyInSystem => ObjednavkyRecieved - ObjednavkyDone;
 
             public List<Objednavka?> Workplaces { get; set; } = new();
-            // TODO - spravit index na zrychlenie
+            public PriorityQueue<int, int> WorkplacesAvailable = new();
 
             public Dictionary<StolarType, List<Stolar>> Stolari = new()
             {
@@ -228,16 +228,20 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             public void AssignWorkplace(Objednavka objednavka)
             {
-                var freeWorkplaceIndex = Workplaces.IndexOf(null);
-
-                if (freeWorkplaceIndex == -1)
+                if (!WorkplacesAvailable.TryDequeue(out var freeWorkplaceIndex, out var _))
                 {
                     Workplaces.Add(objednavka);
                     freeWorkplaceIndex = Workplaces.Count - 1;
                 }
 
                 Workplaces[freeWorkplaceIndex] = objednavka;
-                objednavka.Workplace = freeWorkplaceIndex;
+                objednavka.WorkplaceIndex = freeWorkplaceIndex;
+            }
+            
+            internal void FreeWorkplace(Objednavka objednavka)
+            {
+                WorkplacesAvailable.Enqueue(objednavka.WorkplaceIndex, objednavka.WorkplaceIndex);
+                Workplaces[objednavka.WorkplaceIndex] = null;
             }
 
             public Stolar? GetFreeStolar(StolarType type) => GetFreeStolar(Stolari[type]);
@@ -277,7 +281,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         public class Objednavka : IComparable<Objednavka>
         {
             public int Id { get; init; }
-            public int Workplace { get; set; } // should be init 
+            public int WorkplaceIndex { get; set; } // should be init 
             public Nabytok Nabytok { get; init; }
 
             public bool WorkStarted { get; set; } = false;
@@ -513,7 +517,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Objednavka!.Status = ObjednavkaStatus.Narezana;
 
                 // zmen stav Stolar
-                Stolar!.CurrentPlace = Objednavka.Workplace;
+                Stolar!.CurrentPlace = Objednavka.WorkplaceIndex;
                 Stolar!.StopWork(Simulation.CurrentTime);
             }
 
@@ -560,7 +564,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var totalDuration = 0.0;
 
                 // presun na pracovisko
-                if (Stolar!.CurrentPlace != Objednavka!.Workplace)
+                if (Stolar!.CurrentPlace != Objednavka!.WorkplaceIndex)
                 {
                     // TODO - skontrolovat ci je presun medzi 
                         // - skladom a pracoviskom
@@ -590,7 +594,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Objednavka!.Status = ObjednavkaStatus.Namorena;
 
                 // zmen stav Stolar
-                Stolar!.CurrentPlace = Objednavka.Workplace;
+                Stolar!.CurrentPlace = Objednavka.WorkplaceIndex;
                 Stolar!.StopWork(Simulation.CurrentTime);
             }
 
@@ -649,7 +653,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var totalDuration = 0.0;
 
                 // presun na pracovisko
-                if (Stolar!.CurrentPlace != Objednavka!.Workplace)
+                if (Stolar!.CurrentPlace != Objednavka!.WorkplaceIndex)
                 {
                     totalDuration += Simulation.Generators.StolarMoveBetweenWorkplaces.GetSampleDouble();
                 }
@@ -675,7 +679,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Objednavka!.Status = ObjednavkaStatus.Poskladana;
 
                 // zmen stav Stolar
-                Stolar!.CurrentPlace = Objednavka.Workplace;
+                Stolar!.CurrentPlace = Objednavka.WorkplaceIndex;
                 Stolar!.StopWork(Simulation.CurrentTime);
             }
 
@@ -729,7 +733,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var totalDuration = 0.0;
 
                 // presun na pracovisko
-                if (Stolar!.CurrentPlace != Objednavka!.Workplace)
+                if (Stolar!.CurrentPlace != Objednavka!.WorkplaceIndex)
                 {
                     totalDuration += Simulation.Generators.StolarMoveBetweenWorkplaces.GetSampleDouble();
                 }
@@ -755,7 +759,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Objednavka!.Status = ObjednavkaStatus.Ukoncena;
 
                 // zmen stav Stolar
-                Stolar!.CurrentPlace = Objednavka.Workplace;
+                Stolar!.CurrentPlace = Objednavka.WorkplaceIndex;
                 Stolar!.StopWork(Simulation.CurrentTime);
             }
 
@@ -806,7 +810,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Simulation.ExperimentStatistics.ObjednavkaTotalTime.AddSample(Objednavka.TimeInSystem);
 
                 // uvolni workplace
-                Simulation.ExperimentData.Workplaces[Objednavka.Workplace] = null;
+                Simulation.ExperimentData.FreeWorkplace(Objednavka);
             }
 
             public override void PlanNextEvents()
