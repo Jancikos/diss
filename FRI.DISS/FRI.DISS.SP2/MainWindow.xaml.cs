@@ -47,7 +47,7 @@ namespace FRI.DISS.SP2
                 _lst_expStolariTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
                 _lst_expStolariTypesQueues.Children.Add(new StolariQueueUserControl() { StolarType = stolarType });
 
-                _lst_repsStolariTypes.Children.Add(new DicreteStatistic() { Title = $"Vyťaženie stolárov {stolarType} (%)", PlotShow = true });
+                _lst_repsStolariTypes.Children.Add(new DicreteStatistic() { Title = $"Vyťaženie stolárov {stolarType} (%)", PlotShow = true, TransformToPercentage = true });
                 _lst_repsStolarTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
             });
         }

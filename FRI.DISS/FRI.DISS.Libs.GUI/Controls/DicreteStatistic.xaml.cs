@@ -49,6 +49,7 @@ namespace FRI.DISS.Libs.GUI.Controls
         public int LastRenderedCount { get; protected set; } = 0;
 
         public bool TransformFromSecondsToHours { get; set; } = false;
+        public bool TransformToPercentage { get; set; } = false;
 
         public DicreteStatistic()
         {
@@ -143,9 +144,14 @@ namespace FRI.DISS.Libs.GUI.Controls
             _txt_Count.Value = stats.Count.ToString();
             _txt_Min.Value = _transformValue(stats.Min).ToString("F2");
             _txt_Max.Value = _transformValue(stats.Max).ToString("F2");
-            _txt_Avg.Value = _transformValue(stats.Mean).ToString("F2");
-            _txt_StdDev.Value = _transformValue(stats.StandardDeviation).ToString("F2");
-            _txt_Variance.Value = _transformValue(stats.Variance).ToString("F2");
+            _txt_Mean.Value = _transformValue(stats.Mean).ToString("F2");
+            
+            _txt_SampleStdDev.Value = _transformValue(stats.SampleStandardDeviation).ToString("F2");
+
+            _txt_Interval.Title = $"Interval ({stats.CurrentIntervalT_alfa.ToString().Split("_").Last()}%)";
+            _txt_Interval.Value = stats.CanCalculateInterval 
+                ? $"<{_transformValue(stats.IntervalLowerBound):F2}; {_transformValue(stats.IntervalUpperBound):F2}>"
+                : "--";
             
             if (PlotShow)
             {
@@ -162,6 +168,11 @@ namespace FRI.DISS.Libs.GUI.Controls
                 return value / 60.0 / 60.0;
             }
 
+            if (TransformToPercentage)
+            {
+                return value * 100.0;
+            }
+
             return value;
         }
 
@@ -172,9 +183,9 @@ namespace FRI.DISS.Libs.GUI.Controls
             _txt_Count.Value = "0";
             _txt_Min.Value = "0";
             _txt_Max.Value = "0";
-            _txt_Avg.Value = "0";
-            _txt_StdDev.Value = "0";
-            _txt_Variance.Value = "0";
+            _txt_Mean.Value = "0";
+            _txt_SampleStdDev.Value = "0";
+            _txt_Interval.Value = "-";
 
             _reinitializePlot();
             _plot.Refresh();

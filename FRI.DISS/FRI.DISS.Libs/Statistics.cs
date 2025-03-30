@@ -26,12 +26,9 @@ namespace FRI.DISS.Libs.Generators
         public double Mean => Count == 0
         ? 0
         : (double)Sum / Count;
-        public double Variance => (double)SumOfSquares / Count - Mean * Mean;
-        public double StandardDeviation => Math.Sqrt(Variance);
 
-
-        public double SmerodajnaOdchylka => Math.Sqrt(SumOfSquares / Count - Math.Pow(Sum / Count, 2));
-        public double VyberovaSmerodajnaOdchylka => Math.Sqrt((SumOfSquares / Count - Math.Pow(Sum / Count, 2) / (Count - 1)));
+        public double StandardDeviation => Math.Sqrt(SumOfSquares / Count - Math.Pow(Sum / Count, 2));
+        public double SampleStandardDeviation => Math.Sqrt(SumOfSquares / Count - Math.Pow(Sum / Count, 2) / (Count - 1));
 
         // interval spolahlivosti
         public IntervalT_alfa CurrentIntervalT_alfa { get; set; } = IntervalT_alfa.t_alfa_95;
@@ -44,7 +41,7 @@ namespace FRI.DISS.Libs.Generators
         };
         public bool CanCalculateInterval => Count >= 30;
         public double IntervalHalfWidth => CanCalculateInterval
-            ? IntervalT_alfaValue * VyberovaSmerodajnaOdchylka / Math.Sqrt(Count)
+            ? IntervalT_alfaValue * SampleStandardDeviation / Math.Sqrt(Count)
             : throw new InvalidOperationException("Interval calculation is not valid for sample sizes less than 30.");
         public double IntervalLowerBound => Mean - IntervalHalfWidth;
         public double IntervalUpperBound => Mean + IntervalHalfWidth;
@@ -98,7 +95,7 @@ namespace FRI.DISS.Libs.Generators
 
         public override string ToString()
         {
-            return $"Count: {Count}, Mean: {Mean}, Variance: {Variance}, Max: {Max}, Min: {Min}";
+            return $"Count: {Count}, Mean: {Mean}, Max: {Max}, Min: {Min}";
         }
 
         public string MeanToString(bool withMinMax = false)

@@ -73,7 +73,7 @@
                                 <StackPanel Orientation="Vertical">
                                     <libsuc:InlineTextBox x:Name="_txt_simStolariACount" Title="A count:" Value="3" />
                                     <libsuc:InlineTextBox x:Name="_txt_simStolariBCount" Title="B count:" Value="3" />
-                                    <libsuc:InlineTextBox x:Name="_txt_simStolariCCount" Title="C count:" Value="20" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simStolariCCount" Title="C count:" Value="18" />
                                 </StackPanel>
                             </GroupBox>
                         </StackPanel>
@@ -190,7 +190,7 @@
                             <libsuc:DicreteStatistic Grid.RowSpan="2" Grid.Column="1" x:Name="_sts_repsObjednavkaTime" Title="Objednavka TimeInSystem" MinWidth="500" TransformFromSecondsToHours="true" PlotShow="true" PlotTitle="Objednávky - priemerný celkový čas v systéme" PlotXLabel="Replikácia" PlotYLabel="Čas v systéme [h]" />
 
                             <libsuc:DicreteStatistic Grid.Column="2" x:Name="_sts_repsObjednavkaReceivedCount" Title="Objednavka ReceivedCount" MinWidth="400" PlotShow="true" PlotTitle="" PlotXLabel="" PlotYLabel="Počet" MinHeight="300" />
-                            <libsuc:DicreteStatistic Grid.Column="2" Grid.Row="1" x:Name="_sts_repsObjednavkaNotDoneCount" Title="Objednavka NotDoneCount" MinWidth="400" PlotShow="true" PlotTitle="" PlotXLabel="" PlotYLabel="Počet" MinHeight="300" />
+                            <libsuc:DicreteStatistic Grid.Column="2" Grid.Row="1" x:Name="_sts_repsObjednavkaNotDoneCount" Title="Objednavka NoWorkStartedCount" MinWidth="400" PlotShow="true" PlotTitle="" PlotXLabel="" PlotYLabel="Počet" MinHeight="300" />
 
                             <GroupBox Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" Header="Stolari" MinWidth="500">
                                 <UniformGrid Columns="1">
