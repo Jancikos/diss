@@ -10,8 +10,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
     public enum EventDrivenSimulationEventArgsType
     {
         SimulationEventDone,
+        SimulationStarted,
         SimulationExperimentStarted,
         SimulationExperimentDone,
+        SimulationDone,
         RefreshGUI,
         RefreshTime
     }
@@ -103,7 +105,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             if (State == SimulationState.Starting)
             {
                 _beforeSimulation();
-                OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationExperimentStarted);
+                OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationStarted);
             }
 
             State = SimulationState.Running;
@@ -118,6 +120,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                     {
                         _planSystemEvent();
                     }
+
+                    OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationExperimentStarted);
                 }
 
                 while (!_eventsStack!.IsEmpty && !_checkStopCondition())
@@ -168,6 +172,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             } else {
                 _afterSimulation();
                 State = SimulationState.Done;
+                OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationDone);
             }
 
             OnGUIEventHappened(EventDrivenSimulationEventArgsType.RefreshGUI);

@@ -106,13 +106,22 @@ namespace FRI.DISS.SP2
                     case EventDrivenSimulationEventArgsType.RefreshGUI:
                         _refreshExperimentGUI();
                         break;
-                    case EventDrivenSimulationEventArgsType.SimulationExperimentStarted:
+                    case EventDrivenSimulationEventArgsType.SimulationStarted:
                         _clearExperimentGUI();
+                        _clearReplicationsGUI();
                         break;
                     case EventDrivenSimulationEventArgsType.SimulationExperimentDone:
                         _refreshReplicationsStats();
                         break;
                 }
+            });
+        }
+
+        private void _clearReplicationsGUI()
+        {
+            _lst_repsStolarTypes.Children.Cast<StolariUserControl>().ToList().ForEach(stolariUc =>
+            {
+                stolariUc.Clear();
             });
         }
 

@@ -71,9 +71,9 @@
 
                             <GroupBox Header="Stolari">
                                 <StackPanel Orientation="Vertical">
-                                    <libsuc:InlineTextBox x:Name="_txt_simStolariACount" Title="A count:" Value="37" />
-                                    <libsuc:InlineTextBox x:Name="_txt_simStolariBCount" Title="B count:" Value="12" />
-                                    <libsuc:InlineTextBox x:Name="_txt_simStolariCCount" Title="C count:" Value="30" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simStolariACount" Title="A count:" Value="3" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simStolariBCount" Title="B count:" Value="3" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simStolariCCount" Title="C count:" Value="20" />
                                 </StackPanel>
                             </GroupBox>
                         </StackPanel>
