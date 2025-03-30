@@ -28,7 +28,7 @@ namespace FRI.DISS.Libs.Generators
         : (double)Sum / Count;
 
         public double StandardDeviation => Math.Sqrt(SumOfSquares / Count - Math.Pow(Sum / Count, 2));
-        public double SampleStandardDeviation => Math.Sqrt(SumOfSquares / Count - Math.Pow(Sum / Count, 2) / (Count - 1));
+        public double SampleStandardDeviation => Math.Sqrt((SumOfSquares - (Math.Pow(Sum, 2) / Count)) / (Count - 1));
 
         // interval spolahlivosti
         public IntervalT_alfa CurrentIntervalT_alfa { get; set; } = IntervalT_alfa.t_alfa_95;
@@ -41,7 +41,7 @@ namespace FRI.DISS.Libs.Generators
         };
         public bool CanCalculateInterval => Count >= 30;
         public double IntervalHalfWidth => CanCalculateInterval
-            ? IntervalT_alfaValue * SampleStandardDeviation / Math.Sqrt(Count)
+            ? (IntervalT_alfaValue * SampleStandardDeviation) / Math.Sqrt(Count)
             : throw new InvalidOperationException("Interval calculation is not valid for sample sizes less than 30.");
         public double IntervalLowerBound => Mean - IntervalHalfWidth;
         public double IntervalUpperBound => Mean + IntervalHalfWidth;
