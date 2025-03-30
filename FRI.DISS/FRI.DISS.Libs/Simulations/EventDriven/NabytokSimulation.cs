@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -186,6 +186,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             public int ObjednavkyInSystem => ObjednavkyRecieved - ObjednavkyDone;
 
             public List<Objednavka?> Workplaces { get; set; } = new();
+            // TODO - spravit index na zrychlenie
 
             public Dictionary<StolarType, List<Stolar>> Stolari = new()
             {
@@ -193,6 +194,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 { StolarType.B, new() },
                 { StolarType.C, new() }
             };
+
+            // TODO rozdelit to na 4ri priority queues (podla operacie)
 
             public Dictionary<StolarType, Queue<Objednavka>> StolariQueues = new()
             {
@@ -559,6 +562,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 // presun na pracovisko
                 if (Stolar!.CurrentPlace != Objednavka!.Workplace)
                 {
+                    // TODO - skontrolovat ci je presun medzi 
+                        // - skladom a pracoviskom
+                        // - pracoviskami
+
                     totalDuration += Simulation.Generators.StolarMoveBetweenWorkplaces.GetSampleDouble();
                 }
 
