@@ -234,7 +234,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         }
         public void OnGUIEventHappened(EventDrivenSimulationGUIEventArgs eventArgs)
         {
-            Debug.WriteLine("EventSimGUI evetn: " + eventArgs.Type);
+            //Debug.WriteLine("EventSimGUI evetn: " + eventArgs.Type);
             GUIEventHappened?.Invoke(this, eventArgs);
         }
     }
