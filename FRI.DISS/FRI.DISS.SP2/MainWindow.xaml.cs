@@ -203,7 +203,7 @@ namespace FRI.DISS.SP2
             _lst_expStolariTypesQueues.Children.Cast<StolariQueueUserControl>().ToList().ForEach(stolariQueueUC =>
             {
                 var stolarType = stolariQueueUC.StolarType;
-                var objednavky = _simulation.ExperimentData.StolariQueues[stolarType];
+                var objednavky = _simulation.ExperimentData.GetWaitingObjednavky(stolarType);
 
                 stolariQueueUC._updateGUI(objednavky.ToList());
             });
