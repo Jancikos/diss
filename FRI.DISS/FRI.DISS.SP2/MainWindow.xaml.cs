@@ -141,7 +141,7 @@ namespace FRI.DISS.SP2
             _sts_repsObjednavkaTime.Update(_simulation.ReplicationsStatistics.ObjednavkaTime);
 
             _sts_repsObjednavkaReceivedCount.Update(_simulation.ReplicationsStatistics.ObjednavkyRecieved);
-            _sts_repsObjednavkaNotDoneCount.Update(_simulation.ReplicationsStatistics.ObjednavkyNotDone);
+            _sts_repsObjednavkaNotDoneCount.Update(_simulation.ReplicationsStatistics.ObjednavkyNotWorkingOn);
 
             var i = 0;
             var stolariStatsUCs = _lst_repsStolariTypes.Children.Cast<DicreteStatistic>().ToList();

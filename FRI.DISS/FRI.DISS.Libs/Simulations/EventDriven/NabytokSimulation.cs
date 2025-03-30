@@ -68,7 +68,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             ReplicationsStatistics.ObjednavkaTime.AddSample(ExperimentStatistics.ObjednavkaTotalTime.Mean);
 
             ReplicationsStatistics.ObjednavkyRecieved.AddSample(ExperimentData.ObjednavkyRecieved);
-            ReplicationsStatistics.ObjednavkyNotDone.AddSample(ExperimentData.ObjednavkyInSystem);
+            ReplicationsStatistics.ObjednavkyNotWorkingOn.AddSample(ExperimentData.Workplaces.Count(o => o?.WorkStarted == false));
 
             // stolari work time ratio
             foreach (var stolarType in Enum.GetValues<StolarType>())
@@ -77,8 +77,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var totalWorkTime = EndTime!.Value;
                 var groupWorkTime = stolari.Sum(s => s.TimeInWork);
 
-                // TODO - opravit tento vypocet
-                ReplicationsStatistics.StolariWorkTimeRatio[stolarType].AddSample(groupWorkTime / totalWorkTime);
+                ReplicationsStatistics.StolariWorkTimeRatio[stolarType].AddSample((double)groupWorkTime / (double)(totalWorkTime * stolari.Count));
 
                 for (int i = 0; i < stolari.Count; i++)
                 {
@@ -95,8 +94,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             public Statistics ObjednavkaTime { get; set; } = new Statistics();
             public Statistics ObjednavkyRecieved { get; } = new Statistics();
-            // POZOR - podla zadania treba pocet objednavok, na kt. sa ani nezacalo pracovat
-            public Statistics ObjednavkyNotDone { get; } = new Statistics();
+            public Statistics ObjednavkyNotWorkingOn { get; } = new Statistics();
 
             public Dictionary<StolarType, Statistics> StolariWorkTimeRatio { get; } = new()
             {
@@ -126,7 +124,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             // objednavky
             public AbstractGenerator ObjednavkyInputIntesity = new ExponentialGenerator(1.0 / 
-        (30.0 * 60.0), seedGenerator);
+        (double)TimeHelper.M2S(30), seedGenerator);
             protected AbstractGenerator ObjednavkyNabytokType = new UniformGenerator(GenerationMode.Continuous, seedGenerator);
             public Nabytok GenerateObjednavkaNabytokType()
             {
@@ -142,34 +140,34 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             }
 
             // presuny
-            public AbstractGenerator StolarMoveToWarehouse = new TriangularGenerator(60 * 60, 480 * 60, 120 * 60, seedGenerator);
-            public AbstractGenerator StolarMoveBetweenWorkplaces = new TriangularGenerator(120 * 60, 500 * 60, 150 * 60, seedGenerator);
+            public AbstractGenerator StolarMoveToWarehouse = new TriangularGenerator(60, 480, 120, seedGenerator);
+            public AbstractGenerator StolarMoveBetweenWorkplaces = new TriangularGenerator(120, 500, 150, seedGenerator);
 
             // technologicke procesy
-            public AbstractGenerator SkladPripravaMaterialu = new TriangularGenerator(300 * 60, 900 * 60, 500 * 60, seedGenerator);
+            public AbstractGenerator SkladPripravaMaterialu = new TriangularGenerator(300, 900, 500, seedGenerator);
 
             public Dictionary<Nabytok, Dictionary<NabytokOperation, AbstractGenerator>> NabytokOperations = new Dictionary<Nabytok, Dictionary<NabytokOperation, AbstractGenerator>>
             {
                 { Nabytok.Stol, new Dictionary<NabytokOperation, AbstractGenerator>
                     {
-                        { NabytokOperation.Rezanie, new EmpiricalGenerator(GenerationMode.Continuous, [10 * 60, 25 * 60, 50 * 60], [0.6, 0.4], seedGenerator) },
-                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 200 * 60, Max = 610 * 60} },
-                        { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 30 * 60, Max = 60 * 60} }
+                        { NabytokOperation.Rezanie, new EmpiricalGenerator(GenerationMode.Continuous, [TimeHelper.M2S(10), TimeHelper.M2S(25), TimeHelper.M2S(50)], [0.6, 0.4], seedGenerator) },
+                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(200), Max = TimeHelper.M2S(610)} },
+                        { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(30), Max = TimeHelper.M2S(60)} }
                     }
                 },
                 { Nabytok.Stolicka, new Dictionary<NabytokOperation, AbstractGenerator>
                     {
-                        { NabytokOperation.Rezanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 12 * 60, Max = 16 * 60} },
-                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 210 * 60, Max = 540 * 60} },
-                        { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 14 * 60, Max = 24 * 60} }
+                        { NabytokOperation.Rezanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(12), Max = TimeHelper.M2S(16)} },
+                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(210), Max = TimeHelper.M2S(540)} },
+                        { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(14), Max = TimeHelper.M2S(24)} }
                     }
                 },
                 { Nabytok.Skrina, new Dictionary<NabytokOperation, AbstractGenerator>
                     {
-                        { NabytokOperation.Rezanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 15 * 60, Max = 80 * 60} },
-                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 600 * 60, Max = 700 * 60} },
-                        { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 35 * 60, Max = 75 * 60} },
-                        { NabytokOperation.MontazKovani, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 15 * 60, Max = 25 * 60} }
+                        { NabytokOperation.Rezanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(15), Max = TimeHelper.M2S(80)} },
+                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(600), Max = TimeHelper.M2S(700)} },
+                        { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(35), Max = TimeHelper.M2S(75)} },
+                        { NabytokOperation.MontazKovani, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(15), Max = TimeHelper.M2S(25)} }
                     }
                 }
             };
@@ -279,6 +277,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             public int Workplace { get; set; } // should be init 
             public Nabytok Nabytok { get; init; }
 
+            public bool WorkStarted { get; set; } = false;
             public ObjednavkaStatus Status { get; set; } = ObjednavkaStatus.Vytvorena;
 
             public NabytokOperation MapStatusToNectOperation()
@@ -469,6 +468,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             {
                 Validate(StolarType.A, false);
 
+                Objednavka!.WorkStarted = true;
                 Stolar!.StartWork(Simulation.CurrentTime);
             }
 
