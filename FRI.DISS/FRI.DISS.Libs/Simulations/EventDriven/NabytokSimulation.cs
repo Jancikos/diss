@@ -293,7 +293,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             }
         }
 
-        public class Objednavka : IComparable<Objednavka>
+        public class Objednavka
         {
             public int Id { get; init; }
             public int WorkplaceIndex { get; set; } // should be init 
@@ -330,22 +330,6 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                     NabytokOperation.MontazKovani => StolarType.C,
                     _ => throw new NotImplementedException()
                 };
-            }
-
-            public int CompareTo(Objednavka? other)
-            {
-                if (other is null)
-                    return 1;
-
-                if (Status == ObjednavkaStatus.Poskladana && Nabytok == Nabytok.Skrina)
-                {
-                    if (other.Nabytok != Nabytok.Skrina || other.Status != ObjednavkaStatus.Poskladana)
-                        return -1;
-
-                    return Id.CompareTo(other.Id);
-                }
-
-                return Id.CompareTo(other.Id);
             }
 
             public double CreationTime { get; init; }
@@ -413,6 +397,17 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
                 TimeInWork += time - _lastWorkStartTime.Value;
                 _lastWorkStartTime = null;
+            }
+
+            public double GetMoveTime(NabytokSimulation simulation, int toWorkplace)
+            {
+                if (CurrentPlace == toWorkplace)
+                    return 0;
+
+                if (CurrentPlace == WarehousePlaceIndex || toWorkplace == WarehousePlaceIndex)
+                    return simulation.Generators.StolarMoveToWarehouse.GetSampleDouble();
+
+                return simulation.Generators.StolarMoveBetweenWorkplaces.GetSampleDouble();
             }
 
             public override string ToString() => $"{Id} - Stolar{Type}";
@@ -591,14 +586,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var totalDuration = 0.0;
 
                 // presun na pracovisko
-                if (Stolar!.CurrentPlace != Objednavka!.WorkplaceIndex)
-                {
-                    // TODO - skontrolovat ci je presun medzi 
-                    // - skladom a pracoviskom
-                    // - pracoviskami
-
-                    totalDuration += Simulation.Generators.StolarMoveBetweenWorkplaces.GetSampleDouble();
-                }
+                totalDuration += Stolar!.GetMoveTime(Simulation, Objednavka!.WorkplaceIndex);
 
                 // doba morenia
                 totalDuration += Simulation.Generators.GetNabytokOperationTime(Objednavka);
@@ -680,10 +668,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var totalDuration = 0.0;
 
                 // presun na pracovisko
-                if (Stolar!.CurrentPlace != Objednavka!.WorkplaceIndex)
-                {
-                    totalDuration += Simulation.Generators.StolarMoveBetweenWorkplaces.GetSampleDouble();
-                }
+                totalDuration += Stolar!.GetMoveTime(Simulation, Objednavka!.WorkplaceIndex);
 
                 // doba skladania
                 totalDuration += Simulation.Generators.GetNabytokOperationTime(Objednavka);
@@ -761,10 +746,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var totalDuration = 0.0;
 
                 // presun na pracovisko
-                if (Stolar!.CurrentPlace != Objednavka!.WorkplaceIndex)
-                {
-                    totalDuration += Simulation.Generators.StolarMoveBetweenWorkplaces.GetSampleDouble();
-                }
+                totalDuration += Stolar!.GetMoveTime(Simulation, Objednavka!.WorkplaceIndex);
 
                 // doba montaze kovani
                 totalDuration += Simulation.Generators.GetNabytokOperationTime(Objednavka);
