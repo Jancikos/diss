@@ -43,12 +43,16 @@ namespace FRI.DISS.SP2
                     {
                         var e = _guiEventsQueue.Dequeue();
 
-                        Dispatcher.Invoke(() =>
+                        if (e is not null)
                         {
-                            _handleSimulationGUIEvent(e);
-                        });
+                            Dispatcher.Invoke(() =>
+                            {
+                                _handleSimulationGUIEvent(e);
+                            });
 
-                        continue;
+                            continue;
+                        }
+
                     } 
 
                     await Task.Delay(35);
@@ -89,6 +93,16 @@ namespace FRI.DISS.SP2
             _setSimulationTimeFromGUI();
             _txt_repsStartTime.Value = DateTime.Now.ToString("HH:mm:ss");
             _txt_repsEndTime.Value = "--:--:--";
+
+            _sts_expObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_repsObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_repsObjednavkaNotDoneCount.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_repsObjednavkaReceivedCount.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_expObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _lst_repsStolariTypes.Children.Cast<DicreteStatistic>().ToList().ForEach(stolariUC =>
+            {
+                stolariUC.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            });
 
             // stolari count
             _simulation.StolariCount[NabytokSimulation.StolarType.A] = _txt_simStolariACount.IntValue;
@@ -185,6 +199,9 @@ namespace FRI.DISS.SP2
             {
                 _txt_repsEndTime.Value = DateTime.Now.ToString("HH:mm:ss");
             }
+
+            if (_simulation.ReplicationsDone == 0)
+                return;
 
             _txt_repsDone.Value = _simulation.ReplicationsDone.ToString();
 

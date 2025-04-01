@@ -37,7 +37,7 @@ namespace FRI.DISS.Libs.GUI.Controls
         public string PlotXLabel { get; set; } = "";
         public string PlotYLabel { get; set; } = "";
 
-        public int SkipFirstCount = 0;
+        public int SkipFirstCount = 120;
         protected DataLogger? _dataLoggerMean;
         protected DataLogger? _dataLoggerIntervalMin;
         protected DataLogger? _dataLoggerIntervalMax;
@@ -45,6 +45,7 @@ namespace FRI.DISS.Libs.GUI.Controls
         protected Statistics? _plotStatsIntervalMin;
         protected Statistics? _plotStatsIntervalMax;
 
+        protected bool PlotHasSkippedFirst = false;
         protected bool PlotShowingInterval = false;
         public int LastRenderedCount { get; protected set; } = 0;
 
@@ -78,6 +79,11 @@ namespace FRI.DISS.Libs.GUI.Controls
                 _reinitializePlotInterval();
             }
 
+            if (value.Count > SkipFirstCount && !PlotHasSkippedFirst)
+            {
+                _skipFirstPlotSamples();
+            }
+
             double transformedValueY = _transformValue(value.Mean);
             double valueX = value.Count;
             _plotStatsMean!.AddSample(transformedValueY);
@@ -99,6 +105,22 @@ namespace FRI.DISS.Libs.GUI.Controls
             );
 
             _plot.Refresh();
+        }
+
+        private void _skipFirstPlotSamples()
+        {
+            _plot.Plot.Clear();
+
+            if (PlotShowingInterval)
+            {
+                _reinitializePlotInterval();
+            }
+            else
+            {
+                _reinitializePlot();
+            }
+
+            PlotHasSkippedFirst = true;
         }
 
         private void _reinitializePlotInterval()
@@ -123,6 +145,7 @@ namespace FRI.DISS.Libs.GUI.Controls
             _plotStatsMean = new Statistics();
 
             PlotShowingInterval = false;
+            PlotHasSkippedFirst = false;
         }
 
         public void InitializePlot()
