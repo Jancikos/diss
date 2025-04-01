@@ -23,12 +23,38 @@ namespace FRI.DISS.SP2
     {
         protected NabytokSimulation _simulation;
 
+
+        protected Queue<EventDrivenSimulationGUIEventArgs> _guiEventsQueue;
+        protected Task _guiTask;
+
         public MainWindow()
         {
             InitializeComponent();
 
             _simulation = new NabytokSimulation();
             _simulation.GUIEventHappened += _simulation_GUIEventHappened;
+
+            _guiEventsQueue = new Queue<EventDrivenSimulationGUIEventArgs>();
+            _guiTask = new Task(async () =>
+            {
+                while (true)
+                {
+                    if (_guiEventsQueue.Count > 0)
+                    {
+                        var e = _guiEventsQueue.Dequeue();
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            _handleSimulationGUIEvent(e);
+                        });
+
+                        continue;
+                    } 
+
+                    await Task.Delay(35);
+                }
+            });
+            _guiTask.Start();
 
             _initializeGUI();
         }
@@ -95,26 +121,41 @@ namespace FRI.DISS.SP2
 
         private void _simulation_GUIEventHappened(object? sender, EventDrivenSimulationGUIEventArgs e)
         {
-            Dispatcher.InvokeAsync(() =>
+            switch(_simulation.TimeMode)
             {
-                switch (e.Type)
-                {
-                    case EventDrivenSimulationEventArgsType.RefreshTime:
-                        _refreshTime();
-                        break;
-                    case EventDrivenSimulationEventArgsType.SimulationEventDone:
-                    case EventDrivenSimulationEventArgsType.RefreshGUI:
-                        _refreshExperimentGUI();
-                        break;
-                    case EventDrivenSimulationEventArgsType.SimulationStarted:
-                        _clearExperimentGUI();
-                        _clearReplicationsGUI();
-                        break;
-                    case EventDrivenSimulationEventArgsType.SimulationExperimentDone:
-                        _refreshReplicationsStats();
-                        break;
-                }
-            });
+                case EventDrivenSimulationTimeMode.RealTime:
+                    Dispatcher.Invoke(() =>
+                    {
+                        _handleSimulationGUIEvent(e);
+                    });
+                    break;
+                case EventDrivenSimulationTimeMode.FastForward:
+
+
+                    _guiEventsQueue.Enqueue(e);
+                    break;
+            }
+        }
+
+        private void _handleSimulationGUIEvent(EventDrivenSimulationGUIEventArgs e)
+        {
+            switch (e.Type)
+            {
+                case EventDrivenSimulationEventArgsType.RefreshTime:
+                    _refreshTime();
+                    break;
+                case EventDrivenSimulationEventArgsType.SimulationEventDone:
+                case EventDrivenSimulationEventArgsType.RefreshGUI:
+                    _refreshExperimentGUI();
+                    break;
+                case EventDrivenSimulationEventArgsType.SimulationStarted:
+                    _clearExperimentGUI();
+                    _clearReplicationsGUI();
+                    break;
+                case EventDrivenSimulationEventArgsType.SimulationExperimentDone:
+                    _refreshReplicationsStats();
+                    break;
+            }
         }
 
         private void _clearReplicationsGUI()

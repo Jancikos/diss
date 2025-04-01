@@ -55,8 +55,8 @@
                             <GroupBox Header="General">
                                 <StackPanel Orientation="Vertical">
                                     <libsuc:InlineTextBox x:Name="_txt_simSeed" Title="Seed:" Value="" />
-                                    <libsuc:InlineTextBox x:Name="_txt_simReplicationsCount" Title="Replications count:" Value="10000" />
-                                    <libsuc:InlineTextBox x:Name="_txt_simReplicationsStatsRefresh" Title="Replications stats refresh interval:" Value="50" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simReplicationsCount" Title="Replications count:" Value="1000" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simReplicationsStatsRefresh" Title="Replications stats refresh interval:" Value="100" />
                                 </StackPanel>
                             </GroupBox>
 
