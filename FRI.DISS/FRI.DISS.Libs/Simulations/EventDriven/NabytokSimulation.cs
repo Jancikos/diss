@@ -58,7 +58,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 _experimentData.SetStolariCount(stolarType, StolariCount[stolarType]);
             }
 
-            PlanEvent<ObjednavkaRecievedEvent>(Generators.ObjednavkyInputIntesity.GetSampleDouble());
+            PlanEvent<ObjednavkaRecievedEvent>();
         }
 
         protected override void _afterExperiment(int replication, double result)
@@ -68,7 +68,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             ReplicationsStatistics.ObjednavkaTime.AddSample(ExperimentStatistics.ObjednavkaTotalTime.Mean);
 
             ReplicationsStatistics.ObjednavkyRecieved.AddSample(ExperimentData.ObjednavkyRecieved);
-            ReplicationsStatistics.ObjednavkyNotWorkingOn.AddSample(ExperimentData.Workplaces.Count(o => o?.WorkStarted == false));
+            ReplicationsStatistics.ObjednavkyNotWorkingOn.AddSample(ExperimentData.OperationsQueues[NabytokOperation.Rezanie].Count);
 
             // stolari work time ratio
             foreach (var stolarType in Enum.GetValues<StolarType>())
