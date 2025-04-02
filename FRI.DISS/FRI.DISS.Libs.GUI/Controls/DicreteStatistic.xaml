@@ -29,9 +29,9 @@
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="2">
-                <uc:InlineText x:Name="_txt_Avg" Title="Avg:" />
-                <uc:InlineText x:Name="_txt_StdDev" Title="StdDev:" />
-                <uc:InlineText x:Name="_txt_Variance" Title="Variance:" />
+                <uc:InlineText x:Name="_txt_Mean" Title="Mean:" />
+                <uc:InlineText x:Name="_txt_SampleStdDev" Title="SSDev:" />
+                <uc:InlineText x:Name="_txt_Interval" Title="I:"/>
             </StackPanel>
         </Grid>
     </GroupBox>

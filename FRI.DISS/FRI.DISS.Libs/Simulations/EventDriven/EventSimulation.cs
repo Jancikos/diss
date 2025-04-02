@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
     public enum EventDrivenSimulationEventArgsType
     {
         SimulationEventDone,
+        SimulationStarted,
+        SimulationExperimentStarted,
         SimulationExperimentDone,
+        SimulationDone,
         RefreshGUI,
         RefreshTime
     }
@@ -44,9 +48,9 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         Faster10000x = 10000,
         Faster50000x = 50000,
         Faster100000x = 100000,
-        Faster250000x = 250000,
-        Faster500000x = 500000,
-        Faster1000000x = 1000000
+        // Faster250000x = 250000,
+        // Faster500000x = 500000,
+        // Faster1000000x = 1000000
     }
 
     public abstract class EventSimulation : Simulation
@@ -99,7 +103,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 throw new InvalidOperationException("Simulation already running");
 
             if (State == SimulationState.Starting)
+            {
                 _beforeSimulation();
+                OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationStarted);
+            }
 
             State = SimulationState.Running;
             var firstRun = true;
@@ -113,6 +120,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                     {
                         _planSystemEvent();
                     }
+
+                    OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationExperimentStarted);
                 }
 
                 while (!_eventsStack!.IsEmpty && !_checkStopCondition())
@@ -138,7 +147,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                     currentEvent.PlanNextEvents();
 
                     // notifikuj GUI
-                    OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationEventDone);
+                    if (TimeMode == EventDrivenSimulationTimeMode.RealTime)
+                    {
+                        OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationEventDone);
+                    }
                 }
 
                 if (State == SimulationState.Running)
@@ -160,6 +172,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             } else {
                 _afterSimulation();
                 State = SimulationState.Done;
+                OnGUIEventHappened(EventDrivenSimulationEventArgsType.SimulationDone);
             }
 
             OnGUIEventHappened(EventDrivenSimulationEventArgsType.RefreshGUI);
@@ -221,6 +234,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         }
         public void OnGUIEventHappened(EventDrivenSimulationGUIEventArgs eventArgs)
         {
+            //Debug.WriteLine("EventSimGUI evetn: " + eventArgs.Type);
             GUIEventHappened?.Invoke(this, eventArgs);
         }
     }

@@ -130,7 +130,7 @@ namespace FRI.DISS.SP1
 
             _startTimer();
 
-            Simulation.RunSimulation();
+            Simulation.StartSimulation();
         }
 
         private void _startTimer()

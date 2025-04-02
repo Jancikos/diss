@@ -51,7 +51,7 @@ namespace FRI.DISS.SP2.Controls
                 }
 
                 var workplaceUc = (WorkPlaceUserControl)_lst.Items[i];
-                workplaceUc.Id = objednavka.Workplace + 1;
+                workplaceUc.Id = objednavka.WorkplaceIndex + 1;
                 workplaceUc.Objednavka = objednavka;
             }
 

@@ -10,12 +10,30 @@ namespace FRI.DISS.Libs.Helpers
     {
         public static int HoursToSeconds(int hours)
         {
-            return hours * 60 * 60;
+            return hours * 3600;
+        }
+        /// <summary>
+        /// hours to seconds
+        /// </summary>
+        /// <param name="hours"></param>
+        /// <returns></returns>
+        public static int H2S(int hours)
+        {
+            return HoursToSeconds(hours);
         }
 
         public static int MinutesToSeconds(int minutes)
         {
             return minutes * 60;
+        }
+        /// <summary>
+        /// minutes to seconds
+        /// </summary>
+        /// <param name="minutes"></param>
+        /// <returns></returns>
+        public static int M2S(int minutes)
+        {
+            return MinutesToSeconds(minutes);
         }
     }
 }

@@ -39,10 +39,8 @@
 
                     <GroupBox Header="Simulation parameters">
                         <StackPanel Orientation="Horizontal">
-                            <GroupBox Header="General">
+                            <GroupBox Header="Simlation controls">
                                 <StackPanel Orientation="Vertical">
-                                    <libsuc:InlineTextBox x:Name="_txt_simSeed" Title="Seed:" Value="" />
-                                    <libsuc:InlineTextBox x:Name="_txt_simReplicationsCount" Title="Replications:" Value="100" />
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0 5">
                                         <Button Content="Start" Click="_btn_simStart_Click" Margin="0 0 28 0" Padding="5 3" />
                                         <Button Content="Stop" Click="_btn_simStop_Click" Padding="5 3" />
@@ -51,6 +49,15 @@
                                         <Button Content="Resume" Click="_btn_simResume_Click" Margin="0 0 10 0" Padding="5 3" />
                                         <Button Content="Pause" Click="_btn_simPause_Click" Padding="5 3" />
                                     </StackPanel>
+                                </StackPanel>
+                            </GroupBox>
+
+                            <GroupBox Header="General">
+                                <StackPanel Orientation="Vertical">
+                                    <libsuc:InlineTextBox x:Name="_txt_simSeed" Title="Seed:" Value="" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simReplicationsCount" Title="Replications count:" Value="1000" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simReplicationsStatsRefresh" Title="Replications stats refresh interval:" Value="100" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simPlotsSkipFirstCount" Title="Plot - skip first:" Value="350" />
                                 </StackPanel>
                             </GroupBox>
 
@@ -65,15 +72,16 @@
 
                             <GroupBox Header="Stolari">
                                 <StackPanel Orientation="Vertical">
-                                    <libsuc:InlineTextBox x:Name="_txt_simStolariACount" Title="A count:" Value="37" />
-                                    <libsuc:InlineTextBox x:Name="_txt_simStolariBCount" Title="B count:" Value="12" />
-                                    <libsuc:InlineTextBox x:Name="_txt_simStolariCCount" Title="C count:" Value="30" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simStolariACount" Title="A count:" Value="2" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simStolariBCount" Title="B count:" Value="2" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simStolariCCount" Title="C count:" Value="18" />
                                 </StackPanel>
                             </GroupBox>
                         </StackPanel>
                     </GroupBox>
 
-                    <GroupBox Grid.Row="1" Header="Current experiment">
+                    <!-- real time mode  -->
+                    <GroupBox x:Name="_grbx_expRealTimeMode" Visibility="Visible" Grid.Row="1" Header="Current experiment">
                         <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -146,6 +154,19 @@
                         </ScrollViewer>
                     </GroupBox>
 
+                    <!-- max speed mode  -->
+                    <GroupBox x:Name="_grbx_expFastForwardMode" Visibility="Collapsed" Grid.Row="1" Header="Current experiment">
+                            <Grid>
+                                <TextBlock Text="Experiment details are not available in fast forward mode." FontSize="24" FontWeight="Bold" Foreground="Red" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 55 0 0" FontSize="20" FontWeight="Bold">
+                                    <Run x:Name="_txt_expCurrentReplication">0</Run>
+                                    <Run Text="/"/>
+                                    <Run x:Name="_txt_expTotalReplications">200</Run>
+                                    <Run Text=" replications done"/>
+                                </TextBlock>
+                            </Grid>
+                    </GroupBox>
+
                     <GroupBox Grid.Row="2" Header="Replications statistics">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -161,14 +182,16 @@
                                 
                             <GroupBox Grid.RowSpan="2" Grid.Column="0" Header="Basic" MinWidth="150">
                                 <StackPanel Orientation="Vertical">
-                                    <libsuc:InlineText x:Name="_txt_repsDone" Title="Replications done:" Value="0" />
+                                    <libsuc:InlineText x:Name="_txt_repsDone" Title="Replications done:" Value="0" Margin="0 0 0 10" />
+                                    <libsuc:InlineText x:Name="_txt_repsStartTime" Title="Start time:" Value="--:--:--" />
+                                    <libsuc:InlineText x:Name="_txt_repsEndTime" Title="End time:" Value="--:--:--" Margin="0 0 0 10" />
                                 </StackPanel>
                             </GroupBox>
 
                             <libsuc:DicreteStatistic Grid.RowSpan="2" Grid.Column="1" x:Name="_sts_repsObjednavkaTime" Title="Objednavka TimeInSystem" MinWidth="500" TransformFromSecondsToHours="true" PlotShow="true" PlotTitle="Objednávky - priemerný celkový čas v systéme" PlotXLabel="Replikácia" PlotYLabel="Čas v systéme [h]" />
 
                             <libsuc:DicreteStatistic Grid.Column="2" x:Name="_sts_repsObjednavkaReceivedCount" Title="Objednavka ReceivedCount" MinWidth="400" PlotShow="true" PlotTitle="" PlotXLabel="" PlotYLabel="Počet" MinHeight="300" />
-                            <libsuc:DicreteStatistic Grid.Column="2" Grid.Row="1" x:Name="_sts_repsObjednavkaNotDoneCount" Title="Objednavka NotDoneCount" MinWidth="400" PlotShow="true" PlotTitle="" PlotXLabel="" PlotYLabel="Počet" MinHeight="300" />
+                            <libsuc:DicreteStatistic Grid.Column="2" Grid.Row="1" x:Name="_sts_repsObjednavkaNotDoneCount" Title="Objednavka NoWorkStartedCount" MinWidth="400" PlotShow="true" PlotTitle="" PlotXLabel="" PlotYLabel="Počet" MinHeight="300" />
 
                             <GroupBox Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" Header="Stolari" MinWidth="500">
                                 <UniformGrid Columns="1">
