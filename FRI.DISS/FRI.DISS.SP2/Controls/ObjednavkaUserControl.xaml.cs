@@ -51,6 +51,9 @@ namespace FRI.DISS.SP2.Controls
             }
 
             _txt_Id.Text = $"#{Objednavka.Id}";
+            _txt_StolarId.Text = Objednavka.CurrentStolar is not null
+                ? $"{Objednavka.CurrentStolar.Type}{Objednavka.CurrentStolar.Id}"
+                : "N/A";
             _txt_Nabytok.Text = Objednavka.Nabytok.ToString();
 
             string status = Objednavka.Status.ToString();

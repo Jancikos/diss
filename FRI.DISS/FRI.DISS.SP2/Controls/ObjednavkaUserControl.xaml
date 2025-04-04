@@ -10,6 +10,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -19,6 +20,8 @@
         <TextBlock x:Name="_txt_Id" Text="#1" />
         <TextBlock Grid.Column="1" x:Name="_txt_Nabytok" Text="Stol" Margin="5 0 0 0" />
 
-        <TextBlock Grid.Column="2" x:Name="_txt_Status" Text="[Namorena => Poskladana]" Margin="5 0 0 0" FontSize="10"  TextAlignment="Right" />
+        <TextBlock x:Name="_txt_StolarId" Text="A1" Grid.Column="2" />
+
+        <TextBlock Grid.Column="3" x:Name="_txt_Status" Text="[Namorena => Poskladana]" Margin="5 0 0 0" FontSize="10"  TextAlignment="Right" />
     </Grid>
 </UserControl>

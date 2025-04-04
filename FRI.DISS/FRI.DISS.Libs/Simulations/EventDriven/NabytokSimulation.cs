@@ -145,6 +145,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             // technologicke procesy
             public AbstractGenerator SkladPripravaMaterialu = new TriangularGenerator(300, 900, 500, seedGenerator);
+            public AbstractGenerator ObjednavkaPrebratie = new TriangularGenerator(TimeHelper.M2S(2), TimeHelper.M2S(8), TimeHelper.M2S(4), seedGenerator);
 
             public Dictionary<Nabytok, Dictionary<NabytokOperation, AbstractGenerator>> NabytokOperations = new Dictionary<Nabytok, Dictionary<NabytokOperation, AbstractGenerator>>
             {
@@ -197,7 +198,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             public Dictionary<NabytokOperation, Queue<Objednavka>> OperationsQueues = new()
             {
-                { NabytokOperation.Rezanie, new() },
+                { NabytokOperation.Prebratie, new() },
                 { NabytokOperation.Morenie, new() },
                 { NabytokOperation.Skladanie, new() },
                 { NabytokOperation.MontazKovani, new() }
@@ -248,7 +249,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 switch (stolarType)
                 {
                     case StolarType.A:
-                        return OperationsQueues[NabytokOperation.Rezanie].ToList();
+                        return OperationsQueues[NabytokOperation.Prebratie].ToList();
                     case StolarType.B:
                         return OperationsQueues[NabytokOperation.Skladanie].ToList();
                     case StolarType.C:
@@ -302,11 +303,15 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             public bool WorkStarted { get; set; } = false;
             public ObjednavkaStatus Status { get; set; } = ObjednavkaStatus.Vytvorena;
 
+            public Stolar? CurrentStolar { get; set; } = null;
+
             public NabytokOperation MapStatusToNextOperation()
             {
                 switch (Status)
                 {
                     case ObjednavkaStatus.Vytvorena:
+                        return NabytokOperation.Prebratie;
+                    case ObjednavkaStatus.Prebrana:
                         return NabytokOperation.Rezanie;
                     case ObjednavkaStatus.Narezana:
                         return NabytokOperation.Morenie;
@@ -324,6 +329,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             {
                 return operation switch
                 {
+                    NabytokOperation.Prebratie => StolarType.A,
                     NabytokOperation.Rezanie => StolarType.A,
                     NabytokOperation.Morenie => StolarType.C,
                     NabytokOperation.Skladanie => StolarType.B,
@@ -344,6 +350,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         public enum ObjednavkaStatus
         {
             Vytvorena,
+            Prebrana,
             Narezana,
             Namorena,
             Poskladana,
@@ -359,6 +366,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
         public enum NabytokOperation
         {
+            Prebratie,
             Rezanie,
             Morenie,
             Skladanie,
@@ -380,7 +388,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             public static void ResetCounter() => StolarCounter = 0;
 
-            public void StartWork(double time)
+            public void StartWork(double time, Objednavka order)
             {
                 if (IsWorking)
                     throw new InvalidOperationException("Stolar is already working");
@@ -477,13 +485,61 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Simulation.PlanEvent(this, Simulation.Generators.ObjednavkyInputIntesity.GetSampleDouble());
 
                 // plan RezanieZaciatok
-                var stolarA = Simulation.ExperimentData.GetFreeStolar(NabytokOperation.Rezanie);
+                var stolarA = Simulation.ExperimentData.GetFreeStolar(NabytokOperation.Prebratie);
                 if (stolarA is null)
                 {
-                    Simulation.ExperimentData.EnqueueWaitingObjednavka(NabytokOperation.Rezanie, Objednavka!);
+                    Simulation.ExperimentData.EnqueueWaitingObjednavka(NabytokOperation.Prebratie, Objednavka!);
                     return;
                 }
-                Simulation.PlanEvent(new RezanieZaciatokEvent(Simulation) { Objednavka = Objednavka, Stolar = stolarA });
+                Simulation.PlanEvent(new PrebratieZaciatokEvent(Simulation) { Objednavka = Objednavka, Stolar = stolarA });
+            }
+        }
+
+        
+        public class PrebratieZaciatokEvent : NabytokSimulationEvent
+        {
+            public PrebratieZaciatokEvent(NabytokSimulation simulation) : base(simulation)
+            {
+            }
+
+            public override void Execute()
+            {
+                Validate(StolarType.A, false);
+
+                Objednavka!.WorkStarted = true;
+                Stolar!.StartWork(Simulation.CurrentTime, Objednavka);
+            }
+
+            public override void PlanNextEvents()
+            {
+                var totalDuration = 0.0;
+                
+                totalDuration += Simulation.Generators.ObjednavkaPrebratie.GetSampleDouble();
+
+                Simulation.PlanEvent(new PrebratieKoniecEvent(Simulation) { Objednavka = Objednavka, Stolar = Stolar }, totalDuration);
+            }
+        }
+
+        public class PrebratieKoniecEvent : NabytokSimulationEvent
+        {
+            public PrebratieKoniecEvent(NabytokSimulation simulation) : base(simulation)
+            {
+            }
+
+            
+            public override void Execute()
+            {
+                Validate(StolarType.A, true);
+
+                // zmen stav Objednavka
+                Objednavka!.Status = ObjednavkaStatus.Prebrana;
+
+                Stolar!.StopWork(Simulation.CurrentTime);
+            }
+
+            public override void PlanNextEvents()
+            {
+                Simulation.PlanEvent(new RezanieZaciatokEvent(Simulation) { Objednavka = Objednavka, Stolar = Stolar });
             }
         }
 
@@ -497,8 +553,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             {
                 Validate(StolarType.A, false);
 
-                Objednavka!.WorkStarted = true;
-                Stolar!.StartWork(Simulation.CurrentTime);
+                Stolar!.StartWork(Simulation.CurrentTime, Objednavka!);
             }
 
             public override void PlanNextEvents()
@@ -546,10 +601,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             public override void PlanNextEvents()
             {
                 // try plan RezanieZaciatok for next objednavka
-                var nextRezanie = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(NabytokOperation.Rezanie);
+                var nextRezanie = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(NabytokOperation.Prebratie);
                 if (nextRezanie is not null)
                 {
-                    Simulation.PlanEvent(new RezanieZaciatokEvent(Simulation)
+                    Simulation.PlanEvent(new PrebratieZaciatokEvent(Simulation)
                     {
                         Objednavka = nextRezanie.Value.objednavka,
                         Stolar = nextRezanie.Value.stolar
@@ -578,7 +633,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Validate(StolarType.C, false);
 
                 // zmen stav Stolar
-                Stolar!.StartWork(Simulation.CurrentTime);
+                Stolar!.StartWork(Simulation.CurrentTime, Objednavka!);
             }
 
             public override void PlanNextEvents()
@@ -660,7 +715,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Validate(StolarType.B, false);
 
                 // zmen stav Stolar
-                Stolar!.StartWork(Simulation.CurrentTime);
+                Stolar!.StartWork(Simulation.CurrentTime, Objednavka!);
             }
 
             public override void PlanNextEvents()
@@ -738,7 +793,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Validate(StolarType.C, false);
 
                 // zmen stav Stolar
-                Stolar!.StartWork(Simulation.CurrentTime);
+                Stolar!.StartWork(Simulation.CurrentTime, Objednavka!);
             }
 
             public override void PlanNextEvents()
