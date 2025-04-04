@@ -68,7 +68,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             ReplicationsStatistics.ObjednavkaTime.AddSample(ExperimentStatistics.ObjednavkaTotalTime.Mean);
 
             ReplicationsStatistics.ObjednavkyRecieved.AddSample(ExperimentData.ObjednavkyRecieved);
-            ReplicationsStatistics.ObjednavkyNotWorkingOn.AddSample(ExperimentData.OperationsQueues[NabytokOperation.Rezanie].Count);
+            ReplicationsStatistics.ObjednavkyNotWorkingOn.AddSample(ExperimentData.OperationsQueues[NabytokOperation.Prebratie].Count);
 
             // stolari work time ratio
             foreach (var stolarType in Enum.GetValues<StolarType>())
@@ -394,6 +394,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                     throw new InvalidOperationException("Stolar is already working");
 
                 _lastWorkStartTime = time;
+                order.CurrentStolar = this;
             }
             public void StopWork(double time)
             {
