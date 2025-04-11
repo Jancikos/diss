@@ -39,6 +39,16 @@ namespace FRI.DISS.SP2.Controls
             InitializeComponent();
         }
 
+        public void Clear()
+        {
+            _txt_TotalCount.Value = "0";
+            _txt_FreeCount.Value = "0";
+            _txt_TotalRatio.Visibility = Visibility.Collapsed;
+            _txt_FreeCount.Visibility = Visibility.Visible;
+
+            _lst.Items.Clear();
+        }
+
         public void UpdateGUI(List<NabytokSimulation.Stolar> stolari)
         {
             _txt_TotalCount.Value = stolari.Count.ToString();

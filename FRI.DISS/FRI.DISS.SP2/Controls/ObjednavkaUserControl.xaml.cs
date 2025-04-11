@@ -56,7 +56,7 @@ namespace FRI.DISS.SP2.Controls
             string status = Objednavka.Status.ToString();
             if (IsShowingNextOperation && Objednavka.Status < NabytokSimulation.ObjednavkaStatus.Poskladana)
             {
-                status += $" -> {Objednavka.MapStatusToNectOperation()}";
+                status += $" -> {Objednavka.MapStatusToNextOperation()}";
             }
             _txt_Status.Text = $"[{status}]";
         }

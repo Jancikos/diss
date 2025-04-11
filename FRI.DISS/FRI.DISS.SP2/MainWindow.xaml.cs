@@ -23,12 +23,42 @@ namespace FRI.DISS.SP2
     {
         protected NabytokSimulation _simulation;
 
+
+        protected Queue<EventDrivenSimulationGUIEventArgs> _guiEventsQueue;
+        protected Task _guiTask;
+
         public MainWindow()
         {
             InitializeComponent();
 
             _simulation = new NabytokSimulation();
             _simulation.GUIEventHappened += _simulation_GUIEventHappened;
+
+            _guiEventsQueue = new Queue<EventDrivenSimulationGUIEventArgs>();
+            _guiTask = new Task(async () =>
+            {
+                while (true)
+                {
+                    if (_guiEventsQueue.Count > 0)
+                    {
+                        var e = _guiEventsQueue.Dequeue();
+
+                        if (e is not null)
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                _handleSimulationGUIEvent(e);
+                            });
+
+                            continue;
+                        }
+
+                    } 
+
+                    await Task.Delay(35);
+                }
+            });
+            _guiTask.Start();
 
             _initializeGUI();
         }
@@ -47,7 +77,7 @@ namespace FRI.DISS.SP2
                 _lst_expStolariTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
                 _lst_expStolariTypesQueues.Children.Add(new StolariQueueUserControl() { StolarType = stolarType });
 
-                _lst_repsStolariTypes.Children.Add(new DicreteStatistic() { Title = $"Vyťaženie stolárov {stolarType} (%)", PlotShow = true });
+                _lst_repsStolariTypes.Children.Add(new DicreteStatistic() { Title = $"Vyťaženie stolárov {stolarType} (%)", PlotShow = true, TransformToPercentage = true });
                 _lst_repsStolarTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
             });
         }
@@ -61,6 +91,18 @@ namespace FRI.DISS.SP2
                 : SeedGenerator.Global;
 
             _setSimulationTimeFromGUI();
+            _txt_repsStartTime.Value = DateTime.Now.ToString("HH:mm:ss");
+            _txt_repsEndTime.Value = "--:--:--";
+
+            _sts_expObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_repsObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_repsObjednavkaNotDoneCount.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_repsObjednavkaReceivedCount.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_expObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _lst_repsStolariTypes.Children.Cast<DicreteStatistic>().ToList().ForEach(stolariUC =>
+            {
+                stolariUC.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            });
 
             // stolari count
             _simulation.StolariCount[NabytokSimulation.StolarType.A] = _txt_simStolariACount.IntValue;
@@ -76,40 +118,97 @@ namespace FRI.DISS.SP2
 
             _simulation.TimeMode = mode;
 
-            if (mode == EventDrivenSimulationTimeMode.RealTime)
+            switch (mode)
             {
-                _simulation.RealTimeRatio = (EventDrivenSimulationRealTimeRatios)_cmbx_simRealTimeRatio.SelectedItem;
+                case EventDrivenSimulationTimeMode.RealTime:
+                    _simulation.RealTimeRatio = (EventDrivenSimulationRealTimeRatios)_cmbx_simRealTimeRatio.SelectedItem;
+                    _grbx_expRealTimeMode.Visibility = Visibility.Visible;
+                    _grbx_expFastForwardMode.Visibility = Visibility.Collapsed;
+                    break;
+
+                case EventDrivenSimulationTimeMode.FastForward:
+                    _grbx_expRealTimeMode.Visibility = Visibility.Collapsed;
+                    _grbx_expFastForwardMode.Visibility = Visibility.Visible;
+                    break;
             }
         }
 
         private void _simulation_GUIEventHappened(object? sender, EventDrivenSimulationGUIEventArgs e)
         {
-            Dispatcher.Invoke(() =>
+            switch(_simulation.TimeMode)
             {
-                switch (e.Type)
-                {
-                    case EventDrivenSimulationEventArgsType.RefreshTime:
-                        _refreshTime();
-                        break;
-                    case EventDrivenSimulationEventArgsType.SimulationEventDone:
-                    case EventDrivenSimulationEventArgsType.RefreshGUI:
-                        _refreshExperimentGUI();
-                        break;
-                    case EventDrivenSimulationEventArgsType.SimulationExperimentDone:
-                        _refreshReplicationsStats();
-                        break;
-                }
+                case EventDrivenSimulationTimeMode.RealTime:
+                    Dispatcher.Invoke(() =>
+                    {
+                        _handleSimulationGUIEvent(e);
+                    });
+                    break;
+                case EventDrivenSimulationTimeMode.FastForward:
+
+
+                    _guiEventsQueue.Enqueue(e);
+                    break;
+            }
+        }
+
+        private void _handleSimulationGUIEvent(EventDrivenSimulationGUIEventArgs e)
+        {
+            switch (e.Type)
+            {
+                case EventDrivenSimulationEventArgsType.RefreshTime:
+                    _refreshTime();
+                    break;
+                case EventDrivenSimulationEventArgsType.SimulationEventDone:
+                case EventDrivenSimulationEventArgsType.RefreshGUI:
+                    _refreshExperimentGUI();
+                    break;
+                case EventDrivenSimulationEventArgsType.SimulationStarted:
+                    _clearExperimentGUI();
+                    _clearReplicationsGUI();
+                    break;
+                case EventDrivenSimulationEventArgsType.SimulationExperimentDone:
+                    _refreshReplicationsStats();
+                    break;
+            }
+        }
+
+        private void _clearReplicationsGUI()
+        {
+            _lst_repsStolarTypes.Children.Cast<StolariUserControl>().ToList().ForEach(stolariUc =>
+            {
+                stolariUc.Clear();
             });
+        }
+
+        private void _clearExperimentGUI()
+        {
+            _lst_expWorkplaces.Items.Clear();
+            _sts_expObjednavkaTime.Clear();
         }
 
         private void _refreshReplicationsStats()
         {
+            // reps fast forward mode stas
+            _txt_expCurrentReplication.Text = _simulation.ReplicationsDone.ToString();
+            _txt_expTotalReplications.Text = _simulation.ReplicationsCount.ToString();
+
+            if (_simulation.ReplicationsDone  % _txt_simReplicationsStatsRefresh.IntValue != 0 && _simulation.ReplicationsDone  != _simulation.ReplicationsCount && _simulation.State == Libs.Simulations.SimulationState.Running)
+                return;
+            
+            if (_simulation.ReplicationsDone  == _simulation.ReplicationsCount || _simulation.State != Libs.Simulations.SimulationState.Running)
+            {
+                _txt_repsEndTime.Value = DateTime.Now.ToString("HH:mm:ss");
+            }
+
+            if (_simulation.ReplicationsDone == 0)
+                return;
+
             _txt_repsDone.Value = _simulation.ReplicationsDone.ToString();
 
             _sts_repsObjednavkaTime.Update(_simulation.ReplicationsStatistics.ObjednavkaTime);
 
             _sts_repsObjednavkaReceivedCount.Update(_simulation.ReplicationsStatistics.ObjednavkyRecieved);
-            _sts_repsObjednavkaNotDoneCount.Update(_simulation.ReplicationsStatistics.ObjednavkyNotDone);
+            _sts_repsObjednavkaNotDoneCount.Update(_simulation.ReplicationsStatistics.ObjednavkyNotWorkingOn);
 
             var i = 0;
             var stolariStatsUCs = _lst_repsStolariTypes.Children.Cast<DicreteStatistic>().ToList();
@@ -129,14 +228,19 @@ namespace FRI.DISS.SP2
 
         private void _refreshExperimentGUI()
         {
-            _txt_expStatus.Value = _simulation.State.ToString();
-            _txt_expReplication.Value = _simulation.ReplicationsDone.ToString();
+            switch (_simulation.TimeMode)
+            {
+                case EventDrivenSimulationTimeMode.RealTime:
+                    _txt_expStatus.Value = _simulation.State.ToString();
+                    _txt_expReplication.Value = _simulation.ReplicationsDone.ToString();
 
-            _refreshTime();
-            _refreshEventsCalendar();
-            _refreshWorkplaces();
-            _refreshStolariExp();
-            _refreshExperimentStats();
+                    _refreshTime();
+                    _refreshEventsCalendar();
+                    _refreshWorkplaces();
+                    _refreshStolariExp();
+                    _refreshExperimentStats();
+                    break;
+            }
         }
 
         private void _refreshExperimentStats()
@@ -157,7 +261,7 @@ namespace FRI.DISS.SP2
             _lst_expStolariTypesQueues.Children.Cast<StolariQueueUserControl>().ToList().ForEach(stolariQueueUC =>
             {
                 var stolarType = stolariQueueUC.StolarType;
-                var objednavky = _simulation.ExperimentData.StolariQueues[stolarType];
+                var objednavky = _simulation.ExperimentData.GetWaitingObjednavky(stolarType);
 
                 stolariQueueUC._updateGUI(objednavky.ToList());
             });
@@ -270,9 +374,9 @@ namespace FRI.DISS.SP2
         private void _btn_simStop_Click(object sender, RoutedEventArgs e)
         {
             _manipulateSimulation(_simulation.StopSimulation);
+            _refreshReplicationsStats();
         }
 
-        // TOOD - make it works correctly
         private void _btn_simResume_Click(object sender, RoutedEventArgs e)
         {
             _manipulateSimulation(_simulation.ResumeSimulation);
@@ -281,6 +385,7 @@ namespace FRI.DISS.SP2
         private void _btn_simPause_Click(object sender, RoutedEventArgs e)
         {
             _manipulateSimulation(_simulation.PauseSimulation);
+            _refreshReplicationsStats();
         }
 
         private void _cmbx_simRealTimeRatio_SelectionChanged(object sender, SelectionChangedEventArgs e)

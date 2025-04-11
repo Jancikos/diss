@@ -7,6 +7,13 @@ using System.Threading.Tasks;
 
 namespace FRI.DISS.Libs.Generators
 {
+    public enum IntervalT_alfa
+    {
+        t_alfa_90,  // 90% interval
+        t_alfa_95,  // 95% interval
+        t_alfa_99   // 99% interval
+    }
+
     public class Statistics
     {
         public int Count { get; protected set; }
@@ -16,9 +23,28 @@ namespace FRI.DISS.Libs.Generators
         public double Min { get; protected set; }
         public double Max { get; protected set; }
 
-        public double Mean => (double)Sum / Count;
-        public double Variance => (double)SumOfSquares / Count - Mean * Mean;
-        public double StandardDeviation => Math.Sqrt(Variance);
+        public double Mean => Count == 0
+        ? 0
+        : (double)Sum / Count;
+
+        public double StandardDeviation => Math.Sqrt(SumOfSquares / Count - Math.Pow(Sum / Count, 2));
+        public double SampleStandardDeviation => Math.Sqrt((SumOfSquares - (Math.Pow(Sum, 2) / Count)) / (Count - 1));
+
+        // interval spolahlivosti
+        public IntervalT_alfa CurrentIntervalT_alfa { get; set; } = IntervalT_alfa.t_alfa_95;
+        public double IntervalT_alfaValue => CurrentIntervalT_alfa switch
+        {
+            IntervalT_alfa.t_alfa_90 => 1.645,
+            IntervalT_alfa.t_alfa_95 => 1.96,
+            IntervalT_alfa.t_alfa_99 => 2.576,
+            _ => throw new ArgumentOutOfRangeException(nameof(CurrentIntervalT_alfa))
+        };
+        public bool CanCalculateInterval => Count >= 30;
+        public double IntervalHalfWidth => CanCalculateInterval
+            ? (IntervalT_alfaValue * SampleStandardDeviation) / Math.Sqrt(Count)
+            : throw new InvalidOperationException("Interval calculation is not valid for sample sizes less than 30.");
+        public double IntervalLowerBound => Mean - IntervalHalfWidth;
+        public double IntervalUpperBound => Mean + IntervalHalfWidth;
 
         public Statistics()
         {
@@ -69,7 +95,7 @@ namespace FRI.DISS.Libs.Generators
 
         public override string ToString()
         {
-            return $"Count: {Count}, Mean: {Mean}, Variance: {Variance}, Max: {Max}, Min: {Min}";
+            return $"Count: {Count}, Mean: {Mean}, Max: {Max}, Min: {Min}";
         }
 
         public string MeanToString(bool withMinMax = false)

@@ -127,7 +127,7 @@ namespace FRI.DISS.GeneratorTester
             _txt_GeneratedSamplesMax.Value = statistics.Max.ToString();
             
             _txt_GeneratedSamplesMean.Value = statistics.Mean.ToString();
-            _txt_GeneratedSamplesVariance.Value = statistics.Variance.ToString();
+            //_txt_GeneratedSamplesVariance.Value = statistics.Variance.ToString();
             _txt_GeneratedSamplesStdDev.Value = statistics.StandardDeviation.ToString();
         }
 

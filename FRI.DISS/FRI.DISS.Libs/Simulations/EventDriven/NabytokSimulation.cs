@@ -22,7 +22,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         protected NabytokExperimentStatistics? _experimentStatistics;
         public NabytokExperimentStatistics ExperimentStatistics => _experimentStatistics ?? throw new InvalidOperationException("Experiment statistics are not initialized");
 
-        public Dictionary<StolarType, int> StolariCount {get;} = new()
+        public Dictionary<StolarType, int> StolariCount { get; } = new()
         {
             { StolarType.A, 2 },
             { StolarType.B, 2 },
@@ -41,8 +41,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             _generators = new NabytokGenerators(SeedGenerator);
             _replicationsStatistics = new NabytokReplicationsStatistics();
 
-            // _endTime = TimeHelper.HoursToSeconds(8) * 249; // 6:00 az 14:00 * 249 dni
-            _endTime = TimeHelper.HoursToSeconds(8) * 24; // ONLY FOR TESTING
+            _endTime = TimeHelper.HoursToSeconds(8) * 249; // 6:00 az 14:00 * 249 dni
+            // _endTime = TimeHelper.HoursToSeconds(8) * 24; // ONLY FOR TESTING
         }
 
         protected override void _beforeExperiment()
@@ -55,10 +55,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             Stolar.ResetCounter();
             foreach (var stolarType in StolariCount.Keys)
             {
-                _experimentData.SetStolariCount(stolarType, StolariCount[stolarType]); 
+                _experimentData.SetStolariCount(stolarType, StolariCount[stolarType]);
             }
 
-            PlanEvent<ObjednavkaRecievedEvent>(Generators.ObjednavkyInputIntesity.GetSampleDouble());
+            PlanEvent<ObjednavkaRecievedEvent>();
         }
 
         protected override void _afterExperiment(int replication, double result)
@@ -68,7 +68,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             ReplicationsStatistics.ObjednavkaTime.AddSample(ExperimentStatistics.ObjednavkaTotalTime.Mean);
 
             ReplicationsStatistics.ObjednavkyRecieved.AddSample(ExperimentData.ObjednavkyRecieved);
-            ReplicationsStatistics.ObjednavkyNotDone.AddSample(ExperimentData.ObjednavkyInSystem);
+            ReplicationsStatistics.ObjednavkyNotWorkingOn.AddSample(ExperimentData.OperationsQueues[NabytokOperation.Rezanie].Count);
 
             // stolari work time ratio
             foreach (var stolarType in Enum.GetValues<StolarType>())
@@ -77,7 +77,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var totalWorkTime = EndTime!.Value;
                 var groupWorkTime = stolari.Sum(s => s.TimeInWork);
 
-                ReplicationsStatistics.StolariWorkTimeRatio[stolarType].AddSample(groupWorkTime / totalWorkTime);
+                ReplicationsStatistics.StolariWorkTimeRatio[stolarType].AddSample((double)groupWorkTime / (double)(totalWorkTime * stolari.Count));
 
                 for (int i = 0; i < stolari.Count; i++)
                 {
@@ -94,7 +94,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         {
             public Statistics ObjednavkaTime { get; set; } = new Statistics();
             public Statistics ObjednavkyRecieved { get; } = new Statistics();
-            public Statistics ObjednavkyNotDone { get; } = new Statistics();
+            public Statistics ObjednavkyNotWorkingOn { get; } = new Statistics();
 
             public Dictionary<StolarType, Statistics> StolariWorkTimeRatio { get; } = new()
             {
@@ -123,8 +123,8 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
         public class NabytokGenerators(SeedGenerator seedGenerator)
         {
             // objednavky
-            public AbstractGenerator ObjednavkyInputIntesity = new ExponentialGenerator(1.0 / 
-        (30.0 * 60.0), seedGenerator);
+            public AbstractGenerator ObjednavkyInputIntesity = new ExponentialGenerator(1.0 /
+        (double)TimeHelper.M2S(30), seedGenerator);
             protected AbstractGenerator ObjednavkyNabytokType = new UniformGenerator(GenerationMode.Continuous, seedGenerator);
             public Nabytok GenerateObjednavkaNabytokType()
             {
@@ -140,40 +140,40 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             }
 
             // presuny
-            public AbstractGenerator StolarMoveToWarehouse = new TriangularGenerator(60 * 60, 480 * 60, 120 * 60, seedGenerator);
-            public AbstractGenerator StolarMoveBetweenWorkplaces = new TriangularGenerator(120 * 60, 500 * 60, 150 * 60, seedGenerator);
+            public AbstractGenerator StolarMoveToWarehouse = new TriangularGenerator(60, 480, 120, seedGenerator);
+            public AbstractGenerator StolarMoveBetweenWorkplaces = new TriangularGenerator(120, 500, 150, seedGenerator);
 
             // technologicke procesy
-            public AbstractGenerator SkladPripravaMaterialu = new TriangularGenerator(300 * 60, 900 * 60, 500 * 60, seedGenerator);
+            public AbstractGenerator SkladPripravaMaterialu = new TriangularGenerator(300, 900, 500, seedGenerator);
 
             public Dictionary<Nabytok, Dictionary<NabytokOperation, AbstractGenerator>> NabytokOperations = new Dictionary<Nabytok, Dictionary<NabytokOperation, AbstractGenerator>>
             {
                 { Nabytok.Stol, new Dictionary<NabytokOperation, AbstractGenerator>
                     {
-                        { NabytokOperation.Rezanie, new EmpiricalGenerator(GenerationMode.Continuous, [10 * 60, 25 * 60, 50 * 60], [0.6, 0.4], seedGenerator) },
-                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 200 * 60, Max = 610 * 60} },
-                        { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 30 * 60, Max = 60 * 60} }
+                        { NabytokOperation.Rezanie, new EmpiricalGenerator(GenerationMode.Continuous, [TimeHelper.M2S(10), TimeHelper.M2S(25), TimeHelper.M2S(50)], [0.6, 0.4], seedGenerator) },
+                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(200), Max = TimeHelper.M2S(610)} },
+                        { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(30), Max = TimeHelper.M2S(60)} }
                     }
                 },
                 { Nabytok.Stolicka, new Dictionary<NabytokOperation, AbstractGenerator>
                     {
-                        { NabytokOperation.Rezanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 12 * 60, Max = 16 * 60} },
-                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 210 * 60, Max = 540 * 60} },
-                        { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 14 * 60, Max = 24 * 60} }
+                        { NabytokOperation.Rezanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(12), Max = TimeHelper.M2S(16)} },
+                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(210), Max = TimeHelper.M2S(540)} },
+                        { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(14), Max = TimeHelper.M2S(24)} }
                     }
                 },
                 { Nabytok.Skrina, new Dictionary<NabytokOperation, AbstractGenerator>
                     {
-                        { NabytokOperation.Rezanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 15 * 60, Max = 80 * 60} },
-                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 600 * 60, Max = 700 * 60} },
-                        { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 35 * 60, Max = 75 * 60} },
-                        { NabytokOperation.MontazKovani, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = 15 * 60, Max = 25 * 60} }
+                        { NabytokOperation.Rezanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(15), Max = TimeHelper.M2S(80)} },
+                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(600), Max = TimeHelper.M2S(700)} },
+                        { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(35), Max = TimeHelper.M2S(75)} },
+                        { NabytokOperation.MontazKovani, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(15), Max = TimeHelper.M2S(25)} }
                     }
                 }
             };
             public double GetNabytokOperationTime(Objednavka objednavka)
             {
-                return NabytokOperations[objednavka.Nabytok][objednavka.MapStatusToNectOperation()].GetSampleDouble();
+                return NabytokOperations[objednavka.Nabytok][objednavka.MapStatusToNextOperation()].GetSampleDouble();
             }
         }
         #endregion
@@ -186,6 +186,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             public int ObjednavkyInSystem => ObjednavkyRecieved - ObjednavkyDone;
 
             public List<Objednavka?> Workplaces { get; set; } = new();
+            public PriorityQueue<int, int> WorkplacesAvailable = new();
 
             public Dictionary<StolarType, List<Stolar>> Stolari = new()
             {
@@ -194,11 +195,12 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 { StolarType.C, new() }
             };
 
-            public Dictionary<StolarType, Queue<Objednavka>> StolariQueues = new()
+            public Dictionary<NabytokOperation, Queue<Objednavka>> OperationsQueues = new()
             {
-                { StolarType.A, new() },
-                { StolarType.B, new() },
-                { StolarType.C, new() }
+                { NabytokOperation.Rezanie, new() },
+                { NabytokOperation.Morenie, new() },
+                { NabytokOperation.Skladanie, new() },
+                { NabytokOperation.MontazKovani, new() }
             };
 
             public void SetStolariCount(StolarType stolarType, int newCount)
@@ -225,25 +227,45 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
             public void AssignWorkplace(Objednavka objednavka)
             {
-                var freeWorkplaceIndex = Workplaces.IndexOf(null);
-
-                if (freeWorkplaceIndex == -1)
+                if (!WorkplacesAvailable.TryDequeue(out var freeWorkplaceIndex, out var _))
                 {
                     Workplaces.Add(objednavka);
                     freeWorkplaceIndex = Workplaces.Count - 1;
                 }
 
                 Workplaces[freeWorkplaceIndex] = objednavka;
-                objednavka.Workplace = freeWorkplaceIndex;
+                objednavka.WorkplaceIndex = freeWorkplaceIndex;
             }
 
+            internal void FreeWorkplace(Objednavka objednavka)
+            {
+                WorkplacesAvailable.Enqueue(objednavka.WorkplaceIndex, objednavka.WorkplaceIndex);
+                Workplaces[objednavka.WorkplaceIndex] = null;
+            }
+
+            public List<Objednavka> GetWaitingObjednavky(StolarType stolarType)
+            {
+                switch (stolarType)
+                {
+                    case StolarType.A:
+                        return OperationsQueues[NabytokOperation.Rezanie].ToList();
+                    case StolarType.B:
+                        return OperationsQueues[NabytokOperation.Skladanie].ToList();
+                    case StolarType.C:
+                        return OperationsQueues[NabytokOperation.MontazKovani].ToList().Concat(OperationsQueues[NabytokOperation.Morenie]).ToList();
+                    default:
+                        throw new NotImplementedException($"Stolar type {stolarType} is not implemented");
+                }
+            }
+
+            public Stolar? GetFreeStolar(NabytokOperation operation) => GetFreeStolar(Objednavka.MapOperationToStolarType(operation));
             public Stolar? GetFreeStolar(StolarType type) => GetFreeStolar(Stolari[type]);
             public Stolar? GetFreeStolar(List<Stolar> stolari)
             {
                 return stolari.FirstOrDefault(s => !s!.IsWorking, null);
             }
 
-            public Objednavka? GetWaitingObjednavka(StolarType type) => GetWaitingObjednavka(StolariQueues[type]);
+            public Objednavka? GetWaitingObjednavka(NabytokOperation type) => GetWaitingObjednavka(OperationsQueues[type]);
             public Objednavka? GetWaitingObjednavka(Queue<Objednavka> queue)
             {
                 if (queue.Count == 0)
@@ -251,19 +273,19 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
                 return queue.Dequeue();
             }
-            public void EnqueueWaitingObjednavka(StolarType type, Objednavka objednavka) => EnqueueWaitingObjednavka(StolariQueues[type], objednavka);
+            public void EnqueueWaitingObjednavka(NabytokOperation type, Objednavka objednavka) => EnqueueWaitingObjednavka(OperationsQueues[type], objednavka);
             public void EnqueueWaitingObjednavka(Queue<Objednavka> queue, Objednavka objednavka)
             {
                 queue.Enqueue(objednavka);
             }
 
-            public (Stolar stolar, Objednavka objednavka)? GetFreeStolarAndWaitingObjednavka(StolarType type)
+            public (Stolar stolar, Objednavka objednavka)? GetFreeStolarAndWaitingObjednavka(NabytokOperation operation)
             {
-                var objednavka = GetWaitingObjednavka(type);
+                var objednavka = GetWaitingObjednavka(operation);
                 if (objednavka is null)
                     return null;
 
-                var stolar = GetFreeStolar(type);
+                var stolar = GetFreeStolar(Objednavka.MapOperationToStolarType(operation));
                 if (stolar is null)
                     return null;
 
@@ -271,15 +293,16 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             }
         }
 
-        public class Objednavka : IComparable<Objednavka>
+        public class Objednavka
         {
             public int Id { get; init; }
-            public int Workplace { get; set; } // should be init 
+            public int WorkplaceIndex { get; set; } // should be init 
             public Nabytok Nabytok { get; init; }
 
+            public bool WorkStarted { get; set; } = false;
             public ObjednavkaStatus Status { get; set; } = ObjednavkaStatus.Vytvorena;
 
-            public NabytokOperation MapStatusToNectOperation()
+            public NabytokOperation MapStatusToNextOperation()
             {
                 switch (Status)
                 {
@@ -297,26 +320,22 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 throw new NotImplementedException();
             }
 
-            public int CompareTo(Objednavka? other)
+            public static StolarType MapOperationToStolarType(NabytokOperation operation)
             {
-                if (other is null)
-                    return 1;
-
-                if (Status == ObjednavkaStatus.Poskladana && Nabytok == Nabytok.Skrina)
+                return operation switch
                 {
-                    if (other.Nabytok != Nabytok.Skrina || other.Status != ObjednavkaStatus.Poskladana)
-                        return -1;
-
-                    return Id.CompareTo(other.Id);
-                }
-
-                return Id.CompareTo(other.Id);
+                    NabytokOperation.Rezanie => StolarType.A,
+                    NabytokOperation.Morenie => StolarType.C,
+                    NabytokOperation.Skladanie => StolarType.B,
+                    NabytokOperation.MontazKovani => StolarType.C,
+                    _ => throw new NotImplementedException()
+                };
             }
 
             public double CreationTime { get; init; }
             public double? EndTime { get; set; }
-            public double TimeInSystem => EndTime is not null 
-                ? EndTime.Value - CreationTime 
+            public double TimeInSystem => EndTime is not null
+                ? EndTime.Value - CreationTime
                 : throw new InvalidOperationException("End time is not set");
 
             public override string ToString() => $"{Id} - {Nabytok} [{Status}]";
@@ -378,6 +397,17 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
 
                 TimeInWork += time - _lastWorkStartTime.Value;
                 _lastWorkStartTime = null;
+            }
+
+            public double GetMoveTime(NabytokSimulation simulation, int toWorkplace)
+            {
+                if (CurrentPlace == toWorkplace)
+                    return 0;
+
+                if (CurrentPlace == WarehousePlaceIndex || toWorkplace == WarehousePlaceIndex)
+                    return simulation.Generators.StolarMoveToWarehouse.GetSampleDouble();
+
+                return simulation.Generators.StolarMoveBetweenWorkplaces.GetSampleDouble();
             }
 
             public override string ToString() => $"{Id} - Stolar{Type}";
@@ -444,13 +474,13 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             public override void PlanNextEvents()
             {
                 // plan next objednavka recieved
-                Simulation.PlanEvent<ObjednavkaRecievedEvent>(Simulation.Generators.ObjednavkyInputIntesity.GetSampleDouble());
+                Simulation.PlanEvent(this, Simulation.Generators.ObjednavkyInputIntesity.GetSampleDouble());
 
                 // plan RezanieZaciatok
-                var stolarA = Simulation.ExperimentData.GetFreeStolar(StolarType.A);
+                var stolarA = Simulation.ExperimentData.GetFreeStolar(NabytokOperation.Rezanie);
                 if (stolarA is null)
                 {
-                    Simulation.ExperimentData.EnqueueWaitingObjednavka(StolarType.A, Objednavka!);
+                    Simulation.ExperimentData.EnqueueWaitingObjednavka(NabytokOperation.Rezanie, Objednavka!);
                     return;
                 }
                 Simulation.PlanEvent(new RezanieZaciatokEvent(Simulation) { Objednavka = Objednavka, Stolar = stolarA });
@@ -467,6 +497,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
             {
                 Validate(StolarType.A, false);
 
+                Objednavka!.WorkStarted = true;
                 Stolar!.StartWork(Simulation.CurrentTime);
             }
 
@@ -508,14 +539,14 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Objednavka!.Status = ObjednavkaStatus.Narezana;
 
                 // zmen stav Stolar
-                Stolar!.CurrentPlace = Objednavka.Workplace;
+                Stolar!.CurrentPlace = Objednavka.WorkplaceIndex;
                 Stolar!.StopWork(Simulation.CurrentTime);
             }
 
             public override void PlanNextEvents()
             {
                 // try plan RezanieZaciatok for next objednavka
-                var nextRezanie = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(StolarType.A);
+                var nextRezanie = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(NabytokOperation.Rezanie);
                 if (nextRezanie is not null)
                 {
                     Simulation.PlanEvent(new RezanieZaciatokEvent(Simulation)
@@ -526,10 +557,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 }
 
                 // try plan MorenieZaciatok for this objednavka
-                var freeStolarC = Simulation.ExperimentData.GetFreeStolar(StolarType.C);
+                var freeStolarC = Simulation.ExperimentData.GetFreeStolar(NabytokOperation.Morenie);
                 if (freeStolarC is null)
                 {
-                    Simulation.ExperimentData.EnqueueWaitingObjednavka(StolarType.C, Objednavka!);
+                    Simulation.ExperimentData.EnqueueWaitingObjednavka(NabytokOperation.Morenie, Objednavka!);
                     return;
                 }
                 Simulation.PlanEvent(new MorenieZaciatok(Simulation) { Objednavka = Objednavka, Stolar = freeStolarC });
@@ -555,10 +586,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var totalDuration = 0.0;
 
                 // presun na pracovisko
-                if (Stolar!.CurrentPlace != Objednavka!.Workplace)
-                {
-                    totalDuration += Simulation.Generators.StolarMoveBetweenWorkplaces.GetSampleDouble();
-                }
+                totalDuration += Stolar!.GetMoveTime(Simulation, Objednavka!.WorkplaceIndex);
 
                 // doba morenia
                 totalDuration += Simulation.Generators.GetNabytokOperationTime(Objednavka);
@@ -581,28 +609,28 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Objednavka!.Status = ObjednavkaStatus.Namorena;
 
                 // zmen stav Stolar
-                Stolar!.CurrentPlace = Objednavka.Workplace;
+                Stolar!.CurrentPlace = Objednavka.WorkplaceIndex;
                 Stolar!.StopWork(Simulation.CurrentTime);
             }
 
             public override void PlanNextEvents()
             {
                 // try plan next objednavka for Stolar C
-                var nextObjednavka = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(StolarType.C);
+                var nextObjednavka = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(NabytokOperation.MontazKovani);
                 if (nextObjednavka is not null)
                 {
-                    if (nextObjednavka.Value.objednavka.Status == ObjednavkaStatus.Narezana)
+                    Simulation.PlanEvent(new MontazKovaniZaciatok(Simulation)
+                    {
+                        Objednavka = nextObjednavka.Value.objednavka,
+                        Stolar = nextObjednavka.Value.stolar
+                    });
+                }
+                else
+                {
+                    nextObjednavka = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(NabytokOperation.Morenie);
+                    if (nextObjednavka is not null)
                     {
                         Simulation.PlanEvent(new MorenieZaciatok(Simulation)
-                        {
-                            Objednavka = nextObjednavka.Value.objednavka,
-                            Stolar = nextObjednavka.Value.stolar
-                        });
-                    }
-
-                    if (nextObjednavka.Value.objednavka.Status == ObjednavkaStatus.Poskladana)
-                    {
-                        Simulation.PlanEvent(new MontazKovaniZaciatok(Simulation)
                         {
                             Objednavka = nextObjednavka.Value.objednavka,
                             Stolar = nextObjednavka.Value.stolar
@@ -611,10 +639,10 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 }
 
                 // try plan SkladanieZaciatok for this objednavka
-                var freeStolarB = Simulation.ExperimentData.GetFreeStolar(StolarType.B);
+                var freeStolarB = Simulation.ExperimentData.GetFreeStolar(NabytokOperation.Skladanie);
                 if (freeStolarB is null)
                 {
-                    Simulation.ExperimentData.EnqueueWaitingObjednavka(StolarType.B, Objednavka!);
+                    Simulation.ExperimentData.EnqueueWaitingObjednavka(NabytokOperation.Skladanie, Objednavka!);
                     return;
                 }
                 Simulation.PlanEvent(new SkladanieZaciatok(Simulation) { Objednavka = Objednavka, Stolar = freeStolarB });
@@ -640,10 +668,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var totalDuration = 0.0;
 
                 // presun na pracovisko
-                if (Stolar!.CurrentPlace != Objednavka!.Workplace)
-                {
-                    totalDuration += Simulation.Generators.StolarMoveBetweenWorkplaces.GetSampleDouble();
-                }
+                totalDuration += Stolar!.GetMoveTime(Simulation, Objednavka!.WorkplaceIndex);
 
                 // doba skladania
                 totalDuration += Simulation.Generators.GetNabytokOperationTime(Objednavka);
@@ -666,14 +691,14 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Objednavka!.Status = ObjednavkaStatus.Poskladana;
 
                 // zmen stav Stolar
-                Stolar!.CurrentPlace = Objednavka.Workplace;
+                Stolar!.CurrentPlace = Objednavka.WorkplaceIndex;
                 Stolar!.StopWork(Simulation.CurrentTime);
             }
 
             public override void PlanNextEvents()
             {
                 // try plan next objednavka for Stolar B
-                var nextObjednavka = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(StolarType.B);
+                var nextObjednavka = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(NabytokOperation.Skladanie);
                 if (nextObjednavka is not null)
                 {
                     Simulation.PlanEvent(new SkladanieZaciatok(Simulation)
@@ -686,12 +711,13 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 // try plan MontazKovaniZaciatok for this objednavka
                 if (Objednavka!.Nabytok == Nabytok.Skrina)
                 {
-                    var freeStolarC = Simulation.ExperimentData.GetFreeStolar(StolarType.C);
+                    var freeStolarC = Simulation.ExperimentData.GetFreeStolar(NabytokOperation.MontazKovani);
                     if (freeStolarC is null)
                     {
-                        Simulation.ExperimentData.EnqueueWaitingObjednavka(StolarType.C, Objednavka!);
+                        Simulation.ExperimentData.EnqueueWaitingObjednavka(NabytokOperation.MontazKovani, Objednavka!);
                         return;
                     }
+
                     Simulation.PlanEvent(new MontazKovaniZaciatok(Simulation) { Objednavka = Objednavka, Stolar = freeStolarC });
                     return;
                 }
@@ -720,10 +746,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 var totalDuration = 0.0;
 
                 // presun na pracovisko
-                if (Stolar!.CurrentPlace != Objednavka!.Workplace)
-                {
-                    totalDuration += Simulation.Generators.StolarMoveBetweenWorkplaces.GetSampleDouble();
-                }
+                totalDuration += Stolar!.GetMoveTime(Simulation, Objednavka!.WorkplaceIndex);
 
                 // doba montaze kovani
                 totalDuration += Simulation.Generators.GetNabytokOperationTime(Objednavka);
@@ -746,28 +769,31 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Objednavka!.Status = ObjednavkaStatus.Ukoncena;
 
                 // zmen stav Stolar
-                Stolar!.CurrentPlace = Objednavka.Workplace;
+                Stolar!.CurrentPlace = Objednavka.WorkplaceIndex;
                 Stolar!.StopWork(Simulation.CurrentTime);
             }
 
             public override void PlanNextEvents()
             {
                 // try plan next objednavka for Stolar C
-                var nextObjednavka = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(StolarType.C);
+                var nextObjednavka = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(NabytokOperation.MontazKovani);
                 if (nextObjednavka is not null)
                 {
-                    if (nextObjednavka.Value.objednavka.Status == ObjednavkaStatus.Narezana)
+                    if (nextObjednavka.Value.objednavka.Status == ObjednavkaStatus.Poskladana)
                     {
-                        Simulation.PlanEvent(new MorenieZaciatok(Simulation)
+                        Simulation.PlanEvent(new MontazKovaniZaciatok(Simulation)
                         {
                             Objednavka = nextObjednavka.Value.objednavka,
                             Stolar = nextObjednavka.Value.stolar
                         });
                     }
-
-                    if (nextObjednavka.Value.objednavka.Status == ObjednavkaStatus.Poskladana)
+                }
+                else
+                {
+                    nextObjednavka = Simulation.ExperimentData.GetFreeStolarAndWaitingObjednavka(NabytokOperation.Morenie);
+                    if (nextObjednavka is not null)
                     {
-                        Simulation.PlanEvent(new MontazKovaniZaciatok(Simulation)
+                        Simulation.PlanEvent(new MorenieZaciatok(Simulation)
                         {
                             Objednavka = nextObjednavka.Value.objednavka,
                             Stolar = nextObjednavka.Value.stolar
@@ -797,7 +823,7 @@ namespace FRI.DISS.Libs.Simulations.EventDriven
                 Simulation.ExperimentStatistics.ObjednavkaTotalTime.AddSample(Objednavka.TimeInSystem);
 
                 // uvolni workplace
-                Simulation.ExperimentData.Workplaces[Objednavka.Workplace] = null;
+                Simulation.ExperimentData.FreeWorkplace(Objednavka);
             }
 
             public override void PlanNextEvents()

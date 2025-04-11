@@ -9,3 +9,13 @@ Popísaný v [https://github.com/Jancikos/diss/pull/1](https://github.com/Jancik
 ### Final
 
 Popísaný v [https://github.com/Jancikos/diss/pull/3](https://github.com/Jancikos/diss/pull/3)
+
+# SP2 
+
+### Checkpoint 1
+
+Popísaný v [https://github.com/Jancikos/diss/pull/4](https://github.com/Jancikos/diss/pull/4)
+
+### Final
+
+Popísaný v [https://github.com/Jancikos/diss/pull/5](https://github.com/Jancikos/diss/pull/5)
