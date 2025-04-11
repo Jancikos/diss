@@ -28,7 +28,11 @@ namespace FRI.DISS.SP3
 
         private void _mnitem_StanicaSimWindow_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("StanicaSimWindow clicked!");
+            var stanicaSimulationWindow = new StanicaSimulationWindow();
+
+            stanicaSimulationWindow.Owner = this;
+            stanicaSimulationWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            stanicaSimulationWindow.ShowDialog();
         }
     }
 }
