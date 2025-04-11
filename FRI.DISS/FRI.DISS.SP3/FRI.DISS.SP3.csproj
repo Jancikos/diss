@@ -8,4 +8,10 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="ABACore">
+      <HintPath>ABACore.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
