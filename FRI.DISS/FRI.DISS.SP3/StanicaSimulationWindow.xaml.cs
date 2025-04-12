@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using FRI.DISS.SP3.Libs.StanicaSimulation.Simulation;
 
 namespace FRI.DISS.SP3
 {
@@ -31,7 +33,16 @@ namespace FRI.DISS.SP3
 
         private void _mnitem_RunSimulation_Click(object sender, RoutedEventArgs e)
         {
-           MessageBox.Show("Simulation started!");
+            Debug.WriteLine("Simulating...");
+
+            var replicationsCount = 10;
+            var endTime = 1000;
+
+            var sim = new MySimulation();
+            
+            sim.Simulate(replicationsCount, endTime);
+
+            Debug.WriteLine("Finished...");
         }
     }
 }

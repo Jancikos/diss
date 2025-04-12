@@ -25,6 +25,7 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentStanica
 		//meta! sender="AgentModelu", id="23", type="Notice"
 		public void ProcessNoticePrichodZakaznika(MessageForm message)
 		{
+            MyAgent.CustomersInStation++;
 		}
 
 		//meta! sender="AgentObsluhaZakaznika", id="28", type="Response"

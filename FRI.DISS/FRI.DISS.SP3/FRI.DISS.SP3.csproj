@@ -18,4 +18,9 @@
     <Folder Include="Libs\StanicaSimulation\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FRI.DISS.Libs.GUI\FRI.DISS.Libs.GUI.csproj" />
+    <ProjectReference Include="..\FRI.DISS.Libs\FRI.DISS.Libs.csproj" />
+  </ItemGroup>
+
 </Project>

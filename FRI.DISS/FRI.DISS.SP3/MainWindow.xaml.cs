@@ -19,6 +19,8 @@ namespace FRI.DISS.SP3
         public MainWindow()
         {
             InitializeComponent();
+
+            // _mnitem_StanicaSimWindow_Click(null, null);
         }
 
         private void _mnitem_Close_Click(object sender, RoutedEventArgs e)

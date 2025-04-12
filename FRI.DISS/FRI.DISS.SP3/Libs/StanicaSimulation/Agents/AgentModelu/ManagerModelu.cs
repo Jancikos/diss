@@ -3,6 +3,7 @@ using  FRI.DISS.SP3.Libs.StanicaSimulation.Simulation;
 namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentModelu
 {
 	/*!
+
 	 * Tiez by som ho považoval za agenta celej stanice
 	 */
 	//meta! id="1"
@@ -28,6 +29,25 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentModelu
 		//meta! sender="AgentOkolia", id="13", type="Notice"
 		public void ProcessNoticePrichodZakaznika(MessageForm message)
 		{
+            if (message.Code != Mc.NoticePrichodZakaznika)
+            {
+                throw new InvalidOperationException("Invalid message code");
+            }
+
+            // vytvor zakaznika
+            var customer = new Customer
+            {
+                ArrivalTime = MySim.CurrentTime
+            };
+            MyAgent.AddCustomer(customer);
+
+            // notifikuj stanicu o prichode zakaznika
+            var stanicaMesasge = ((MySimulation)MySim).CreateStanicaMessage();
+            stanicaMesasge.Code = Mc.NoticePrichodZakaznika;
+            stanicaMesasge.Addressee = MySim.FindAgent(SimId.AgentStanica);
+            stanicaMesasge.Customer = customer;
+
+            Notice(stanicaMesasge);
 		}
 
 		//meta! sender="AgentStanica", id="24", type="Notice"
@@ -40,11 +60,21 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentModelu
 		{
 			switch (message.Code)
 			{
+                case Mc.NoticeInicializuj:
+                    ProcessNoticeInicializuj(message);
+                    break;
 			}
 		}
 
-		//meta! userInfo="Generated code: do not modify", tag="begin"
-		public void Init()
+        private void ProcessNoticeInicializuj(MessageForm message)
+        {
+            // iniciliazuj AgentaOkolia
+            message.Addressee = MySim.FindAgent(SimId.AgentOkolia);
+            Notice(message.CreateCopy());
+        }
+
+        //meta! userInfo="Generated code: do not modify", tag="begin"
+        public void Init()
 		{
 		}
 

@@ -6,6 +6,8 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentStanica
 	//meta! id="5"
 	public class AgentStanica : OSPABA.Agent
 	{
+        public int CustomersInStation { get; set; } = 0;
+
 		public AgentStanica(int id, OSPABA.Simulation mySim, Agent parent) :
 			base(id, mySim, parent)
 		{

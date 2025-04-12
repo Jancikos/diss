@@ -17,6 +17,8 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia
 		{
 			base.PrepareReplication();
 			// Setup component for the next replication
+
+            AddOwnMessage(Mc.NoticePrichodZakaznika);
 		}
 
 		//meta! userInfo="Generated code: do not modify", tag="begin"

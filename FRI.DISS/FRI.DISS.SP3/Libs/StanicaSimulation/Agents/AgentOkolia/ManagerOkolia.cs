@@ -1,5 +1,7 @@
 using OSPABA;
 using  FRI.DISS.SP3.Libs.StanicaSimulation.Simulation;
+
+
 namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia
 {
 	//meta! id="3"
@@ -33,12 +35,34 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia
 		{
 			switch (message.Code)
 			{
+                case Mc.NoticePrichodZakaznika:
+                    ProcessNoticePrichodZakaznika(message);
+                    break;
 			}
 		}
 
-		//meta! sender="AgentModelu", id="59", type="Notice"
-		public void ProcessNoticeInicializuj(MessageForm message)
+        private void ProcessNoticePrichodZakaznika(MessageForm message)
+        {
+            if (message.Code != Mc.NoticePrichodZakaznika)
+            {
+                throw new InvalidOperationException("Invalid message code");
+            }
+
+            // notifikuj parku o prichode zakaznika
+            message.Addressee = MyAgent.Parent;
+            Notice(message.CreateCopy());
+
+            // naplanuj prichod dalsieho zakaznika
+            message.Addressee = MyAgent.FindAssistant(SimId.SchedulerPrichodZakaznika);
+            StartContinualAssistant(message.CreateCopy());
+        }
+
+        //meta! sender="AgentModelu", id="59", type="Notice"
+        public void ProcessNoticeInicializuj(MessageForm message)
 		{
+            // spusti SchedulerPrichodZakaznika pre generovanie prichodov zakaznikov
+            message.Addressee = MyAgent.FindAssistant(SimId.SchedulerPrichodZakaznika);
+            StartContinualAssistant(message.CreateCopy());
 		}
 
 		//meta! userInfo="Generated code: do not modify", tag="begin"
