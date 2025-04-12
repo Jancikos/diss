@@ -5,7 +5,7 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Simulation
 	{
 		//meta! userInfo="Generated code: do not modify", tag="begin"
 		public const int NoticePrichodZakaznika = 1002;
-		public const int NoticeOdchodZakaznika = 1004;
+		public const int NoticeOdchodZakaznika = 1007;
 		public const int RequestResponsePresunZakaznika = 1009;
 		public const int RequestResponseObluzZakaznika = 1010;
 		//meta! tag="end"

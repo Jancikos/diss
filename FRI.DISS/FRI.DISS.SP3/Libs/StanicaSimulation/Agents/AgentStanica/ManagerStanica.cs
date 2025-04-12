@@ -57,16 +57,16 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentStanica
 		{
 			switch (message.Code)
 			{
+			case Mc.RequestResponseObluzZakaznika:
+				ProcessRequestResponseObluzZakaznika(message);
+			break;
+
 			case Mc.NoticePrichodZakaznika:
 				ProcessNoticePrichodZakaznika(message);
 			break;
 
 			case Mc.RequestResponsePresunZakaznika:
 				ProcessRequestResponsePresunZakaznika(message);
-			break;
-
-			case Mc.RequestResponseObluzZakaznika:
-				ProcessRequestResponseObluzZakaznika(message);
 			break;
 
 			default:

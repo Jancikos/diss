@@ -1,7 +1,7 @@
 using OSPABA;
 using  FRI.DISS.SP3.Libs.StanicaSimulation.Simulation;
 using  FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia.ContinualAssistants;
-using  FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia.InstantAssistants;
+
 namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia
 {
 	//meta! id="3"
@@ -23,9 +23,7 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia
 		private void Init()
 		{
 			new ManagerOkolia(SimId.ManagerOkolia, MySim, this);
-			new AdviserOdchodZakaznika(SimId.AdviserOdchodZakaznika, MySim, this);
 			new SchedulerPrichodZakaznika(SimId.SchedulerPrichodZakaznika, MySim, this);
-			AddOwnMessage(Mc.NoticeOdchodZakaznika);
 		}
 		//meta! tag="end"
 	}

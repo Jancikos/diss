@@ -15,7 +15,6 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Simulation
 		public const int ManagerOkolia = 103;
 		public const int ManagerStanica = 105;
 		public const int SchedulerPrichodZakaznika = 1003;
-		public const int AdviserOdchodZakaznika = 1004;
 		public const int ProcessObsluzZakaznika = 1005;
 		public const int AdviserZaradZakaznikaDoFronty = 1006;
 		public const int ProcessPresunZakaznika = 1007;

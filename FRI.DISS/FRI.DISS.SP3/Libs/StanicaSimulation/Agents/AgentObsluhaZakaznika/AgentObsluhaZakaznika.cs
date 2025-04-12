@@ -2,6 +2,7 @@ using OSPABA;
 using  FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentObsluhaZakaznika.InstantAssistants;
 using  FRI.DISS.SP3.Libs.StanicaSimulation.Simulation;
 using  FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentObsluhaZakaznika.ContinualAssistants;
+
 namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentObsluhaZakaznika
 {
 	//meta! id="19"
@@ -23,8 +24,8 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentObsluhaZakaznika
 		private void Init()
 		{
 			new ManagerObsluhaZakaznika(SimId.ManagerObsluhaZakaznika, MySim, this);
-			new AdviserZaradZakaznikaDoFronty(SimId.AdviserZaradZakaznikaDoFronty, MySim, this);
 			new ProcessObsluzZakaznika(SimId.ProcessObsluzZakaznika, MySim, this);
+			new AdviserZaradZakaznikaDoFronty(SimId.AdviserZaradZakaznikaDoFronty, MySim, this);
 			AddOwnMessage(Mc.RequestResponseObluzZakaznika);
 		}
 		//meta! tag="end"

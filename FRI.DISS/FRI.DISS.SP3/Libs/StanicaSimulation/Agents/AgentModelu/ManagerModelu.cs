@@ -52,12 +52,12 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentModelu
 		{
 			switch (message.Code)
 			{
-			case Mc.NoticeOdchodZakaznika:
-				ProcessNoticeOdchodZakaznika(message);
-			break;
-
 			case Mc.NoticePrichodZakaznika:
 				ProcessNoticePrichodZakaznika(message);
+			break;
+
+			case Mc.NoticeOdchodZakaznika:
+				ProcessNoticeOdchodZakaznika(message);
 			break;
 
 			default:

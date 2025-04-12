@@ -22,10 +22,6 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia
 			}
 		}
 
-		//meta! sender="AgentModelu", id="16", type="Notice"
-		public void ProcessNoticeOdchodZakaznika(MessageForm message)
-		{
-		}
 
 		//meta! sender="SchedulerPrichodZakaznika", id="34", type="Finish"
 		public void ProcessFinish(MessageForm message)
@@ -49,10 +45,6 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia
 		{
 			switch (message.Code)
 			{
-			case Mc.NoticeOdchodZakaznika:
-				ProcessNoticeOdchodZakaznika(message);
-			break;
-
 			case Mc.Finish:
 				ProcessFinish(message);
 			break;

@@ -49,12 +49,12 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentObsluhaZakaznika
 		{
 			switch (message.Code)
 			{
-			case Mc.RequestResponseObluzZakaznika:
-				ProcessRequestResponseObluzZakaznika(message);
-			break;
-
 			case Mc.Finish:
 				ProcessFinish(message);
+			break;
+
+			case Mc.RequestResponseObluzZakaznika:
+				ProcessRequestResponseObluzZakaznika(message);
 			break;
 
 			default:

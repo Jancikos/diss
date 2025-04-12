@@ -1,5 +1,6 @@
 using OSPABA;
 using  FRI.DISS.SP3.Libs.StanicaSimulation.Simulation;
+
 namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentModelu
 {
 	/*!
