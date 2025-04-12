@@ -36,6 +36,11 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia
 			}
 		}
 
+		//meta! sender="AgentModelu", id="59", type="Notice"
+		public void ProcessNoticeInicializuj(MessageForm message)
+		{
+		}
+
 		//meta! userInfo="Generated code: do not modify", tag="begin"
 		public void Init()
 		{
@@ -47,6 +52,10 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia
 			{
 			case Mc.Finish:
 				ProcessFinish(message);
+			break;
+
+			case Mc.NoticeInicializuj:
+				ProcessNoticeInicializuj(message);
 			break;
 
 			default:

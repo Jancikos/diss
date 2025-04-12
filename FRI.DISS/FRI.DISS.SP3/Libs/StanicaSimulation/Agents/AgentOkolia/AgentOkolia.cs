@@ -24,6 +24,7 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia
 		{
 			new ManagerOkolia(SimId.ManagerOkolia, MySim, this);
 			new SchedulerPrichodZakaznika(SimId.SchedulerPrichodZakaznika, MySim, this);
+			AddOwnMessage(Mc.NoticeInicializuj);
 		}
 		//meta! tag="end"
 	}
