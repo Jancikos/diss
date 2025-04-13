@@ -12,6 +12,9 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Simulation
 	{   
         public Statistics? CustomersCount;
         public Statistics? CustomersInStationLeftCount;
+        public Statistics? CustomersTotalTime;
+        public Statistics? CustomersQueueTime;
+        public Statistics? CustomersQueueCount;
 
 
 		public MySimulation()
@@ -26,17 +29,15 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Simulation
 			// Create global statistics
 			CustomersCount = new Statistics();
             CustomersInStationLeftCount = new Statistics();
+            CustomersTotalTime = new Statistics();
+            CustomersQueueTime = new Statistics();
+            CustomersQueueCount = new Statistics();
 		}
 
 		override public void PrepareReplication()
 		{
 			base.PrepareReplication();
 			// Reset entities, queues, local statistics, etc...
-
-            var agentModelu = (AgentModelu)FindAgent(SimId.AgentModelu);
-
-            agentModelu.Customers.Clear();
-            Customer.IdCounter = 0;
 
             var agentStanice = (AgentStanica)FindAgent(SimId.AgentStanica);
             agentStanice.CustomersInStation = 0;
@@ -49,9 +50,14 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Simulation
 
             var agentModelu = (AgentModelu)FindAgent(SimId.AgentModelu);
             CustomersCount!.AddSample(agentModelu.Customers.Count);
+            CustomersTotalTime!.AddSample(agentModelu.StatisticsCustomerInStationTime.Mean);
+            CustomersQueueTime!.AddSample(agentModelu.StatisticsCustomerInQueueTime.Mean);
 
             var agentStanice = (AgentStanica)FindAgent(SimId.AgentStanica);
             CustomersInStationLeftCount!.AddSample(agentStanice.CustomersInStation);
+
+            var agentObsluhy = (AgentObsluhaZakaznika)FindAgent(SimId.AgentObsluhaZakaznika);
+            CustomersQueueCount!.AddSample(agentObsluhy.CustomersQueue.Count);
 		}
 
 		override public void SimulationFinished()
@@ -84,6 +90,12 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Simulation
         public MyStanicaMesasge CreateStanicaMessage()
         {
             return new MyStanicaMesasge(this);
+        }
+        public MyStanicaMesasge CreateStanicaMessage(Customer customer)
+        {
+            var message = CreateStanicaMessage();
+            message.Customer = customer;
+            return message;
         }
 	}
     

@@ -53,6 +53,21 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentModelu
 		//meta! sender="AgentStanica", id="24", type="Notice"
 		public void ProcessNoticeOdchodZakaznika(MessageForm message)
 		{
+            if (message.Code != Mc.NoticeOdchodZakaznika)
+            {
+                throw new InvalidOperationException("Invalid message code");
+            }
+
+            var myMsg = (MyStanicaMesasge)message;
+            var customer = myMsg.Customer!;
+
+            customer.State = CustomerState.Left;
+            customer.DepartureTime = MySim.CurrentTime;
+
+            // update statistiky
+            MyAgent.StatisticsCustomerInStationTime.AddSample(customer.TotalTime);
+            MyAgent.StatisticsCustomerInQueueTime.AddSample(customer.QueueTime);
+
 		}
 
 		//meta! userInfo="Process messages defined in code", id="0"

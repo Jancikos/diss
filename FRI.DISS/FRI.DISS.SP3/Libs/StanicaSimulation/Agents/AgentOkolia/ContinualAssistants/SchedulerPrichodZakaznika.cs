@@ -2,12 +2,13 @@ using  FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia;
 using OSPABA;
 using  FRI.DISS.SP3.Libs.StanicaSimulation.Simulation;
 using FRI.DISS.Libs.Generators;
+using FRI.DISS.Libs.Helpers;
 namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia.ContinualAssistants
 {
 	//meta! id="33"
 	public class SchedulerPrichodZakaznika : OSPABA.Scheduler
 	{
-        private AbstractGenerator _generator = new ExponentialGenerator(1.0 / 10.0, SeedGenerator.Global);
+        private AbstractGenerator _generator = new ExponentialGenerator(1.0 / (5.0 * 60.0), SeedGenerator.Global);
 
 		public SchedulerPrichodZakaznika(int id, OSPABA.Simulation mySim, CommonAgent myAgent) :
 			base(id, mySim, myAgent)
@@ -24,7 +25,8 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentOkolia.ContinualAssist
 		public void ProcessStart(MessageForm message)
 		{
             message.Code = Mc.NoticePrichodZakaznika;
-            Hold(_generator.GetSampleDouble(), message);
+            var inTime = _generator.GetSampleDouble();
+            Hold(inTime, message);
 		}
 
         public void ProcessNoticePrichodZakaznika(MessageForm message)

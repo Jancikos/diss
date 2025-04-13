@@ -1,5 +1,6 @@
 using OSPABA;
 using  FRI.DISS.SP3.Libs.StanicaSimulation.Simulation;
+using FRI.DISS.Libs.Generators;
 namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentPresunZakaznika
 {
 	//meta! id="18"
@@ -28,6 +29,11 @@ namespace FRI.DISS.SP3.Libs.StanicaSimulation.Agents.AgentPresunZakaznika
 		//meta! sender="AgentStanica", id="27", type="Request"
 		public void ProcessRequestResponsePresunZakaznika(MessageForm message)
 		{
+            var msg = message.CreateCopy();
+            // msg.Addressee = MyAgent.FindAssistant(SimId.ProcessPresunZakaznika);
+            // StartContinualAssistant(msg);
+
+            Response(msg);
 		}
 
 		//meta! sender="ProcessPresunZakaznika", id="43", type="Finish"

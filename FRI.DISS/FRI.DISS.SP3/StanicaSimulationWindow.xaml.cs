@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using FRI.DISS.Libs.Helpers;
 using FRI.DISS.SP3.Libs.StanicaSimulation.Simulation;
 
 namespace FRI.DISS.SP3
@@ -36,10 +37,12 @@ namespace FRI.DISS.SP3
             Debug.WriteLine("Simulating...");
 
             var replicationsCount = 10;
-            var endTime = 1000;
+            var endTime = TimeHelper.HoursToSeconds(8);
 
             var sim = new MySimulation();
-            
+
+            sim.SetMaxSimSpeed();
+
             sim.Simulate(replicationsCount, endTime);
 
             Debug.WriteLine("Finished...");
