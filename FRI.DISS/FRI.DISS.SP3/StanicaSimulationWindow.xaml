@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:libsuc="clr-namespace:FRI.DISS.Libs.GUI.Controls;assembly=FRI.DISS.Libs.GUI"
         xmlns:local="clr-namespace:FRI.DISS.SP3"
         mc:Ignorable="d"
         Title="DISS SP3 Stanica Simulation" Height="1000" Width="1200">
@@ -26,7 +27,21 @@
     
     
             <Grid Grid.Row="1" Margin="5">
-                
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <libsuc:DicreteStatistic x:Name="_sts_repTotalTime" Title="Celkový čas zakaznika v systému"
+                         MinWidth="200" TransformFromSecondsToHours="true" PlotShow="true" />
+
+                        <libsuc:DicreteStatistic x:Name="_sts_repQueueTime" Title="Průměrná doba čekání na vyřízení"
+                         MinWidth="200" PlotShow="true" />
+                         
+                        <libsuc:DicreteStatistic x:Name="_sts_repQueueLength" Title="Průměrná délka fronty na konci simulace"
+                         MinWidth="200" PlotShow="true" />
+                         
+                        <libsuc:DicreteStatistic x:Name="_sts_repTotalCustomerCount" Title="Celkový počet zakazníků"
+                         MinWidth="200" PlotShow="true" />
+                    </StackPanel>
+                </ScrollViewer>
             </Grid>
     
         </Grid>

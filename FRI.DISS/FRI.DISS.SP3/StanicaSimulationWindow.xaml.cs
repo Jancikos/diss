@@ -36,14 +36,32 @@ namespace FRI.DISS.SP3
         {
             Debug.WriteLine("Simulating...");
 
-            var replicationsCount = 10;
+            var replicationsCount = 10000;
+            var renderInterval = replicationsCount / 50;
             var endTime = TimeHelper.HoursToSeconds(8);
 
             var sim = new MySimulation();
 
+            int repsDone = 0;
+            sim.OnReplicationDidFinish((_) =>
+            {
+                repsDone++;
+
+                if (repsDone % renderInterval == 0)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        _sts_repQueueLength.Update(sim.CustomersQueueCount!);
+                        _sts_repQueueTime.Update(sim.CustomersQueueTime!);
+                        _sts_repTotalTime.Update(sim.CustomersTotalTime!);
+                        _sts_repTotalCustomerCount.Update(sim.CustomersCount!);
+                    });
+                }
+            });
+
             sim.SetMaxSimSpeed();
 
-            sim.Simulate(replicationsCount, endTime);
+            sim.SimulateAsync(replicationsCount, endTime);
 
             Debug.WriteLine("Finished...");
         }
