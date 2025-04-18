@@ -7,10 +7,22 @@ using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariC;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariB;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariA;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
+using FRI.DISS.Libs.Generators;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 {
 	public class MySimulation : OSPABA.Simulation
 	{
+        public int PracoviskaCount { get; set; } = 20;
+        public Dictionary<StolarType, int> StolariCount { get; set; } = new()
+        {
+            { StolarType.A, 2 },
+            { StolarType.B, 2 },
+            { StolarType.C, 18 }
+        };
+
+        public SeedGenerator SeedGenerator { get; set; } = SeedGenerator.Global;
+
 		public MySimulation()
 		{
 			Init();

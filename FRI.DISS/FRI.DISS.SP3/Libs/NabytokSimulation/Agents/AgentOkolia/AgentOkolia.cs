@@ -10,6 +10,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentOkolia
 			base(id, mySim, parent)
 		{
 			Init();
+
+            AddOwnMessage(Mc.NoticePrichodObjednavka);
 		}
 
 		override public void PrepareReplication()

@@ -1,5 +1,6 @@
 using OSPABA;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
 {
 	/*!
@@ -28,6 +29,20 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
 		//meta! sender="AgentOkolia", id="8", type="Notice"
 		public void ProcessNoticePrichodObjednavka(MessageForm message)
 		{
+            if (message.Code != Mc.NoticePrichodObjednavka)
+            {
+                throw new InvalidOperationException("Invalid message code");
+            }
+
+            var myMsg = (MyMessage)message;
+            // pridaj objednavku do zoznamu
+            var objednavka = myMsg.Objednavka;
+            if (objednavka == null)
+            {
+                throw new InvalidOperationException("Objednavka cannot be null");
+            }
+
+            MyAgent.ObjednavkyTotal.Add(objednavka);
 		}
 
 		/*!

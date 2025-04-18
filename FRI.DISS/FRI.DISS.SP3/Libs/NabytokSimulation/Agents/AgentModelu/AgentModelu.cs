@@ -1,5 +1,6 @@
 using OSPABA;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
 {
 	/*!
@@ -8,6 +9,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
 	//meta! id="1"
 	public class AgentModelu : OSPABA.Agent
 	{
+        public List<Objednavka> ObjednavkyTotal { get; set; } = new();
+
 		public AgentModelu(int id, OSPABA.Simulation mySim, Agent parent) :
 			base(id, mySim, parent)
 		{
@@ -17,7 +20,15 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
 		override public void PrepareReplication()
 		{
 			base.PrepareReplication();
+
 			// Setup component for the next replication
+            ObjednavkyTotal.Clear();
+
+            // posli inicializacnu spravu Agentovi okolia
+            var message = new MyMessage(MySim);
+            message.Code = Mc.NoticeInicialuzuj;
+            message.Addressee = MySim.FindAgent(SimId.AgentOkolia);
+            MyManager.Notice(message);
 		}
 
 		//meta! userInfo="Generated code: do not modify", tag="begin"

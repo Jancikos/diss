@@ -18,6 +18,8 @@
 
         <StackPanel>
             <Menu>
+                <MenuItem Header="Run simulation" Click="_mnitem_RunSim_Click">
+                </MenuItem>
                 <MenuItem Header="Stanica simulation" Click="_mnitem_StanicaSimWindow_Click">
                 </MenuItem>
 

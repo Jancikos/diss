@@ -25,11 +25,14 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentOkolia
 		//meta! sender="AgentModelu", id="9", type="Notice"
 		public void ProcessNoticeInicialuzuj(MessageForm message)
 		{
+            message.Addressee = MyAgent.FindAssistant(SimId.SchedulerPrichody);
+            StartContinualAssistant(message.CreateCopy());
 		}
 
 		//meta! sender="SchedulerPrichody", id="69", type="Finish"
 		public void ProcessFinish(MessageForm message)
 		{
+            message.Code = Mc.NoticePrichodObjednavka;
 		}
 
 		//meta! userInfo="Process messages defined in code", id="0"
@@ -37,6 +40,15 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentOkolia
 		{
 			switch (message.Code)
 			{
+                case Mc.NoticePrichodObjednavka:
+                    // notifikuj AgentaModelu o prichode objednavky
+                    message.Addressee = MyAgent.Parent;
+                    Notice(message.CreateCopy());
+
+                    // naplanuj prichod dalsieho zakaznika
+                    message.Addressee = MyAgent.FindAssistant(SimId.SchedulerPrichody);
+                    StartContinualAssistant(message);
+                    break;
 			}
 		}
 

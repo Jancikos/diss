@@ -49,6 +49,11 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
             Type = type;
         }
 
+        public override string ToString()
+        {
+            return $"#{Id} {Type} [{State}]";
+        }
+
         public NabytokOperation MapStatusToNextOperation()
         {
             switch (State)
@@ -79,7 +84,6 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
                 NabytokOperation.MontazKovani => StolarType.C,
                 _ => throw new NotImplementedException()
             };
-
         }
     }
 }
