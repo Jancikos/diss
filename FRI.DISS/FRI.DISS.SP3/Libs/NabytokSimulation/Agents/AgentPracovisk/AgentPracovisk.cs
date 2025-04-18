@@ -1,5 +1,6 @@
 using OSPABA;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
 {
 	/*!
@@ -12,6 +13,15 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
 	//meta! id="30"
 	public class AgentPracovisk : OSPABA.Agent
 	{
+        public List<Pracovisko> Pracoviska { get; set; } = new();
+
+        public Queue<Pracovisko> FreePracoviska { get; set; } = new();
+        public bool HasFreePracovisko => FreePracoviska.Count > 0;
+
+
+        public Queue<MyMessage> WaitingForPracovisko { get; set; } = new();
+        public bool HasWaitingForPracovisko => WaitingForPracovisko.Count > 0;
+
 		public AgentPracovisk(int id, OSPABA.Simulation mySim, Agent parent) :
 			base(id, mySim, parent)
 		{
@@ -22,6 +32,17 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
 		{
 			base.PrepareReplication();
 			// Setup component for the next replication
+
+            Pracoviska.Clear();
+            FreePracoviska.Clear();
+            WaitingForPracovisko.Clear();
+
+            for (int i = 0; i < ((MySimulation)MySim).PracoviskaCount; i++)
+            {
+                var pracovisko = new Pracovisko();
+                Pracoviska.Add(pracovisko);
+                FreePracoviska.Enqueue(pracovisko);
+            }
 		}
 
 		//meta! userInfo="Generated code: do not modify", tag="begin"

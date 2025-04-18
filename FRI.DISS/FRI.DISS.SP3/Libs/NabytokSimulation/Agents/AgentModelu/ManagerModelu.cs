@@ -30,20 +30,26 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
 		public void ProcessNoticePrichodObjednavka(MessageForm message)
 		{
             if (message.Code != Mc.NoticePrichodObjednavka)
-            {
                 throw new InvalidOperationException("Invalid message code");
-            }
 
             var myMsg = (MyMessage)message;
             // pridaj objednavku do zoznamu
             var objednavka = myMsg.Objednavka;
-            if (objednavka == null)
-            {
+            if (objednavka is null)
                 throw new InvalidOperationException("Objednavka cannot be null");
-            }
 
             MyAgent.ObjednavkyTotal.Add(objednavka);
-		}
+
+            // prirad nabytkom pracovisko
+            foreach (var nabytok in objednavka.Nabytky)
+            {
+                var nabytokMsg = (MyMessage)myMsg.CreateCopy();
+                nabytokMsg.Nabytok = nabytok;
+                nabytokMsg.Code = Mc.RequestResponsePriradPracovisko;
+                nabytokMsg.Addressee = MySim.FindAgent(SimId.AgentPracovisk);
+                Request(nabytokMsg);
+            }
+        }
 
 		/*!
 		 * posle oparaciu, ktoru chce vykonat
@@ -63,6 +69,13 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
 		//meta! sender="AgentPracovisk", id="32", type="Response"
 		public void ProcessRequestResponsePriradPracovisko(MessageForm message)
 		{
+            var myMsg = (MyMessage)message;
+            if (message.Code != Mc.RequestResponseVykonajOperaciu)
+                throw new InvalidOperationException("Invalid message code");
+
+            // posli operaciu na vykonanie
+
+            // TODOO
 		}
 
 		//meta! userInfo="Process messages defined in code", id="0"

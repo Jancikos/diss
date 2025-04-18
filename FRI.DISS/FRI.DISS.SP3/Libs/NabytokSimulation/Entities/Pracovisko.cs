@@ -14,5 +14,9 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
         public Dictionary<int, Stolar> Stolari { get; init; } = new();
 
+        public override string ToString()
+        {
+            return $"#{Id} [{(IsFree ? "free" : CurrentNabytok!.ToString())}]";
+        }
     }
 }
