@@ -114,6 +114,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             {
                 // presun stolara na pracovisko
 
+                // TODO
+
                 return;
             }
 
@@ -126,16 +128,35 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
 
         private void _handleOperationRezanie(MyMessage myMsg, Stolar stolar)
         {
+            // TODO
             throw new NotImplementedException();
         }
 
         //meta! sender="ProcessVykonajOperaciu", id="67", type="Finish"
         public void ProcessFinish(MessageForm message)
 		{
+            var  myMsg = (MyMessage)message;
+
+            var nabytok = myMsg.Nabytok!;
+            nabytok.State = nabytok.GetNextState();
+
+            // uvolni stolara
+            _tryFreeStolar(myMsg.Stolar!);
+            myMsg.Stolar = null;
+
+            // vrat response
+            myMsg.Code = Mc.RequestResponseVykonajOperaciu;
+            Response(myMsg);
 		}
 
-		//meta! userInfo="Process messages defined in code", id="0"
-		public void ProcessDefault(MessageForm message)
+        private void _tryFreeStolar(Stolar stolar)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
+        //meta! userInfo="Process messages defined in code", id="0"
+        public void ProcessDefault(MessageForm message)
 		{
 			switch (message.Code)
 			{

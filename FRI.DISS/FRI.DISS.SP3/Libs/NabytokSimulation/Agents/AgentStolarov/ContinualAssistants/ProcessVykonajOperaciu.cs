@@ -57,6 +57,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov.ContinualAssi
 		public void ProcessStart(MessageForm message)
 		{
             var myMsg = (MyMessage)message;
+            myMsg.Code = Mc.Finish;
 
             var intime = _genOperations[myMsg.Nabytok!.Type][myMsg.Nabytok!.MapStateToNextOperation()!].GetSampleDouble();
             Hold(intime, message);
@@ -66,9 +67,6 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov.ContinualAssi
 		public void ProcessDefault(MessageForm message)
 		{
             AssistantFinished(message);
-			switch (message.Code)
-			{
-			}
 		}
 
 		//meta! userInfo="Generated code: do not modify", tag="begin"

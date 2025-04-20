@@ -78,6 +78,26 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
             return $"#{Id} {Type} [{State}]";
         }
 
+        public NabytokState GetNextState()
+        {
+            switch (State)
+            {
+                case NabytokState.CakaNaZaciatokPrace:
+                    return NabytokState.Narezana;
+                case NabytokState.Narezana:
+                    return NabytokState.Namorena;
+                case NabytokState.Namorena:
+                    return NabytokState.Nalakovana;
+                case NabytokState.Nalakovana:
+                    return NabytokState.Poskladana;
+                case NabytokState.Poskladana:
+                    if (Type == NabytokType.Skrina)
+                        return NabytokState.NamontovaneKovania;
+                    break;
+            }
+            return NabytokState.Ukoncena;
+        }
+
         public NabytokOperation MapStateToNextOperation()
         {
             switch (State)
