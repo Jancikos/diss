@@ -1,5 +1,6 @@
 using OSPABA;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
 {
 	/*!
@@ -66,10 +67,70 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
 		//meta! sender="AgentModelu", id="22", type="Request"
 		public void ProcessRequestResponseVykonajOperaciu(MessageForm message)
 		{
+            var myMsg = (MyMessage)message;
+            if (myMsg.Nabytok is null)
+                throw new InvalidOperationException("Nabytok cannot be null");
+
+            if (myMsg.Nabytok.AllWorkDone)
+                throw new InvalidOperationException("Nabytok is already done");
+
+            var nextOperation = myMsg.Nabytok.MapStateToNextOperation();
+            var stolariTypes = myMsg.Nabytok.MapOperationToStolarTypes();
+
+            Stolar? stolar = null;
+            foreach (var stolariType in stolariTypes)
+            {
+                // try to get free stolar of given type
+
+                // TODO
+            }
+
+            if (stolar is null)
+            {
+                // no free stolar of given type => add to waiting queue
+                MyAgent.OperationsQueues[nextOperation].Enqueue(myMsg);
+                return;
+            }
+
+            // starts the operation
+            _handleOperation(myMsg, stolar);
+
 		}
 
-		//meta! sender="ProcessVykonajOperaciu", id="67", type="Finish"
-		public void ProcessFinish(MessageForm message)
+        private void _handleOperation(MyMessage myMsg, Stolar stolar)
+        {
+            var nextOperation = myMsg.Nabytok!.MapStateToNextOperation();
+
+            if (nextOperation == NabytokOperation.Rezanie)
+            {
+                _handleOperationRezanie(myMsg, stolar);
+                return;
+            }
+
+            var nabytok = myMsg.Nabytok!;
+            var pracovisko = nabytok.Pracovisko!;
+
+            if (stolar.CurrentPracovisko != pracovisko)
+            {
+                // presun stolara na pracovisko
+
+                return;
+            }
+
+            // vykonaj operaciu
+            var operationMsg = (MyMessage)myMsg.CreateCopy();
+            operationMsg.Addressee = MyAgent.FindAssistant(SimId.ProcessVykonajOperaciu);
+            StartContinualAssistant(operationMsg);
+        }
+
+
+        private void _handleOperationRezanie(MyMessage myMsg, Stolar stolar)
+        {
+            throw new NotImplementedException();
+        }
+
+        //meta! sender="ProcessVykonajOperaciu", id="67", type="Finish"
+        public void ProcessFinish(MessageForm message)
 		{
 		}
 

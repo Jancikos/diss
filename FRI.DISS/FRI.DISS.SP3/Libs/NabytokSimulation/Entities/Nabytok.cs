@@ -21,11 +21,12 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
     public enum NabytokState
     {
         CakaNaPracovisko,
-        CakaNaNarezanie,
+        CakaNaZaciatokPrace,
         Narezana,
         Namorena,
         Nalakovana,
         Poskladana,
+        NamontovaneKovania,
         Ukoncena
     }
 
@@ -41,6 +42,29 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
         public NabytokType Type { get; init; }
         public NabytokState State { get; set; } = NabytokState.CakaNaPracovisko;
 
+        /// <summary>
+        /// ci su vsetky prace na nabytku hotove
+        /// </summary>
+        /// <value></value>
+        public bool AllWorkDone
+        {
+            get
+            {
+                switch (State)
+                {
+                    case NabytokState.Poskladana:
+                        return Type == NabytokType.Skrina
+                            ? false
+                            : true;
+                    case NabytokState.NamontovaneKovania:
+                    case NabytokState.Ukoncena:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        }
+
         public Pracovisko? Pracovisko { get; set; } = null;
 
         public Nabytok(Objednavka objednavka, NabytokType type)
@@ -54,11 +78,11 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
             return $"#{Id} {Type} [{State}]";
         }
 
-        public NabytokOperation MapStatusToNextOperation()
+        public NabytokOperation MapStateToNextOperation()
         {
             switch (State)
             {
-                case NabytokState.CakaNaNarezanie:
+                case NabytokState.CakaNaZaciatokPrace:
                     return NabytokOperation.Rezanie;
                 case NabytokState.Narezana:
                     return NabytokOperation.Morenie;
@@ -74,16 +98,22 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
             throw new NotImplementedException();
         }
 
-        public static StolarType MapOperationToStolarType(NabytokOperation operation)
+        public StolarType[] MapOperationToStolarTypes() => MapOperationToStolarTypes(MapStateToNextOperation());
+        public static StolarType[] MapOperationToStolarTypes(NabytokOperation operation)
         {
-            return operation switch
+            switch (operation)
             {
-                NabytokOperation.Rezanie => StolarType.A,
-                NabytokOperation.Morenie => StolarType.C,
-                NabytokOperation.Skladanie => StolarType.B,
-                NabytokOperation.MontazKovani => StolarType.C,
-                _ => throw new NotImplementedException()
-            };
+                case NabytokOperation.Rezanie:
+                    return [StolarType.A];
+                case NabytokOperation.Morenie:
+                case NabytokOperation.Lakovanie:
+                    return [StolarType.C];
+                case NabytokOperation.Skladanie:
+                    return [StolarType.B];
+                case NabytokOperation.MontazKovani:
+                    return [StolarType.A, StolarType.C];
+            }
+            throw new NotImplementedException($"Operation {operation} is not implemented");
         }
     }
 }

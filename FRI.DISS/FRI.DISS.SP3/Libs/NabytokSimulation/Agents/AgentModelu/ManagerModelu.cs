@@ -58,6 +58,21 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
 		//meta! sender="AgentStolarov", id="22", type="Response"
 		public void ProcessRequestResponseVykonajOperaciu(MessageForm message)
 		{
+            var myMsg = (MyMessage)message;
+            if (myMsg.Nabytok is null)
+                throw new InvalidOperationException("Nabytok cannot be null");
+
+            if (myMsg.Nabytok.AllWorkDone)
+            {
+                // nabytok je hotovy callback
+                // TODO
+                return;
+            }
+
+            // naplanuj vykonanie dalejsej operacie
+            myMsg.Addressee = MySim.FindAgent(SimId.AgentStolarov);
+            myMsg.Code = Mc.RequestResponseVykonajOperaciu;
+            Request(myMsg);
 		}
 
 		/*!
@@ -74,8 +89,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
                 throw new InvalidOperationException("Invalid message code");
 
             // posli operaciu na vykonanie
-
-            // TODOO
+            myMsg.Code = Mc.RequestResponseVykonajOperaciu;
+            ProcessRequestResponseVykonajOperaciu(myMsg);
 		}
 
 		//meta! userInfo="Process messages defined in code", id="0"

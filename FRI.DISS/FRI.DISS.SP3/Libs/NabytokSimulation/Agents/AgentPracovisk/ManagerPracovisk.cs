@@ -1,5 +1,6 @@
 using OSPABA;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
 {
 	/*!
@@ -45,6 +46,12 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
 
             var myMsg = (MyMessage)message;
 
+            if (myMsg.Nabytok is null)
+                throw new InvalidOperationException("Nabytok cannot be null");
+
+            if (myMsg.Nabytok.State != NabytokState.CakaNaPracovisko)
+                throw new InvalidOperationException("Nabytok is not in the state CakaNaPracovisko");
+
             // pokus sa priradit pracovisko
             if (!MyAgent.HasFreePracovisko)
             {
@@ -55,8 +62,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
 
             // ak je volne pracovisko, tak pridel pracovisko
             var pracovisko = MyAgent.FreePracoviska.Dequeue();
-            pracovisko.CurrentNabytok = myMsg.Nabytok;
-            myMsg.Pracovisko = pracovisko;
+            _assignPracoviskoToNabytok(myMsg, pracovisko);
             Response(myMsg);
 		}
 
@@ -77,7 +83,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
             if (MyAgent.HasWaitingForPracovisko)
             {
                 var waitingMsg = MyAgent.WaitingForPracovisko.Dequeue();
-                waitingMsg.Pracovisko = pracovisko;
+                _assignPracoviskoToNabytok(waitingMsg, pracovisko);
                 Response(waitingMsg);
                 return;
             }
@@ -85,6 +91,20 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
             // ak nikto nie je v rade, tak pracovisko je volne
             MyAgent.FreePracoviska.Enqueue(pracovisko);
 		}
+
+        protected void _assignPracoviskoToNabytok(MyMessage message, Pracovisko pracovisko)
+        {
+            if (message.Nabytok is null)
+                throw new InvalidOperationException("Nabytok cannot be null");
+
+            if (message.Nabytok.State != NabytokState.CakaNaPracovisko)
+                throw new InvalidOperationException("Nabytok is not in the state CakaNaPracovisko");
+
+            // pridel pracovisko
+            message.Nabytok.State = NabytokState.CakaNaZaciatokPrace;
+            message.Pracovisko = pracovisko;
+            pracovisko.CurrentNabytok = message.Nabytok;
+        }
 
 		//meta! userInfo="Process messages defined in code", id="0"
 		public void ProcessDefault(MessageForm message)
