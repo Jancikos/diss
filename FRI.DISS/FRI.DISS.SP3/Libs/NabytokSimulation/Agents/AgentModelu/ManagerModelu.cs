@@ -85,7 +85,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
 		public void ProcessRequestResponsePriradPracovisko(MessageForm message)
 		{
             var myMsg = (MyMessage)message;
-            if (message.Code != Mc.RequestResponseVykonajOperaciu)
+            if (message.Code != Mc.RequestResponsePriradPracovisko)
                 throw new InvalidOperationException("Invalid message code");
 
             // posli operaciu na vykonanie

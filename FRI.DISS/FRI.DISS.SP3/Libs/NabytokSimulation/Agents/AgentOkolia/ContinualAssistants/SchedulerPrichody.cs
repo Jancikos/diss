@@ -57,26 +57,19 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentOkolia.ContinualAssist
 		//meta! sender="AgentOkolia", id="69", type="Start"
 		public void ProcessStart(MessageForm message)
 		{
-            message.Code = Mc.NoticePrichodObjednavka;
             var inTime = _genPrichody.GetSampleDouble();
+            message.Code = Mc.Finish;
             Hold(inTime, message);
 		}
 
 		//meta! userInfo="Process messages defined in code", id="0"
 		public void ProcessDefault(MessageForm message)
 		{
-			switch (message.Code)
-			{
-                case Mc.NoticePrichodObjednavka:
-                    var ntcMessage = new MyMessage(MySim)
-                    {
-                        Code = Mc.NoticePrichodObjednavka,
-                        Addressee = MyAgent.Parent,
-                        Objednavka = _createNewOrder()
-                    };
-                    Notice(ntcMessage);
-                    break;
-			}
+            var ntcMessage = new MyMessage(MySim)
+            {
+                Objednavka = _createNewOrder()
+            };
+            AssistantFinished(ntcMessage);
 		}
 
         private Objednavka _createNewOrder()
