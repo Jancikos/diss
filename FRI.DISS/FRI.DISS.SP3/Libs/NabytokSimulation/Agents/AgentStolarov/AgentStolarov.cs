@@ -15,6 +15,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
     {
         public Dictionary<NabytokOperation, Queue<MyMessage>> OperationsQueues = new()
             {
+                { NabytokOperation.PripravaMaterialu, new() },
                 { NabytokOperation.Rezanie, new() },
                 { NabytokOperation.Morenie, new() },
                 { NabytokOperation.Lakovanie, new() },

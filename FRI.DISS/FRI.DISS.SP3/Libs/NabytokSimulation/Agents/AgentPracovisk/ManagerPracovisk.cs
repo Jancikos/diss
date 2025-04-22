@@ -103,6 +103,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
 
             // pridel pracovisko
             message.Nabytok.State = NabytokState.CakaNaZaciatokPrace;
+            message.Nabytok.Pracovisko = pracovisko;
             message.Pracovisko = pracovisko;
             pracovisko.CurrentNabytok = message.Nabytok;
         }
