@@ -135,5 +135,18 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
             }
             throw new NotImplementedException($"Operation {operation} is not implemented");
         }
+        public static NabytokOperation[] MapStolarTypeToOperations(StolarType stolarType)
+        {
+            switch (stolarType)
+            {
+                case StolarType.A:
+                    return [NabytokOperation.Rezanie, NabytokOperation.MontazKovani];
+                case StolarType.B:
+                    return [NabytokOperation.Skladanie];
+                case StolarType.C:
+                    return [NabytokOperation.Morenie, NabytokOperation.Lakovanie, NabytokOperation.MontazKovani];
+            }
+            throw new NotImplementedException($"Stolar type {stolarType} is not implemented");
+        }
     }
 }

@@ -20,10 +20,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 			// copy() is called in superclass
 
             // Copy attributes
-            Objednavka = original.Objednavka;
-            Nabytok = original.Nabytok;
-            Pracovisko = original.Pracovisko;
-            Stolar = original.Stolar;
+            Copy(original);
 		}
 
 		override public MessageForm CreateCopy()
@@ -34,8 +31,45 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 		override protected void Copy(MessageForm message)
 		{
 			base.Copy(message);
-			MyMessage original = (MyMessage)message;
+
 			// Copy attributes
+			MyMessage original = (MyMessage)message;
+            Objednavka = original.Objednavka;
+            Nabytok = original.Nabytok;
+            Pracovisko = original.Pracovisko;
+            Stolar = original.Stolar;
 		}
 	}
+
+    public class DajStolaraMessage : MyMessage
+    {
+        public Queue<StolarType> StolarTypes { get; set; } = new();
+
+        public DajStolaraMessage(OSPABA.Simulation mySim) :
+            base(mySim)
+        {
+        }
+
+        public DajStolaraMessage(DajStolaraMessage original) :
+            base(original)
+        {
+            // copy() is called in superclass
+
+            // Copy attributes
+            Copy(original);
+        }
+
+        override public MessageForm CreateCopy()
+        {
+            return new DajStolaraMessage(this);
+        }
+        override protected void Copy(MessageForm message)
+        {
+            base.Copy(message);
+
+            // Copy attributes
+            DajStolaraMessage original = (DajStolaraMessage)message;
+            StolarTypes = new Queue<StolarType>(original.StolarTypes);
+        }
+    }
 }

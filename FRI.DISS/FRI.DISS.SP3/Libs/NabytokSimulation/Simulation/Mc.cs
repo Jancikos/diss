@@ -1,3 +1,5 @@
+using FRI.DISS.Libs.Generators;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 using OSPABA;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 {
@@ -16,5 +18,15 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 		//meta! tag="end"
 
 		// 1..1000 range reserved for user
+        public static int GetAgentByStolarType(StolarType type)
+        {
+            return type switch
+            {
+                StolarType.A => SimId.AgentStolariA,
+                StolarType.B => SimId.AgentStolariB,
+                StolarType.C => SimId.AgentStolariC,
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
+        }
 	}
 }

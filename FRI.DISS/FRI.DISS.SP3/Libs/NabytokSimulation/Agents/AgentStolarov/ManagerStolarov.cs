@@ -32,16 +32,44 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
 		//meta! sender="AgentPresunuStolarov", id="61", type="Response"
 		public void ProcessRequestResponsePresunSklad(MessageForm message)
 		{
+            _handleOperation((MyMessage)message);
 		}
 
 		//meta! sender="AgentPresunuStolarov", id="60", type="Response"
 		public void ProcessRequestResponsePresunPracoviska(MessageForm message)
 		{
+            _handleOperation((MyMessage)message);
+		}
+
+		// sender="AgentStolariA|AgentStolariB|AgentStolariC", type="Response"
+		public void ProcessRequestResponseDajStolara(MessageForm message)
+		{
+            var myMsg = (DajStolaraMessage)message;
+
+            if (myMsg.Stolar is not null)
+            {
+                // starts the operation
+                _handleOperation(myMsg);
+                return;
+            }
+
+            if (myMsg.StolarTypes.Count > 0)
+            {
+                // try to get another stolar
+                var nextStolarMsg = (DajStolaraMessage)myMsg.CreateCopy();
+                nextStolarMsg.Addressee = MyAgent.FindAssistant(Mc.GetAgentByStolarType(nextStolarMsg.StolarTypes.Dequeue()));
+                Request(nextStolarMsg);
+                return;
+            }
+
+            // no free stolar of given type => add to waiting queue
+            MyAgent.OperationsQueues[myMsg.Nabytok!.MapStateToNextOperation()!].Enqueue(myMsg);
 		}
 
 		//meta! sender="AgentStolariB", id="25", type="Response"
 		public void ProcessRequestResponseDajStolaraAgentStolariB(MessageForm message)
 		{
+            ProcessRequestResponseDajStolara(message);
 		}
 
 		/*!
@@ -53,11 +81,13 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
 		//meta! sender="AgentStolariC", id="26", type="Response"
 		public void ProcessRequestResponseDajStolaraAgentStolariC(MessageForm message)
 		{
+            ProcessRequestResponseDajStolara(message);
 		}
 
 		//meta! sender="AgentStolariA", id="24", type="Response"
 		public void ProcessRequestResponseDajStolaraAgentStolariA(MessageForm message)
 		{
+            ProcessRequestResponseDajStolara(message);
 		}
 
 		/*!
@@ -74,48 +104,46 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             if (myMsg.Nabytok.AllWorkDone)
                 throw new InvalidOperationException("Nabytok is already done");
 
-            var nextOperation = myMsg.Nabytok.MapStateToNextOperation();
             var stolariTypes = myMsg.Nabytok.MapOperationToStolarTypes();
 
-            Stolar? stolar = null;
+            var dajStolaraMessage = new DajStolaraMessage(MySim)
+            {
+                Nabytok = myMsg.Nabytok,
+            };
             foreach (var stolariType in stolariTypes)
             {
-                // try to get free stolar of given type
-
-                // TODO
+                dajStolaraMessage.StolarTypes.Enqueue(stolariType);
             }
 
-            if (stolar is null)
-            {
-                // no free stolar of given type => add to waiting queue
-                MyAgent.OperationsQueues[nextOperation].Enqueue(myMsg);
-                return;
-            }
-
-            // starts the operation
-            _handleOperation(myMsg, stolar);
-
+            // try to get free stolar of given type
+            ProcessRequestResponseDajStolara(dajStolaraMessage);
 		}
 
-        private void _handleOperation(MyMessage myMsg, Stolar stolar)
+        private void _handleOperation(MyMessage myMsg)
         {
+            var nabytok = myMsg.Nabytok!;
             var nextOperation = myMsg.Nabytok!.MapStateToNextOperation();
+            var pracovisko = nabytok.Pracovisko!;
+            var stolar = myMsg.Stolar!;
+
+            stolar.StartWork(MySim.CurrentTime);
 
             if (nextOperation == NabytokOperation.Rezanie)
             {
-                _handleOperationRezanie(myMsg, stolar);
+                _handleOperationRezanie(myMsg);
                 return;
             }
-
-            var nabytok = myMsg.Nabytok!;
-            var pracovisko = nabytok.Pracovisko!;
 
             if (stolar.CurrentPracovisko != pracovisko)
             {
                 // presun stolara na pracovisko
+                var presunMsg = (MyMessage)myMsg.CreateCopy();
+                presunMsg.Addressee = MyAgent.FindAssistant(SimId.AgentPresunuStolarov);
+                presunMsg.Code = stolar.IsInWarehouse
+                    ? Mc.RequestResponsePresunSklad
+                    : Mc.RequestResponsePresunPracoviska;
 
-                // TODO
-
+                Request(presunMsg);
                 return;
             }
 
@@ -126,7 +154,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
         }
 
 
-        private void _handleOperationRezanie(MyMessage myMsg, Stolar stolar)
+        private void _handleOperationRezanie(MyMessage myMsg)
         {
             // TODO
             throw new NotImplementedException();
@@ -141,6 +169,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             nabytok.State = nabytok.GetNextState();
 
             // uvolni stolara
+            myMsg.Stolar!.StopWork(MySim.CurrentTime);
             _tryFreeStolar(myMsg.Stolar!);
             myMsg.Stolar = null;
 
@@ -151,8 +180,27 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
 
         private void _tryFreeStolar(Stolar stolar)
         {
-            // TODO
-            throw new NotImplementedException();
+            // try find next operation
+            foreach (var operation in Nabytok.MapStolarTypeToOperations(stolar.Type))
+            {
+                if (MyAgent.OperationsQueues[operation].Count > 0)
+                {
+                    // get next operation
+                    var nextOperationMsg = MyAgent.OperationsQueues[operation].Dequeue();
+                    nextOperationMsg.Stolar = stolar;
+                    _handleOperation(nextOperationMsg);
+                    return; // stolar will not be free
+                }
+            }
+
+            // no more operations => free stolar
+            var freeStolarMsg = new MyMessage(MySim)
+            {
+                Code = Mc.NoticeStolarUvolneny,
+                Stolar = stolar,
+                Addressee = MyAgent.FindAssistant(Mc.GetAgentByStolarType(stolar.Type))
+            };
+            Notice(freeStolarMsg);
         }
 
         //meta! userInfo="Process messages defined in code", id="0"

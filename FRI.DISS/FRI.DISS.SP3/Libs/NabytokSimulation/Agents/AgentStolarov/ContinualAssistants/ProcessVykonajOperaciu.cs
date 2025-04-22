@@ -16,7 +16,6 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov.ContinualAssi
 		{
             var seedGenerator = ((MySimulation)MySim).SeedGenerator;
 
-            // TODO - doplnit spravne casy (parametre)
             _genOperations = new()
             {
                 { NabytokType.Stol, new Dictionary<NabytokOperation, AbstractGenerator>
