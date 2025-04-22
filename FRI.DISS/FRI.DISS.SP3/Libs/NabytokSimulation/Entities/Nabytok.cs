@@ -11,6 +11,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
     public enum NabytokOperation
     {
+        PripravaMaterialu,
         Rezanie,
         Morenie,
         Lakovanie,
@@ -22,6 +23,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
     {
         CakaNaPracovisko,
         CakaNaZaciatokPrace,
+        PripravenyMaterial,
         Narezana,
         Namorena,
         Nalakovana,
@@ -83,6 +85,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
             switch (State)
             {
                 case NabytokState.CakaNaZaciatokPrace:
+                    return NabytokState.PripravenyMaterial;
+                case NabytokState.PripravenyMaterial:
                     return NabytokState.Narezana;
                 case NabytokState.Narezana:
                     return NabytokState.Namorena;
@@ -103,6 +107,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
             switch (State)
             {
                 case NabytokState.CakaNaZaciatokPrace:
+                    return NabytokOperation.PripravaMaterialu;
+                case NabytokState.PripravenyMaterial:
                     return NabytokOperation.Rezanie;
                 case NabytokState.Narezana:
                     return NabytokOperation.Morenie;
@@ -123,6 +129,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
         {
             switch (operation)
             {
+                case NabytokOperation.PripravaMaterialu:
                 case NabytokOperation.Rezanie:
                     return [StolarType.A];
                 case NabytokOperation.Morenie:
@@ -140,11 +147,11 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
             switch (stolarType)
             {
                 case StolarType.A:
-                    return [NabytokOperation.Rezanie, NabytokOperation.MontazKovani];
+                    return [NabytokOperation.MontazKovani, NabytokOperation.PripravaMaterialu, NabytokOperation.Rezanie];
                 case StolarType.B:
                     return [NabytokOperation.Skladanie];
                 case StolarType.C:
-                    return [NabytokOperation.Morenie, NabytokOperation.Lakovanie, NabytokOperation.MontazKovani];
+                    return [NabytokOperation.MontazKovani, NabytokOperation.Morenie, NabytokOperation.Lakovanie];
             }
             throw new NotImplementedException($"Stolar type {stolarType} is not implemented");
         }

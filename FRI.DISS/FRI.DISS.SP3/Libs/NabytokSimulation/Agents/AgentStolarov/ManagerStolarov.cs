@@ -104,6 +104,14 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             if (myMsg.Nabytok.AllWorkDone)
                 throw new InvalidOperationException("Nabytok is already done");
 
+            if (myMsg.Stolar is not null)
+            {
+                // stolar is already assigned
+                _handleOperation(myMsg);
+                return;
+            }
+
+            // get free stolar of given type
             var stolariTypes = myMsg.Nabytok.MapOperationToStolarTypes();
 
             var dajStolaraMessage = new DajStolaraMessage(MySim)
@@ -128,18 +136,19 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
 
             stolar.StartWork(MySim.CurrentTime);
 
-            if (nextOperation == NabytokOperation.Rezanie)
+            if (nextOperation == NabytokOperation.PripravaMaterialu)
             {
-                _handleOperationRezanie(myMsg);
+                // lebo tato operacia sa vykonava na pracovisku
+                pracovisko = Pracovisko.Sklad;
                 return;
             }
 
-            if (stolar.CurrentPracovisko != pracovisko)
+            if (stolar.CurrentPracovisko!.Id != pracovisko.Id)
             {
                 // presun stolara na pracovisko
                 var presunMsg = (MyMessage)myMsg.CreateCopy();
                 presunMsg.Addressee = MyAgent.FindAssistant(SimId.AgentPresunuStolarov);
-                presunMsg.Code = stolar.IsInWarehouse
+                presunMsg.Code = (stolar.IsInWarehouse || pracovisko.IsWarehouse)
                     ? Mc.RequestResponsePresunSklad
                     : Mc.RequestResponsePresunPracoviska;
 
@@ -153,13 +162,6 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             StartContinualAssistant(operationMsg);
         }
 
-
-        private void _handleOperationRezanie(MyMessage myMsg)
-        {
-            // TODO
-            throw new NotImplementedException();
-        }
-
         //meta! sender="ProcessVykonajOperaciu", id="67", type="Finish"
         public void ProcessFinish(MessageForm message)
 		{
@@ -168,10 +170,13 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             var nabytok = myMsg.Nabytok!;
             nabytok.State = nabytok.GetNextState();
 
-            // uvolni stolara
-            myMsg.Stolar!.StopWork(MySim.CurrentTime);
-            _tryFreeStolar(myMsg.Stolar!);
-            myMsg.Stolar = null;
+            if (nabytok.State != NabytokState.PripravenyMaterial) 
+            {
+                // uvolni stolara
+                myMsg.Stolar!.StopWork(MySim.CurrentTime);
+                _tryFreeStolar(myMsg.Stolar!);
+                myMsg.Stolar = null;
+            }
 
             // vrat response
             myMsg.Code = Mc.RequestResponseVykonajOperaciu;
