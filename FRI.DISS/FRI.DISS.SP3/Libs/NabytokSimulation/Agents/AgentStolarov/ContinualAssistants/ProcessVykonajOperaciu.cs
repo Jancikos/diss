@@ -22,24 +22,24 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov.ContinualAssi
                 { NabytokType.Stol, new Dictionary<NabytokOperation, AbstractGenerator>
                     {
                         { NabytokOperation.Rezanie, new EmpiricalGenerator(GenerationMode.Continuous, [TimeHelper.M2S(10), TimeHelper.M2S(25), TimeHelper.M2S(50)], [0.6, 0.4], seedGenerator) },
-                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(100), Max = TimeHelper.M2S(610)} },
-                        { NabytokOperation.Lakovanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(20), Max = TimeHelper.M2S(40)} },
+                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(100), Max = TimeHelper.M2S(480)} },
+                        { NabytokOperation.Lakovanie, new EmpiricalGenerator(GenerationMode.Continuous, [TimeHelper.M2S(50), TimeHelper.M2S(70), TimeHelper.M2S(150), TimeHelper.M2S(200)], [0.1, 0.6, 0.3], seedGenerator) },
                         { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(30), Max = TimeHelper.M2S(60)} }
                     }
                 },
                 { NabytokType.Stolicka, new Dictionary<NabytokOperation, AbstractGenerator>
                     {
                         { NabytokOperation.Rezanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(12), Max = TimeHelper.M2S(16)} },
-                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(210), Max = TimeHelper.M2S(540)} },
-                        { NabytokOperation.Lakovanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(20), Max = TimeHelper.M2S(30)} },
+                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(90), Max = TimeHelper.M2S(400)} },
+                        { NabytokOperation.Lakovanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(40), Max = TimeHelper.M2S(200)} },
                         { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(14), Max = TimeHelper.M2S(24)} }
                     }
                 },
                 { NabytokType.Skrina, new Dictionary<NabytokOperation, AbstractGenerator>
                     {
                         { NabytokOperation.Rezanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(15), Max = TimeHelper.M2S(80)} },
-                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(600), Max = TimeHelper.M2S(700)} },
-                        { NabytokOperation.Lakovanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(30), Max = TimeHelper.M2S(50)} },
+                        { NabytokOperation.Morenie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(300), Max = TimeHelper.M2S(600)} },
+                        { NabytokOperation.Lakovanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(250), Max = TimeHelper.M2S(560)} },
                         { NabytokOperation.Skladanie, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(35), Max = TimeHelper.M2S(75)} },
                         { NabytokOperation.MontazKovani, new UniformGenerator(GenerationMode.Continuous, seedGenerator) {Min = TimeHelper.M2S(15), Max = TimeHelper.M2S(25)} }
                     }
