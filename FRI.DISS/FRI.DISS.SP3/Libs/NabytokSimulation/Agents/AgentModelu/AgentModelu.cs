@@ -10,6 +10,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
 	public class AgentModelu : OSPABA.Agent
 	{
         public List<Objednavka> ObjednavkyTotal { get; set; } = new();
+        public int ObjednavkyCount => ObjednavkyTotal.Count;
+        public int ObjednavkyDoneCount { get; set; } = 0;
 
 		public AgentModelu(int id, OSPABA.Simulation mySim, Agent parent) :
 			base(id, mySim, parent)
@@ -23,6 +25,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
 
 			// Setup component for the next replication
             ObjednavkyTotal.Clear();
+            ObjednavkyDoneCount = 0;
 
             // posli inicializacnu spravu Agentovi okolia
             var message = new MyMessage(MySim);

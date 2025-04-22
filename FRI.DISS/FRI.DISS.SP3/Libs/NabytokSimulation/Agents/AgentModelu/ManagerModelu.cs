@@ -65,7 +65,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
             if (myMsg.Nabytok.AllWorkDone)
             {
                 // nabytok je hotovy callback
-                // TODO
+                _handleNabytokFinished(myMsg.Nabytok!);
                 return;
             }
 
@@ -75,14 +75,47 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
             Request(myMsg);
 		}
 
-		/*!
+        private void _handleNabytokFinished(Nabytok nabytok)
+        {
+            if (!nabytok.AllWorkDone) 
+                throw new InvalidOperationException("Nabytok is not finished");
+
+            var objednavka = nabytok.Objednavka!;
+
+            // aktualiuj statistiky
+            objednavka.NabytokDoneCount++;
+
+            // uvolni pracovisko
+            var myMsg = new MyMessage(MySim)
+            {
+                Pracovisko = nabytok.Pracovisko,
+                Code = Mc.NoticePracoviskoUvolnene,
+                Addressee = MySim.FindAgent(SimId.AgentPracovisk)
+            };
+            Notice(myMsg);
+
+            // skontroluj ci je uz nie cela objednavka hotova
+            if (objednavka.NabytokDoneCount == objednavka.NabytokCount)
+            {
+                _handleObjednavkaFinished(objednavka);
+            }
+        }
+
+        private void _handleObjednavkaFinished(Objednavka objednavka)
+        {
+            MyAgent.ObjednavkyDoneCount++;
+            objednavka.EndTime = MySim.CurrentTime;
+        }
+
+        /*!
 		 * request na priradene pracovbisku sa moze spravit len ak ten agent pracovisk  
 		 * 
 		 * 
 		 * meisto sa moze 
 		 */
-		//meta! sender="AgentPracovisk", id="32", type="Response"
-		public void ProcessRequestResponsePriradPracovisko(MessageForm message)
+        //meta! sender="AgentPracovisk", id="32", type="Response"
+
+        public void ProcessRequestResponsePriradPracovisko(MessageForm message)
 		{
             var myMsg = (MyMessage)message;
             if (message.Code != Mc.RequestResponsePriradPracovisko)

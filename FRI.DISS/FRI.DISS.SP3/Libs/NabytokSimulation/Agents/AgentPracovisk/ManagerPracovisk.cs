@@ -89,6 +89,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
             }
 
             // ak nikto nie je v rade, tak pracovisko je volne
+            pracovisko.CurrentNabytok = null;
             MyAgent.FreePracoviska.Enqueue(pracovisko);
 		}
 

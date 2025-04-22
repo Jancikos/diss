@@ -10,6 +10,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
         public int Id { get; init; } = GetNextId();
 
         public List<Nabytok> Nabytky { get; init; } = new();
+        public int NabytokCount => Nabytky.Count;
+        public int NabytokDoneCount {get; set; } = 0;
         public double CreationTime { get; init; }
         public double? EndTime { get; set; }
         public double TimeInSystem => EndTime is not null
