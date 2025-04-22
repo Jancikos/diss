@@ -44,7 +44,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
 		// sender="AgentStolariA|AgentStolariB|AgentStolariC", type="Response"
 		public void ProcessRequestResponseDajStolara(MessageForm message)
 		{
-            var myMsg = (DajStolaraMessage)message;
+            var myMsg = (MyMessage)message;
 
             if (myMsg.Stolar is not null)
             {
@@ -56,7 +56,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             if (myMsg.StolarTypes.Count > 0)
             {
                 // try to get another stolar
-                var nextStolarMsg = (DajStolaraMessage)myMsg.CreateCopy();
+                var nextStolarMsg = (MyMessage)myMsg.CreateCopy();
                 nextStolarMsg.Addressee = MySim.FindAgent(Mc.GetAgentByStolarType(nextStolarMsg.StolarTypes.Dequeue()));
                 Request(nextStolarMsg);
                 return;
@@ -114,18 +114,14 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             // get free stolar of given type
             var stolariTypes = myMsg.Nabytok.MapOperationToStolarTypes();
 
-            var dajStolaraMessage = new DajStolaraMessage(MySim)
-            {
-                Nabytok = myMsg.Nabytok,
-                Code = Mc.RequestResponseDajStolara
-            };
+            myMsg.Code = Mc.RequestResponseDajStolara;
             foreach (var stolariType in stolariTypes)
             {
-                dajStolaraMessage.StolarTypes.Enqueue(stolariType);
+                myMsg.StolarTypes.Enqueue(stolariType);
             }
 
             // try to get free stolar of given type
-            ProcessRequestResponseDajStolara(dajStolaraMessage);
+            ProcessRequestResponseDajStolara(myMsg);
 		}
 
         private void _handleOperation(MyMessage myMsg)
@@ -145,7 +141,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             {
                 // presun stolara na pracovisko
                 var presunMsg = (MyMessage)myMsg.CreateCopy();
-                presunMsg.Addressee = MyAgent.FindAssistant(SimId.AgentPresunuStolarov);
+                presunMsg.Addressee = MySim.FindAgent(SimId.AgentPresunuStolarov);
                 presunMsg.Pracovisko = pracovisko;
                 presunMsg.Code = (stolar.IsInWarehouse || pracovisko.IsWarehouse)
                     ? Mc.RequestResponsePresunSklad

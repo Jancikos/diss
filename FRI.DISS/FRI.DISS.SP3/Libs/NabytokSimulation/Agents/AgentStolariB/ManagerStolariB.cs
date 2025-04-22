@@ -25,7 +25,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariB
 		//meta! sender="AgentStolarov", id="25", type="Request"
 		public void ProcessRequestResponseDajStolara(MessageForm message)
 		{
-            var myMsg = (DajStolaraMessage)message;
+            var myMsg = (MyMessage)message;
 
             if (myMsg.Stolar is not null)
                 throw new InvalidOperationException("Stolar must be null");
