@@ -20,12 +20,20 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
         public StolarType Type { get; init; }
 
-        public Pracovisko? CurrentPracovisko { get; set; } = null;
-        public bool IsInWarehouse => CurrentPracovisko is null;
+        public Pracovisko? CurrentPracovisko { get; set; }
+        public bool IsInWarehouse => CurrentPracovisko?.IsWarehouse ?? false;
+        public bool IsOnTravel => CurrentPracovisko is null;
+
 
         public double TimeInWork { get; protected set; } = 0;
         public bool IsWorking => _lastWorkStartTime is not null;
         protected double? _lastWorkStartTime = null;
+
+        public Stolar()
+        {
+            CurrentPracovisko = Pracovisko.Sklad;
+            Pracovisko.Sklad.Stolari.Add(Id, this);
+        }
 
         public void StartWork(double time)
         {

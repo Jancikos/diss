@@ -1,14 +1,20 @@
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPresunuStolarov;
 using OSPABA;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
+using FRI.DISS.Libs.Generators;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPresunuStolarov.ContinualAssistants
 {
 	//meta! id="62"
 	public class ProcessPresunSklad : OSPABA.Process
 	{
+        private AbstractGenerator _genPresun;
+
 		public ProcessPresunSklad(int id, OSPABA.Simulation mySim, CommonAgent myAgent) :
 			base(id, mySim, myAgent)
 		{
+            var seedGenerator = ((MySimulation)MySim).SeedGenerator;
+
+            _genPresun = new TriangularGenerator(60, 480, 120, seedGenerator);
 		}
 
 		override public void PrepareReplication()
@@ -20,14 +26,17 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPresunuStolarov.Contin
 		//meta! sender="AgentPresunuStolarov", id="63", type="Start"
 		public void ProcessStart(MessageForm message)
 		{
+            var myMsg = (MyMessage)message;
+            myMsg.Code = Mc.Finish;
+
+            var intime = _genPresun.GetSampleDouble();
+            Hold(intime, message);
 		}
 
 		//meta! userInfo="Process messages defined in code", id="0"
 		public void ProcessDefault(MessageForm message)
 		{
-			switch (message.Code)
-			{
-			}
+            AssistantFinished(message);
 		}
 
 		//meta! userInfo="Generated code: do not modify", tag="begin"

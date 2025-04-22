@@ -146,6 +146,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
                 // presun stolara na pracovisko
                 var presunMsg = (MyMessage)myMsg.CreateCopy();
                 presunMsg.Addressee = MyAgent.FindAssistant(SimId.AgentPresunuStolarov);
+                presunMsg.Pracovisko = pracovisko;
                 presunMsg.Code = (stolar.IsInWarehouse || pracovisko.IsWarehouse)
                     ? Mc.RequestResponsePresunSklad
                     : Mc.RequestResponsePresunPracoviska;
