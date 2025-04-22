@@ -134,13 +134,10 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             var pracovisko = nabytok.Pracovisko!;
             var stolar = myMsg.Stolar!;
 
-            stolar.StartWork(MySim.CurrentTime);
-
             if (nextOperation == NabytokOperation.PripravaMaterialu)
             {
                 // lebo tato operacia sa vykonava na pracovisku
                 pracovisko = Pracovisko.Sklad;
-                return;
             }
 
             if (stolar.CurrentPracovisko!.Id != pracovisko.Id)
@@ -173,7 +170,6 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             if (nabytok.State != NabytokState.PripravenyMaterial) 
             {
                 // uvolni stolara
-                myMsg.Stolar!.StopWork(MySim.CurrentTime);
                 _tryFreeStolar(myMsg.Stolar!);
                 myMsg.Stolar = null;
             }
