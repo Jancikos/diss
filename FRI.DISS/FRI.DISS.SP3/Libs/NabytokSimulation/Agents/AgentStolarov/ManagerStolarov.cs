@@ -57,7 +57,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             {
                 // try to get another stolar
                 var nextStolarMsg = (DajStolaraMessage)myMsg.CreateCopy();
-                nextStolarMsg.Addressee = MyAgent.FindAssistant(Mc.GetAgentByStolarType(nextStolarMsg.StolarTypes.Dequeue()));
+                nextStolarMsg.Addressee = MySim.FindAgent(Mc.GetAgentByStolarType(nextStolarMsg.StolarTypes.Dequeue()));
                 Request(nextStolarMsg);
                 return;
             }
@@ -117,6 +117,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             var dajStolaraMessage = new DajStolaraMessage(MySim)
             {
                 Nabytok = myMsg.Nabytok,
+                Code = Mc.RequestResponseDajStolara
             };
             foreach (var stolariType in stolariTypes)
             {
