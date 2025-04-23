@@ -9,6 +9,7 @@ using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariA;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 using FRI.DISS.Libs.Generators;
+using FRI.DISS.Libs.Helpers;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 {
 	public class MySimulation : OSPABA.Simulation
@@ -22,6 +23,12 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
         };
 
         public SeedGenerator SeedGenerator { get; set; } = SeedGenerator.Global;
+
+        // pracovna doba je denne od 6:00 do 14:00
+        public string CurrentTimeFormatted => TimeSpan.FromSeconds(TimeHelper.HoursToSeconds(6) + (CurrentTime % TimeHelper.HoursToSeconds(8))).ToString(@"hh\:mm\:ss");
+        public string CurrentTimeDayFormatted => ((int)CurrentTime / TimeHelper.HoursToSeconds(8)).ToString();
+
+        public int Endtime => TimeHelper.HoursToSeconds(8) * 249; // 6:00 az 14:00 * 249 dni
 
 		public MySimulation()
 		{

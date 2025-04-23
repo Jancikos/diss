@@ -110,29 +110,6 @@ namespace FRI.DISS.SP2
             _simulation.StolariCount[NabytokSimulation.StolarType.C] = _txt_simStolariCCount.IntValue;
         }
 
-        private void _setSimulationTimeFromGUI()
-        {
-            var mode = _chk_simMaxSpeed.IsChecked == true
-                ? EventDrivenSimulationTimeMode.FastForward
-                : EventDrivenSimulationTimeMode.RealTime;
-
-            _simulation.TimeMode = mode;
-
-            switch (mode)
-            {
-                case EventDrivenSimulationTimeMode.RealTime:
-                    _simulation.RealTimeRatio = (EventDrivenSimulationRealTimeRatios)_cmbx_simRealTimeRatio.SelectedItem;
-                    _grbx_expRealTimeMode.Visibility = Visibility.Visible;
-                    _grbx_expFastForwardMode.Visibility = Visibility.Collapsed;
-                    break;
-
-                case EventDrivenSimulationTimeMode.FastForward:
-                    _grbx_expRealTimeMode.Visibility = Visibility.Collapsed;
-                    _grbx_expFastForwardMode.Visibility = Visibility.Visible;
-                    break;
-            }
-        }
-
         private void _simulation_GUIEventHappened(object? sender, EventDrivenSimulationGUIEventArgs e)
         {
             switch(_simulation.TimeMode)
