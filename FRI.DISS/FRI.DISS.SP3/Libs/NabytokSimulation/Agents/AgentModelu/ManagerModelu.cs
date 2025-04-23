@@ -105,6 +105,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
         {
             MyAgent.ObjednavkyDoneCount++;
             objednavka.EndTime = MySim.CurrentTime;
+            MyAgent.ObjednavkaTotalTime.AddSample(objednavka.TimeInSystem);
         }
 
         /*!

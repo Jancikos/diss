@@ -70,9 +70,16 @@ namespace FRI.DISS.SP3
                 _refreshWorkplaces();
                 _refreshStolariExp();
                 _refreshOperationsQueuesExp();
+                _refreshExperimentStats();
             });
         }
 
+        private void _refreshExperimentStats()
+        {
+            var agentModelu = (AgentModelu)_simulation.FindAgent(SimId.AgentModelu);
+
+            _sts_expObjednavkaTime.Update(agentModelu.ObjednavkaTotalTime);
+        }
         private void _refreshTimeGUI()
         {
             _txt_expTime.Value = _simulation.CurrentTimeFormatted;
