@@ -1,13 +1,14 @@
 using OSPABA;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariA;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariC
 {
 	//meta! id="13"
-	public class AgentStolariC : OSPABA.Agent
-	{
-        public Dictionary<int, Stolar> Stolari = new();
-        public Queue<Stolar> FreeStolarai = new();
+    public class AgentStolariC : OSPABA.Agent, IAgentStolari
+    {
+        public Dictionary<int, Stolar> Stolari { get; } = new();
+        public Queue<Stolar> FreeStolarai { get; } = new();
 
 		public AgentStolariC(int id, OSPABA.Simulation mySim, Agent parent) :
 			base(id, mySim, parent)

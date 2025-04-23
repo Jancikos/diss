@@ -15,6 +15,7 @@ using FRI.DISS.Libs.Simulations.EventDriven;
 using FRI.DISS.SP3.Controls;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariA;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
 using OSPABA;
@@ -66,6 +67,7 @@ namespace FRI.DISS.SP3
 
                 _refreshOrders();
                 _refreshWorkplaces();
+                _refreshStolariExp();
             });
         }
 
@@ -125,6 +127,24 @@ namespace FRI.DISS.SP3
                 ucPracovisko.Pracovisko = pracovisko;
             }
         }
+        
+        private void _refreshStolariExp()
+        {
+            var agents = new Dictionary<StolarType, IAgentStolari>()
+            {
+                { StolarType.A, (IAgentStolari)_simulation.FindAgent(SimId.AgentStolariA) },
+                { StolarType.B, (IAgentStolari)_simulation.FindAgent(SimId.AgentStolariB) },
+                { StolarType.C, (IAgentStolari)_simulation.FindAgent(SimId.AgentStolariC) },
+            };
+
+            _lst_expStolariTypes.Children.Cast<StolariUserControl>().ToList().ForEach(stolarUC =>
+            {
+                var stolarType = stolarUC.StolarType;
+                var stolari = agents[stolarType].Stolari;
+
+                stolarUC.UpdateGUI(stolari.Values.ToList());
+            });
+        }
 
         private void _initializeGUI()
         {
@@ -132,6 +152,16 @@ namespace FRI.DISS.SP3
             _cmbx_simRealTimeRatio.ItemsSource = Enum.GetValues(typeof(EventDrivenSimulationRealTimeRatios)).Cast<EventDrivenSimulationRealTimeRatios>();
             // _cmbx_simRealTimeRatio.SelectedIndex = 0;
             _cmbx_simRealTimeRatio.SelectedIndex = 9;
+            
+            // stolari types
+            Enum.GetValues(typeof(StolarType)).Cast<StolarType>().ToList().ForEach(stolarType =>
+            {
+                _lst_expStolariTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
+                // _lst_expStolariTypesQueues.Children.Add(new StolariQueueUserControl() { StolarType = stolarType });
+
+                // _lst_repsStolariTypes.Children.Add(new DicreteStatistic() { Title = $"Vyťaženie stolárov {stolarType} (%)", PlotShow = true, TransformToPercentage = true });
+                // _lst_repsStolarTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
+            });
         }
         
         private void _initializeSimulationFromGUI()
