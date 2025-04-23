@@ -197,7 +197,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             {
                 Code = Mc.NoticeStolarUvolneny,
                 Stolar = stolar,
-                Addressee = MyAgent.FindAssistant(Mc.GetAgentByStolarType(stolar.Type))
+                Addressee = MySim.FindAgent(Mc.GetAgentByStolarType(stolar.Type))
             };
             Notice(freeStolarMsg);
         }
