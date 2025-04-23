@@ -10,6 +10,9 @@
     <Compile Update="Controls\ObjednavkaUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Controls\OperationQueueUserControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Controls\PracoviskoUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -25,6 +28,9 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Controls\ObjednavkaUserControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\OperationQueueUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Controls\PracoviskoUserControl.xaml">

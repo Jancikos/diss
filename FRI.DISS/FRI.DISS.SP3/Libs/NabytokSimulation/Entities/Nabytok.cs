@@ -11,6 +11,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
     public enum NabytokOperation
     {
+        PriradovaniePracoviska,
         PripravaMaterialu,
         Rezanie,
         Morenie,
@@ -108,6 +109,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
         {
             switch (State)
             {
+                case NabytokState.CakaNaPracovisko:
+                    return NabytokOperation.PriradovaniePracoviska;
                 case NabytokState.CakaNaZaciatokPrace:
                     return NabytokOperation.PripravaMaterialu;
                 case NabytokState.PripravenyMaterial:

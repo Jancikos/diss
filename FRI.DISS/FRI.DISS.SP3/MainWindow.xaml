@@ -154,8 +154,8 @@
                                     </UniformGrid>
                                 </GroupBox>
 
-                                <GroupBox Grid.Row="1" Grid.Column="3" Header="Stolari queues" MinWidth="600">
-                                    <UniformGrid x:Name="_lst_expStolariTypesQueues" Rows="1">
+                                <GroupBox Grid.Row="1" Grid.Column="3" Header="Operations queues" MinWidth="600">
+                                    <UniformGrid x:Name="_lst_expOperationsQueues" Rows="1">
 
                                     </UniformGrid>
                                 </GroupBox>

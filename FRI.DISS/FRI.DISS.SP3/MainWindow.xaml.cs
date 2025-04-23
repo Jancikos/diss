@@ -16,6 +16,7 @@ using FRI.DISS.SP3.Controls;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariA;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
 using OSPABA;
@@ -68,6 +69,7 @@ namespace FRI.DISS.SP3
                 _refreshOrders();
                 _refreshWorkplaces();
                 _refreshStolariExp();
+                _refreshOperationsQueuesExp();
             });
         }
 
@@ -146,6 +148,22 @@ namespace FRI.DISS.SP3
             });
         }
 
+        private void _refreshOperationsQueuesExp()
+        {
+            var agentStolarov = (AgentStolarov)_simulation.FindAgent(SimId.AgentStolarov);
+            var agentPracovisk = (AgentPracovisk)_simulation.FindAgent(SimId.AgentPracovisk);
+
+            _lst_expOperationsQueues.Children.Cast<OperationQueueUserControl>().ToList().ForEach(operationQueueUC =>
+            {
+                var nabytokOperation = operationQueueUC.NabytokOperation;
+                var items = nabytokOperation == NabytokOperation.PriradovaniePracoviska
+                    ? agentPracovisk.WaitingForPracovisko.ToList()
+                    : agentStolarov.OperationsQueues[nabytokOperation].ToList();
+
+                operationQueueUC._updateGUI(items);
+            });
+        }
+
         private void _initializeGUI()
         {
             // cmbx timeRatio
@@ -161,6 +179,12 @@ namespace FRI.DISS.SP3
 
                 // _lst_repsStolariTypes.Children.Add(new DicreteStatistic() { Title = $"Vyťaženie stolárov {stolarType} (%)", PlotShow = true, TransformToPercentage = true });
                 // _lst_repsStolarTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
+            });
+
+            // operation queues
+            Enum.GetValues(typeof(NabytokOperation)).Cast<NabytokOperation>().ToList().ForEach(nabytokOperation =>
+            {
+                _lst_expOperationsQueues.Children.Add(new OperationQueueUserControl() { NabytokOperation = nabytokOperation });
             });
         }
         
