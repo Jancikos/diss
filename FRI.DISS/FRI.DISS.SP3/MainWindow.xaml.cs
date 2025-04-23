@@ -12,6 +12,8 @@ using System.Windows.Shapes;
 using FRI.DISS.Libs.Generators;
 using FRI.DISS.Libs.Helpers;
 using FRI.DISS.Libs.Simulations.EventDriven;
+using FRI.DISS.SP3.Controls;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
 using OSPABA;
@@ -60,6 +62,8 @@ namespace FRI.DISS.SP3
             Dispatcher.Invoke(() =>
             {
                 _refreshTimeGUI();
+
+                _refreshOrders();
             });
         }
 
@@ -68,6 +72,31 @@ namespace FRI.DISS.SP3
             _txt_expTime.Value = _simulation.CurrentTimeFormatted;
             _txt_expDay.Value = _simulation.CurrentTimeDayFormatted.ToString();
             _txt_expTimeRaw.Value = _simulation.CurrentTime.ToString("F2");
+        }
+        private void _refreshOrders()
+        {
+            var agentModelu = (AgentModelu)_simulation.FindAgent(SimId.AgentModelu);
+
+            _txt_expOrdersCount.Value = agentModelu.ObjednavkyCount.ToString() ?? "";
+            _txt_expOrdersDoneCount.Value = agentModelu.ObjednavkyDoneCount.ToString() ?? "";
+
+            _lst_expOrders.Items.Clear();
+            if (_chk_expOrdersRender.IsChecked == true)
+            {
+                for (int i = 0; i < agentModelu.ObjednavkyCount; i++)
+                {
+                    var objednavka = agentModelu.ObjednavkyTotal[i];
+
+                    if (_lst_expOrders.Items.Count <= i)
+                    {
+                        _lst_expOrders.Items.Add(new ObjednavkaUserControl());
+                    }
+
+                    var ucWorkplace = (ObjednavkaUserControl)_lst_expOrders.Items[i];
+
+                    ucWorkplace.Objednavka = objednavka;
+                }
+            }
         }
 
         private void _initializeGUI()

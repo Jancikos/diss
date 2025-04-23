@@ -118,15 +118,19 @@
                                     </StackPanel>
                                 </GroupBox>
 
-                                <GroupBox Grid.RowSpan="2" Grid.Column="1" Header="Orders" MinWidth="250">
+                                <GroupBox Grid.RowSpan="2" Grid.Column="1" Header="Orders" MinWidth="200">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="auto" />
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
 
-                                        <CheckBox x:Name="_chk_repOrdersRender" Content="Render" IsChecked="False" />
-                                        <TreeView Grid.Row="1" x:Name="_trv_expOrders" VerticalAlignment="Stretch" />
+                                        <UniformGrid Rows="1">
+                                            <CheckBox x:Name="_chk_expOrdersRender" Content="Render" IsChecked="False" />
+                                            <libsuc:InlineText x:Name="_txt_expOrdersCount" Title="Count:" Value="0" Margin="0 0 5 0"/>
+                                            <libsuc:InlineText x:Name="_txt_expOrdersDoneCount" Title="Done:" Value="0" Margin="5 0 0 0" />
+                                        </UniformGrid>
+                                        <ListView Grid.Row="1" x:Name="_lst_expOrders" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                                     </Grid>
                                 </GroupBox>
 
