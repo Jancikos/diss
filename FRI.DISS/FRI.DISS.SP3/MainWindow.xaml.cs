@@ -14,6 +14,7 @@ using FRI.DISS.Libs.Helpers;
 using FRI.DISS.Libs.Simulations.EventDriven;
 using FRI.DISS.SP3.Controls;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
 using OSPABA;
@@ -64,6 +65,7 @@ namespace FRI.DISS.SP3
                 _refreshTimeGUI();
 
                 _refreshOrders();
+                _refreshWorkplaces();
             });
         }
 
@@ -92,10 +94,35 @@ namespace FRI.DISS.SP3
                         _lst_expOrders.Items.Add(new ObjednavkaUserControl());
                     }
 
-                    var ucWorkplace = (ObjednavkaUserControl)_lst_expOrders.Items[i];
-
-                    ucWorkplace.Objednavka = objednavka;
+                    var ucObjednavka = (ObjednavkaUserControl)_lst_expOrders.Items[i];
+                    ucObjednavka.Objednavka = objednavka;
                 }
+            }
+        }
+        
+        private void _refreshWorkplaces()
+        {
+            var agentPracovisk = (AgentPracovisk)_simulation.FindAgent(SimId.AgentPracovisk);
+
+            _txt_expWorkplacesCount.Value = agentPracovisk.Pracoviska.Count.ToString() ?? "";
+            _txt_expWorkplacesOccupiedCount.Value = (agentPracovisk.Pracoviska.Count - agentPracovisk.FreePracoviska.Count).ToString() ?? "";
+
+            if (_lst_expWorkplaces.Items.Count == 0)
+                _lst_expWorkplaces.Items.Add(new PracoviskoUserControl());
+            var ucSklad = (PracoviskoUserControl)_lst_expWorkplaces.Items[0];
+            ucSklad.Pracovisko = Pracovisko.Sklad;
+
+            for (int i = 1; i <= agentPracovisk.Pracoviska.Count; i++)
+            {
+                var pracovisko = agentPracovisk.Pracoviska[i - 1];
+
+                if (_lst_expWorkplaces.Items.Count <= i)
+                {
+                    _lst_expWorkplaces.Items.Add(new PracoviskoUserControl());
+                }
+
+                var ucPracovisko = (PracoviskoUserControl)_lst_expWorkplaces.Items[i];
+                ucPracovisko.Pracovisko = pracovisko;
             }
         }
 

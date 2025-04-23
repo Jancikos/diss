@@ -18,6 +18,10 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
         public Dictionary<int, Stolar> Stolari { get; init; } = new();
 
+        public Dictionary<StolarType, int> StolarTypesCount => Stolari
+            .GroupBy(x => x.Value.Type)
+            .ToDictionary(x => x.Key, x => x.Count());
+
         public override string ToString()
         {
             return $"#{Id} [{(IsFree ? "free" : CurrentNabytok!.ToString())}]";
