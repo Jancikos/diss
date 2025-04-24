@@ -1,6 +1,7 @@
 using OSPABA;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
 {
 	/*!
@@ -135,6 +136,9 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             {
                 // lebo tato operacia sa vykonava na pracovisku
                 pracovisko = Pracovisko.Sklad;
+
+                // poznac ze sa na danej objednavke uz zacalo pracovat
+                ((AgentModelu.AgentModelu)MySim.FindAgent(SimId.AgentModelu)).ObjednavkyWorkStarted[nabytok.Objednavka!.Id] = nabytok.Objednavka;
             }
 
             if (stolar.CurrentPracovisko!.Id != pracovisko.Id)

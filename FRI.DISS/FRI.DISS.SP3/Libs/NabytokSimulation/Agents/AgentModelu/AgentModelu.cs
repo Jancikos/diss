@@ -11,7 +11,10 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
 	public class AgentModelu : OSPABA.Agent
 	{
         public List<Objednavka> ObjednavkyTotal { get; set; } = new();
+        public Dictionary<int, Objednavka> ObjednavkyWorkStarted { get; set; } = new();
+
         public int ObjednavkyCount => ObjednavkyTotal.Count;
+        public int ObjednavkyNotWorkingOnCount => ObjednavkyTotal.Count - ObjednavkyWorkStarted.Count;
         public int ObjednavkyDoneCount { get; set; } = 0;
         public Statistics ObjednavkaTotalTime { get; } = new Statistics();
 
@@ -27,6 +30,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
 
 			// Setup component for the next replication
             ObjednavkyTotal.Clear();
+            ObjednavkyWorkStarted.Clear();
             ObjednavkyDoneCount = 0;
 
             // posli inicializacnu spravu Agentovi okolia

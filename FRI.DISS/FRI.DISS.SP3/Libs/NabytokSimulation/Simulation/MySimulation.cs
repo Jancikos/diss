@@ -30,6 +30,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 
         public int Endtime => TimeHelper.HoursToSeconds(8) * 249; // 6:00 az 14:00 * 249 dni
 
+        public NabytokReplicationsStatistics ReplicationsStatistics { get; set; } = new NabytokReplicationsStatistics();
+
 		public MySimulation()
 		{
 			Init();
@@ -38,19 +40,53 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 		override public void PrepareSimulation()
 		{
 			base.PrepareSimulation();
+
 			// Create global statistcis
+            ReplicationsStatistics = new NabytokReplicationsStatistics();
 		}
 
 		override public void PrepareReplication()
 		{
-			base.PrepareReplication();
 			// Reset entities, queues, local statistics, etc...
+            Pracovisko.ResetSklad();
+            Pracovisko.ResetIdCounter();
+            Stolar.ResetIdCounter();
+            Nabytok.ResetIdCounter();
+            Objednavka.ResetIdCounter();
+
+            // musi sa volat az po resetovani idcok
+			base.PrepareReplication();
 		}
 
 		override public void ReplicationFinished()
 		{
 			// Collect local statistics into global, update UI, etc...
 			base.ReplicationFinished();
+
+            // Collect local statistics into global
+            ReplicationsStatistics.ObjednavkaTime.AddSample(AgentModelu.ObjednavkaTotalTime.Mean);
+
+            
+            ReplicationsStatistics.ObjednavkyRecieved.AddSample(AgentModelu.ObjednavkyCount);
+            ReplicationsStatistics.ObjednavkyNotWorkingOn.AddSample(AgentModelu.ObjednavkyNotWorkingOnCount);
+
+            // stolari work time ratio
+            foreach (var stolarType in Enum.GetValues<StolarType>())
+            {
+                var stolari = ((IAgentStolari)FindAgent(Mc.GetAgentByStolarType(stolarType))).Stolari.Values.ToList();
+                var totalWorkTime = Endtime;
+                var groupWorkTime = stolari.Sum(s => s.TimeInWork);
+
+                ReplicationsStatistics.StolariWorkTimeRatio[stolarType].AddSample((double)groupWorkTime / (double)(totalWorkTime * stolari.Count));
+
+                for (int i = 0; i < stolari.Count; i++)
+                {
+                    if (ReplicationsStatistics.StolarWorkTimeRatio[stolarType].Count <= i)
+                        ReplicationsStatistics.StolarWorkTimeRatio[stolarType].Add(new Statistics());
+
+                    ReplicationsStatistics.StolarWorkTimeRatio[stolarType][i].AddSample(stolari[i].TimeInWork / totalWorkTime);
+                }
+            }
 		}
 
 		override public void SimulationFinished()
@@ -89,4 +125,25 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 		{ get; set; }
 		//meta! tag="end"
 	}
+    
+        public class NabytokReplicationsStatistics
+        {
+            public Statistics ObjednavkaTime { get; set; } = new Statistics();
+            public Statistics ObjednavkyRecieved { get; } = new Statistics();
+            public Statistics ObjednavkyNotWorkingOn { get; } = new Statistics();
+
+            public Dictionary<StolarType, Statistics> StolariWorkTimeRatio { get; } = new()
+            {
+                { StolarType.A, new() },
+                { StolarType.B, new() },
+                { StolarType.C, new() }
+            };
+            public Dictionary<StolarType, List<Statistics>> StolarWorkTimeRatio { get; } = new()
+            {
+                { StolarType.A, new() },
+                { StolarType.B, new() },
+                { StolarType.C, new() }
+            };
+        }
+
 }

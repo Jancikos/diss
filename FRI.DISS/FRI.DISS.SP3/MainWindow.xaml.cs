@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using FRI.DISS.Libs.Generators;
+using FRI.DISS.Libs.GUI.Controls;
 using FRI.DISS.Libs.Helpers;
 using FRI.DISS.Libs.Simulations.EventDriven;
 using FRI.DISS.SP3.Controls;
@@ -58,6 +59,46 @@ namespace FRI.DISS.SP3
         }
         private void _onReplicationDidFinish(Simulation simulation)
         {
+            Dispatcher.Invoke(() =>
+            {
+                _refreshReplicationsStats();
+            });
+        }
+        
+        private void _refreshReplicationsStats()
+        {
+            // reps fast forward mode stas
+            _txt_expCurrentReplication.Text = _simulation.CurrentReplication.ToString();
+            _txt_expTotalReplications.Text = _simulation.ReplicationCount.ToString();
+
+            if (_simulation.CurrentReplication == 0)
+                return;
+
+            _txt_repsDone.Value = _simulation.CurrentReplication.ToString();
+
+
+            var repStats = _simulation.ReplicationsStatistics;
+            
+            _sts_repsObjednavkaTime.Update(repStats.ObjednavkaTime);
+
+
+            _sts_repsObjednavkaReceivedCount.Update(repStats.ObjednavkyRecieved);
+            _sts_repsObjednavkaNotDoneCount.Update(repStats.ObjednavkyNotWorkingOn);
+
+            var i = 0;
+            var stolariStatsUCs = _lst_repsStolariTypes.Children.Cast<DicreteStatistic>().ToList();
+            _lst_repsStolarTypes.Children.Cast<StolariUserControl>().ToList().ForEach(stolarUC =>
+            {
+                var stolarType = stolarUC.StolarType;
+                var stolari = ((IAgentStolari)_simulation.FindAgent(Mc.GetAgentByStolarType(stolarType))).Stolari.Values.ToList();
+                var ratios = repStats.StolarWorkTimeRatio[stolarType];
+                var totalRatio = repStats.StolariWorkTimeRatio[stolarType];
+
+                stolarUC.UpdateGUI(stolari, ratios, totalRatio);
+                stolariStatsUCs[i].Update(totalRatio);
+
+                ++i;
+            });
         }
 
         private void _onRefreshUI(Simulation simulation)
@@ -184,8 +225,8 @@ namespace FRI.DISS.SP3
                 _lst_expStolariTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
                 // _lst_expStolariTypesQueues.Children.Add(new StolariQueueUserControl() { StolarType = stolarType });
 
-                // _lst_repsStolariTypes.Children.Add(new DicreteStatistic() { Title = $"Vyťaženie stolárov {stolarType} (%)", PlotShow = true, TransformToPercentage = true });
-                // _lst_repsStolarTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
+                _lst_repsStolariTypes.Children.Add(new DicreteStatistic() { Title = $"Vyťaženie stolárov {stolarType} (%)", PlotShow = true, TransformToPercentage = true });
+                 _lst_repsStolarTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
             });
 
             // operation queues
@@ -206,14 +247,14 @@ namespace FRI.DISS.SP3
             _txt_repsEndTime.Value = "--:--:--";
 
             _sts_expObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
-            // _sts_repsObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
-            // _sts_repsObjednavkaNotDoneCount.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
-            // _sts_repsObjednavkaReceivedCount.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_repsObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_repsObjednavkaNotDoneCount.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_repsObjednavkaReceivedCount.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
             _sts_expObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
-            // _lst_repsStolariTypes.Children.Cast<DicreteStatistic>().ToList().ForEach(stolariUC =>
-            // {
-            //     stolariUC.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
-            // });
+            _lst_repsStolariTypes.Children.Cast<DicreteStatistic>().ToList().ForEach(stolariUC =>
+            {
+                stolariUC.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            });
 
             // stolari count
             _simulation.StolariCount[StolarType.A] = _txt_simStolariACount.IntValue;
