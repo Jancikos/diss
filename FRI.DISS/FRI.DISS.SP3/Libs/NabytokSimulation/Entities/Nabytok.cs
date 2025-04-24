@@ -45,6 +45,9 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
         public NabytokType Type { get; init; }
         public NabytokState State { get; set; } = NabytokState.CakaNaPracovisko;
 
+        private double _rndLakovanie;
+        public bool ShouldLakovanie => _rndLakovanie < 0.15; // 15% pravdepodobnost
+
         /// <summary>
         /// ci su vsetky prace na nabytku hotove
         /// </summary>
@@ -70,10 +73,11 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
         public Pracovisko? Pracovisko { get; set; } = null;
 
-        public Nabytok(Objednavka objednavka, NabytokType type)
+        public Nabytok(Objednavka objednavka, NabytokType type, double rndLakovanie = 0)
         {
             Objednavka = objednavka;
             Type = type;
+            _rndLakovanie = rndLakovanie;
         }
 
         public override string ToString()
@@ -94,7 +98,9 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
                 case NabytokState.Narezana:
                     return NabytokState.Namorena;
                 case NabytokState.Namorena:
-                    return NabytokState.Nalakovana;
+                    return ShouldLakovanie
+                        ? NabytokState.Nalakovana
+                        : NabytokState.Poskladana;
                 case NabytokState.Nalakovana:
                     return NabytokState.Poskladana;
                 case NabytokState.Poskladana:
@@ -118,7 +124,9 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
                 case NabytokState.Narezana:
                     return NabytokOperation.Morenie;
                 case NabytokState.Namorena:
-                    return NabytokOperation.Lakovanie;
+                    return ShouldLakovanie
+                        ? NabytokOperation.Lakovanie
+                        : NabytokOperation.Skladanie;
                 case NabytokState.Nalakovana:
                     return NabytokOperation.Skladanie;
                 case NabytokState.Poskladana:

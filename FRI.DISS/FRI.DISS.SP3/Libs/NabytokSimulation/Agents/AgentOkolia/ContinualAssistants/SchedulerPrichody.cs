@@ -14,6 +14,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentOkolia.ContinualAssist
 
         private AbstractGenerator _genPocetNabytkov;
         private AbstractGenerator _genTypNabytku;
+        private AbstractGenerator _genLakovanie;
 
 		public SchedulerPrichody(int id, OSPABA.Simulation mySim, CommonAgent myAgent) :
 			base(id, mySim, myAgent)
@@ -33,6 +34,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentOkolia.ContinualAssist
 
             // rovnomerne rozdelenie 0-1
             _genTypNabytku = new UniformGenerator(GenerationMode.Continuous, seedGenerator);
+            _genLakovanie = new UniformGenerator(GenerationMode.Continuous, seedGenerator);
 		}
 
         protected NabytokType _generateNabytokType()
