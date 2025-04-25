@@ -46,6 +46,8 @@ namespace FRI.DISS.SP3
             _initializeGUI();
         }
 
+        #region Simulation events 
+
         private void _onSimulationWillStart(Simulation simulation)
         {
 
@@ -64,6 +66,10 @@ namespace FRI.DISS.SP3
                 _refreshReplicationsStats();
             });
         }
+
+        #endregion Simulation events
+
+        #region GUI methods
         
         private void _refreshReplicationsStats()
         {
@@ -291,7 +297,7 @@ namespace FRI.DISS.SP3
                     break;
             }
         }
-
+        #endregion
         #region GUI events
 
         private void _mnitem_Close_Click(object sender, RoutedEventArgs e)
