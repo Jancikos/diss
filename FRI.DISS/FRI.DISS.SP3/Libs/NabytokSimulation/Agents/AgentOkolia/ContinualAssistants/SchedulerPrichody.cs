@@ -76,7 +76,10 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentOkolia.ContinualAssist
 
         private Objednavka _createNewOrder()
         {
-            var objednavka = new Objednavka();
+            var objednavka = new Objednavka()
+            {
+                CreationTime = MySim.CurrentTime
+            };
 
             var pocetNabytkov = _genPocetNabytkov.GetSampleInt();
             for (int i = 0; i < pocetNabytkov; i++)

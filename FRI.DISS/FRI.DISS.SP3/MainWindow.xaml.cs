@@ -48,12 +48,35 @@ namespace FRI.DISS.SP3
 
         #region Simulation events 
 
+        private void _onRefreshUI(Simulation simulation)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                _refreshTimeGUI();
+
+                _refreshOrders();
+                _refreshWorkplaces();
+                _refreshStolariExp();
+                _refreshOperationsQueuesExp();
+                _refreshExperimentStats();
+            });
+        }
+
         private void _onSimulationWillStart(Simulation simulation)
         {
 
         }
         private void _onSimulationDidFinish(Simulation simulation)
         {
+            var repsDone = _simulation.CurrentReplication;
+
+            Dispatcher.InvokeAsync(() =>
+            {
+                _txt_repsEndTime.Value = DateTime.Now.ToString("HH:mm:ss");
+
+                _refreshReplicationsDoneCounters(repsDone);
+                _refreshReplicationsStats(_simulation.ReplicationsStatistics);
+            });
         }
 
         private void _onReplicationWillStart(Simulation simulation)
@@ -61,29 +84,139 @@ namespace FRI.DISS.SP3
         }
         private void _onReplicationDidFinish(Simulation simulation)
         {
-            Dispatcher.Invoke(() =>
+            var repRefershInterval = _simulation.RepliactionsRefreshStatisticsInterval;
+            var repsDone = _simulation.CurrentReplication;
+
+            Dispatcher.InvokeAsync(() =>
             {
-                _refreshReplicationsStats();
+                _refreshReplicationsDoneCounters(repsDone);
             });
+
+            if (!_shouldRefreshReplicationsStats(repsDone, repRefershInterval))
+                return;
+
+            Dispatcher.InvokeAsync(() =>
+            {
+                _refreshReplicationsStats(_simulation.ReplicationsStatistics);
+            });
+        }
+
+        private bool _shouldRefreshReplicationsStats(int repsDone, int repRefershInterval)
+        {
+            // is first
+            if (repsDone == 0)
+                return true;
+
+            // is last
+            if (repsDone == _simulation.ReplicationCount)
+                return true;
+            
+            // is refresh interval
+            if (repsDone % repRefershInterval == 0)
+                return true;
+            
+            return false;
         }
 
         #endregion Simulation events
 
         #region GUI methods
-        
-        private void _refreshReplicationsStats()
+
+        private void _initializeGUI()
         {
+            // cmbx timeRatio
+            _cmbx_simRealTimeRatio.ItemsSource = Enum.GetValues(typeof(EventDrivenSimulationRealTimeRatios)).Cast<EventDrivenSimulationRealTimeRatios>();
+            // _cmbx_simRealTimeRatio.SelectedIndex = 0;
+            _cmbx_simRealTimeRatio.SelectedIndex = 9;
+            
+            // stolari types
+            Enum.GetValues(typeof(StolarType)).Cast<StolarType>().ToList().ForEach(stolarType =>
+            {
+                _lst_expStolariTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
+                // _lst_expStolariTypesQueues.Children.Add(new StolariQueueUserControl() { StolarType = stolarType });
+
+                _lst_repsStolariTypes.Children.Add(new DicreteStatistic() { Title = $"Vyťaženie stolárov {stolarType} (%)", PlotShow = true, TransformToPercentage = true });
+                 _lst_repsStolarTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
+            });
+
+            // operation queues
+            Enum.GetValues(typeof(NabytokOperation)).Cast<NabytokOperation>().ToList().ForEach(nabytokOperation =>
+            {
+                _lst_expOperationsQueues.Children.Add(new OperationQueueUserControl() { NabytokOperation = nabytokOperation });
+            });
+        }
+        
+        private void _initializeSimulationFromGUI()
+        {
+            _simulation.SeedGenerator = _txt_simSeed.HasValue
+                ? new SeedGenerator(_txt_simSeed.IntValue)
+                : SeedGenerator.Global;
+
+            _simulation.RepliactionsRefreshStatisticsInterval = _txt_simReplicationsStatsRefresh.IntValue;
+
+            _setSimulationTimeFromGUI();
+            _txt_repsStartTime.Value = DateTime.Now.ToString("HH:mm:ss");
+            _txt_repsEndTime.Value = "--:--:--";
+
+            _sts_expObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_repsObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_repsObjednavkaNotDoneCount.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_repsObjednavkaReceivedCount.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _sts_expObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            _lst_repsStolariTypes.Children.Cast<DicreteStatistic>().ToList().ForEach(stolariUC =>
+            {
+                stolariUC.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
+            });
+
+            // stolari count
+            _simulation.StolariCount[StolarType.A] = _txt_simStolariACount.IntValue;
+            _simulation.StolariCount[StolarType.B] = _txt_simStolariBCount.IntValue;
+            _simulation.StolariCount[StolarType.C] = _txt_simStolariCCount.IntValue;
+
+            // workplaces count
+            _simulation.PracoviskaCount = _txt_simWorkplacesCount.IntValue;
+        }
+
+        private void _setSimulationTimeFromGUI()
+        {
+            var mode = _chk_simMaxSpeed.IsChecked == true
+                ? EventDrivenSimulationTimeMode.FastForward
+                : EventDrivenSimulationTimeMode.RealTime;
+
+            switch (mode)
+            {
+                case EventDrivenSimulationTimeMode.RealTime:
+                    var ratio = (EventDrivenSimulationRealTimeRatios)_cmbx_simRealTimeRatio.SelectedItem;
+                    var ratioValue = (int)ratio;
+
+                    _simulation.SetSimSpeed(ratioValue * 1, 1);
+
+                    _grbx_expRealTimeMode.Visibility = Visibility.Visible;
+                    _grbx_expFastForwardMode.Visibility = Visibility.Collapsed;
+                    break;
+
+                case EventDrivenSimulationTimeMode.FastForward:
+                    _simulation.SetMaxSimSpeed();
+
+                    _grbx_expRealTimeMode.Visibility = Visibility.Collapsed;
+                    _grbx_expFastForwardMode.Visibility = Visibility.Visible;
+                    break;
+            }
+        }
+
+        
+        private void _refreshReplicationsDoneCounters(int repsDone)
+        {
+            ++repsDone;
             // reps fast forward mode stas
-            _txt_expCurrentReplication.Text = _simulation.CurrentReplication.ToString();
-            _txt_expTotalReplications.Text = _simulation.ReplicationCount.ToString();
+            _txt_expCurrentReplication.Text = repsDone.ToString();
 
-            if (_simulation.CurrentReplication == 0)
-                return;
-
-            _txt_repsDone.Value = _simulation.CurrentReplication.ToString();
-
-
-            var repStats = _simulation.ReplicationsStatistics;
+            _txt_repsDone.Value = repsDone.ToString();
+        }
+        
+        private void _refreshReplicationsStats(NabytokReplicationsStatistics repStats)
+        {
+            Debug.WriteLine($"JKO_SP3 Replications done: {repStats.ObjednavkaTime.Count}");
             
             _sts_repsObjednavkaTime.Update(repStats.ObjednavkaTime);
 
@@ -104,20 +237,6 @@ namespace FRI.DISS.SP3
                 stolariStatsUCs[i].Update(totalRatio);
 
                 ++i;
-            });
-        }
-
-        private void _onRefreshUI(Simulation simulation)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                _refreshTimeGUI();
-
-                _refreshOrders();
-                _refreshWorkplaces();
-                _refreshStolariExp();
-                _refreshOperationsQueuesExp();
-                _refreshExperimentStats();
             });
         }
 
@@ -217,86 +336,6 @@ namespace FRI.DISS.SP3
                 operationQueueUC._updateGUI(items);
             });
         }
-
-        private void _initializeGUI()
-        {
-            // cmbx timeRatio
-            _cmbx_simRealTimeRatio.ItemsSource = Enum.GetValues(typeof(EventDrivenSimulationRealTimeRatios)).Cast<EventDrivenSimulationRealTimeRatios>();
-            // _cmbx_simRealTimeRatio.SelectedIndex = 0;
-            _cmbx_simRealTimeRatio.SelectedIndex = 9;
-            
-            // stolari types
-            Enum.GetValues(typeof(StolarType)).Cast<StolarType>().ToList().ForEach(stolarType =>
-            {
-                _lst_expStolariTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
-                // _lst_expStolariTypesQueues.Children.Add(new StolariQueueUserControl() { StolarType = stolarType });
-
-                _lst_repsStolariTypes.Children.Add(new DicreteStatistic() { Title = $"Vyťaženie stolárov {stolarType} (%)", PlotShow = true, TransformToPercentage = true });
-                 _lst_repsStolarTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
-            });
-
-            // operation queues
-            Enum.GetValues(typeof(NabytokOperation)).Cast<NabytokOperation>().ToList().ForEach(nabytokOperation =>
-            {
-                _lst_expOperationsQueues.Children.Add(new OperationQueueUserControl() { NabytokOperation = nabytokOperation });
-            });
-        }
-        
-        private void _initializeSimulationFromGUI()
-        {
-            _simulation.SeedGenerator = _txt_simSeed.HasValue
-                ? new SeedGenerator(_txt_simSeed.IntValue)
-                : SeedGenerator.Global;
-
-            _setSimulationTimeFromGUI();
-            _txt_repsStartTime.Value = DateTime.Now.ToString("HH:mm:ss");
-            _txt_repsEndTime.Value = "--:--:--";
-
-            _sts_expObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
-            _sts_repsObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
-            _sts_repsObjednavkaNotDoneCount.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
-            _sts_repsObjednavkaReceivedCount.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
-            _sts_expObjednavkaTime.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
-            _lst_repsStolariTypes.Children.Cast<DicreteStatistic>().ToList().ForEach(stolariUC =>
-            {
-                stolariUC.SkipFirstCount = _txt_simPlotsSkipFirstCount.IntValue;
-            });
-
-            // stolari count
-            _simulation.StolariCount[StolarType.A] = _txt_simStolariACount.IntValue;
-            _simulation.StolariCount[StolarType.B] = _txt_simStolariBCount.IntValue;
-            _simulation.StolariCount[StolarType.C] = _txt_simStolariCCount.IntValue;
-
-            // workplaces count
-            _simulation.PracoviskaCount = _txt_simWorkplacesCount.IntValue;
-        }
-
-        private void _setSimulationTimeFromGUI()
-        {
-            var mode = _chk_simMaxSpeed.IsChecked == true
-                ? EventDrivenSimulationTimeMode.FastForward
-                : EventDrivenSimulationTimeMode.RealTime;
-
-            switch (mode)
-            {
-                case EventDrivenSimulationTimeMode.RealTime:
-                    var ratio = (EventDrivenSimulationRealTimeRatios)_cmbx_simRealTimeRatio.SelectedItem;
-                    var ratioValue = (int)ratio;
-
-                    _simulation.SetSimSpeed(ratioValue * 1, 1);
-
-                    _grbx_expRealTimeMode.Visibility = Visibility.Visible;
-                    _grbx_expFastForwardMode.Visibility = Visibility.Collapsed;
-                    break;
-
-                case EventDrivenSimulationTimeMode.FastForward:
-                    _simulation.SetMaxSimSpeed();
-
-                    _grbx_expRealTimeMode.Visibility = Visibility.Collapsed;
-                    _grbx_expFastForwardMode.Visibility = Visibility.Visible;
-                    break;
-            }
-        }
         #endregion
         #region GUI events
 
@@ -351,6 +390,7 @@ namespace FRI.DISS.SP3
         private void _btn_simStart_Click(object sender, RoutedEventArgs e)
         {
             var repsCount = _txt_simReplicationsCount.IntValue;
+            _txt_expTotalReplications.Text = repsCount.ToString();
 
             _initializeSimulationFromGUI();
             _simulation.SimulateAsync(repsCount, _simulation.Endtime);

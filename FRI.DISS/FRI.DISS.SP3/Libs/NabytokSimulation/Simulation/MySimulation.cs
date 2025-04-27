@@ -29,6 +29,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
         public string CurrentTimeDayFormatted => ((int)CurrentTime / TimeHelper.HoursToSeconds(8)).ToString();
 
         public int Endtime => TimeHelper.HoursToSeconds(8) * 249; // 6:00 az 14:00 * 249 dni
+        public int RepliactionsRefreshStatisticsInterval { get; set; } = 100; // kazdych 10 replikacii sa refreshne statistika
 
         public NabytokReplicationsStatistics ReplicationsStatistics { get; set; } = new NabytokReplicationsStatistics();
 
@@ -61,7 +62,6 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 		override public void ReplicationFinished()
 		{
 			// Collect local statistics into global, update UI, etc...
-			base.ReplicationFinished();
 
             // Collect local statistics into global
             ReplicationsStatistics.ObjednavkaTime.AddSample(AgentModelu.ObjednavkaTotalTime.Mean);
@@ -87,6 +87,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
                     ReplicationsStatistics.StolarWorkTimeRatio[stolarType][i].AddSample(stolari[i].TimeInWork / totalWorkTime);
                 }
             }
+
+            base.ReplicationFinished();
 		}
 
 		override public void SimulationFinished()
