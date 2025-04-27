@@ -79,11 +79,14 @@ namespace FRI.DISS.SP3
                 _refreshReplicationsStats(_simulation.ReplicationsStatistics);
             });
 
-            // TODO - save simulation results to csv file
-            NabytokReplicationsStatisticsCsvWriter.Instance.Write(
-                new FileInfo("./experiments.csv"),
-                _simulation
-            );
+            // save simulation results to csv file
+            if (repsDone > 300)
+            {
+                NabytokReplicationsStatisticsCsvWriter.Instance.Write(
+                    new FileInfo("./experiments.csv"),
+                    _simulation
+                );
+            }
         }
 
         private void _onReplicationWillStart(Simulation simulation)
@@ -117,11 +120,11 @@ namespace FRI.DISS.SP3
             // is last
             if (repsDone == _simulation.ReplicationCount)
                 return true;
-            
+
             // is refresh interval
             if (repsDone % repRefershInterval == 0)
                 return true;
-            
+
             return false;
         }
 
@@ -135,7 +138,7 @@ namespace FRI.DISS.SP3
             _cmbx_simRealTimeRatio.ItemsSource = Enum.GetValues(typeof(EventDrivenSimulationRealTimeRatios)).Cast<EventDrivenSimulationRealTimeRatios>();
             // _cmbx_simRealTimeRatio.SelectedIndex = 0;
             _cmbx_simRealTimeRatio.SelectedIndex = 9;
-            
+
             // stolari types
             Enum.GetValues(typeof(StolarType)).Cast<StolarType>().ToList().ForEach(stolarType =>
             {
@@ -143,7 +146,7 @@ namespace FRI.DISS.SP3
                 // _lst_expStolariTypesQueues.Children.Add(new StolariQueueUserControl() { StolarType = stolarType });
 
                 _lst_repsStolariTypes.Children.Add(new DicreteStatistic() { Title = $"Vyťaženie stolárov {stolarType} (%)", PlotShow = true, TransformToPercentage = true });
-                 _lst_repsStolarTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
+                _lst_repsStolarTypes.Children.Add(new StolariUserControl() { StolarType = stolarType });
             });
 
             // operation queues
@@ -152,7 +155,7 @@ namespace FRI.DISS.SP3
                 _lst_expOperationsQueues.Children.Add(new OperationQueueUserControl() { NabytokOperation = nabytokOperation });
             });
         }
-        
+
         private void _initializeSimulationFromGUI()
         {
             _simulation.SeedGenerator = _txt_simSeed.HasValue
@@ -211,7 +214,7 @@ namespace FRI.DISS.SP3
             }
         }
 
-        
+
         private void _refreshReplicationsDoneCounters(int repsDone)
         {
             ++repsDone;
@@ -220,11 +223,11 @@ namespace FRI.DISS.SP3
 
             _txt_repsDone.Value = repsDone.ToString();
         }
-        
+
         private void _refreshReplicationsStats(NabytokReplicationsStatistics repStats)
         {
             Debug.WriteLine($"JKO_SP3 Replications done: {repStats.ObjednavkaTime.Count}");
-            
+
             _sts_repsObjednavkaTime.Update(repStats.ObjednavkaTime);
 
 
@@ -283,7 +286,7 @@ namespace FRI.DISS.SP3
                 }
             }
         }
-        
+
         private void _refreshWorkplaces()
         {
             var agentPracovisk = (AgentPracovisk)_simulation.FindAgent(SimId.AgentPracovisk);
@@ -309,7 +312,7 @@ namespace FRI.DISS.SP3
                 ucPracovisko.Pracovisko = pracovisko;
             }
         }
-        
+
         private void _refreshStolariExp()
         {
             var agents = new Dictionary<StolarType, IAgentStolari>()

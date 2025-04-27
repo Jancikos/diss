@@ -15,7 +15,7 @@ namespace FRI.DISS.Libs.Helpers
 
         public void Write(FileInfo file, object data)
         {
-            using (var writer = new StreamWriter(file.FullName, false, Encoding.UTF8))
+            using (var writer = new StreamWriter(file.FullName, true, Encoding.UTF8))
             {
                 // Write header if file is empty or IncludeHeaderToEmptyFile is true
                 if (file.Length == 0 && IncludeHeaderToEmptyFile)
