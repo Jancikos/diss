@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -22,6 +23,7 @@ using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
 using OSPABA;
+using OSPAnimator;
 
 namespace FRI.DISS.SP3
 {
@@ -43,6 +45,8 @@ namespace FRI.DISS.SP3
             _simulation.OnReplicationDidFinish(_onReplicationDidFinish);
             _simulation.OnSimulationWillStart(_onSimulationWillStart);
             _simulation.OnSimulationDidFinish(_onSimulationDidFinish);
+            _simulation.OnAnimatorWasCreated(_onSimulationAnimatorCreated);
+            _simulation.OnAnimatorWasRemoved(_onSimulationAnimatorRemoved);
 
             _initializeGUI();
         }
@@ -80,7 +84,7 @@ namespace FRI.DISS.SP3
             });
 
             // save simulation results to csv file
-            if (repsDone > 300)
+            if (repsDone > 30)
             {
                 NabytokReplicationsStatisticsCsvWriter.Instance.Write(
                     new FileInfo("./experiments.csv"),
@@ -128,6 +132,37 @@ namespace FRI.DISS.SP3
             return false;
         }
 
+        private void _onSimulationAnimatorCreated(IAnimator oldAnimator, IAnimator newAnimator)
+        {
+            newAnimator.SetSynchronizedTime(false);
+
+            var textItem = new AnimTextItem("prvy text", Colors.Red, new Typeface("Arial"), 25);
+
+            textItem.SetPosition(10, 10);
+
+            newAnimator.Register(textItem);
+        }
+        private void _onSimulationAnimatorRemoved(IAnimator oldAnimator)
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void _initializeAnimator()
+        {
+            _grd_expAnimator.Visibility = Visibility.Visible;
+
+            _simulation.CreateAnimator();
+            _grd_expAnimator.Children.Add(_simulation.Animator.Canvas);
+        }
+
+        private void _destroyAnimator()
+        {
+            // _grd_expAnimator.Children.Clear();
+            _grd_expAnimator.Visibility = Visibility.Collapsed;
+
+            _simulation.RemoveAnimator();
+        }
+
         #endregion Simulation events
 
         #region GUI methods
@@ -137,7 +172,7 @@ namespace FRI.DISS.SP3
             // cmbx timeRatio
             _cmbx_simRealTimeRatio.ItemsSource = Enum.GetValues(typeof(EventDrivenSimulationRealTimeRatios)).Cast<EventDrivenSimulationRealTimeRatios>();
             // _cmbx_simRealTimeRatio.SelectedIndex = 0;
-            _cmbx_simRealTimeRatio.SelectedIndex = 9;
+            _cmbx_simRealTimeRatio.SelectedIndex = 2;
 
             // stolari types
             Enum.GetValues(typeof(StolarType)).Cast<StolarType>().ToList().ForEach(stolarType =>
@@ -429,6 +464,17 @@ namespace FRI.DISS.SP3
         private void _cmbx_simRealTimeRatio_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _setSimulationTimeFromGUI();
+        }
+
+        private void _chk_repAnimator_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if (_simulation.AnimatorExists)
+            {
+                _destroyAnimator();
+                return;
+            }
+
+            _initializeAnimator();
         }
     }
     #endregion GUI events

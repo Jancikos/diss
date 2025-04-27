@@ -34,8 +34,8 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
-                        <RowDefinition Height="500" />
-                        <RowDefinition Height="650" />
+                        <RowDefinition MinHeight="500" />
+                        <RowDefinition MinHeight="650" />
                     </Grid.RowDefinitions>
 
                     <GroupBox Header="Simulation parameters">
@@ -99,8 +99,9 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="300" />
+                                    <RowDefinition Height="300" />
+                                    <RowDefinition Height="auto" />
                                 </Grid.RowDefinitions>
                                 
                                 <GroupBox Grid.RowSpan="2" Grid.Column="0" Header="Basic" MinWidth="150">
@@ -115,6 +116,8 @@
                                                 <libsuc:InlineText x:Name="_txt_expTimeRaw" Title="Raw Time:" Value="0" />
                                             </StackPanel>
                                         </GroupBox>
+
+                                        <CheckBox x:Name="_chk_repAnimator" Content="Show animation" Checked="_chk_repAnimator_SelectionChanged" Unchecked="_chk_repAnimator_SelectionChanged" />
                                     </StackPanel>
                                 </GroupBox>
 
@@ -161,6 +164,9 @@
                                 </GroupBox>
 
                                 <libsuc:DicreteStatistic Grid.RowSpan="2" Grid.Column="4" x:Name="_sts_expObjednavkaTime" Title="Objednavka TimeInSystem" MinWidth="500" TransformFromSecondsToHours="true" PlotShow="true" PlotTitle="Objednávky - celkový čas v systéme" PlotXLabel="Počet objednávek" PlotYLabel="Čas v systéme [h]" />
+
+                                <Grid x:Name="_grd_expAnimator" Grid.Row="2" Grid.ColumnSpan="5" Visibility="Collapsed" Height="600">
+                                </Grid>
                             </Grid>
                         </ScrollViewer>
                     </GroupBox>
