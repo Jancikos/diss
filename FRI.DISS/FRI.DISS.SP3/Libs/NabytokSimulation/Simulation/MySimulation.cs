@@ -1,19 +1,19 @@
-using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentOkolia;
-using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPresunuStolarov;
-using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentOkolia;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPresunuStolarov;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov;
 using OSPABA;
-using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu;
-using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariC;
-using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariB;
-using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariA;
-using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariC;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariB;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariA;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 using FRI.DISS.Libs.Generators;
 using FRI.DISS.Libs.Helpers;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 {
-	public class MySimulation : OSPABA.Simulation
-	{
+    public class MySimulation : OSPABA.Simulation
+    {
         public int PracoviskaCount { get; set; } = 20;
         public Dictionary<StolarType, int> StolariCount { get; set; } = new()
         {
@@ -33,22 +33,22 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 
         public NabytokReplicationsStatistics ReplicationsStatistics { get; set; } = new NabytokReplicationsStatistics();
 
-		public MySimulation()
-		{
-			Init();
-		}
+        public MySimulation()
+        {
+            Init();
+        }
 
-		override public void PrepareSimulation()
-		{
-			base.PrepareSimulation();
+        override public void PrepareSimulation()
+        {
+            base.PrepareSimulation();
 
-			// Create global statistcis
+            // Create global statistcis
             ReplicationsStatistics = new NabytokReplicationsStatistics();
-		}
+        }
 
-		override public void PrepareReplication()
-		{
-			// Reset entities, queues, local statistics, etc...
+        override public void PrepareReplication()
+        {
+            // Reset entities, queues, local statistics, etc...
             Pracovisko.ResetSklad();
             Pracovisko.ResetIdCounter();
             Stolar.ResetIdCounter();
@@ -56,17 +56,17 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
             Objednavka.ResetIdCounter();
 
             // musi sa volat az po resetovani idcok
-			base.PrepareReplication();
-		}
+            base.PrepareReplication();
+        }
 
-		override public void ReplicationFinished()
-		{
-			// Collect local statistics into global, update UI, etc...
+        override public void ReplicationFinished()
+        {
+            // Collect local statistics into global, update UI, etc...
 
             // Collect local statistics into global
             ReplicationsStatistics.ObjednavkaTime.AddSample(AgentModelu.ObjednavkaTotalTime.Mean);
 
-            
+
             ReplicationsStatistics.ObjednavkyRecieved.AddSample(AgentModelu.ObjednavkyCount);
             ReplicationsStatistics.ObjednavkyNotWorkingOn.AddSample(AgentModelu.ObjednavkyNotWorkingOnCount);
 
@@ -89,63 +89,168 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
             }
 
             base.ReplicationFinished();
-		}
-
-		override public void SimulationFinished()
-		{
-			// Display simulation results
-			base.SimulationFinished();
-		}
-
-		//meta! userInfo="Generated code: do not modify", tag="begin"
-		private void Init()
-		{
-			AgentModelu = new AgentModelu(SimId.AgentModelu, this, null);
-			AgentOkolia = new AgentOkolia(SimId.AgentOkolia, this, AgentModelu);
-			AgentStolarov = new AgentStolarov(SimId.AgentStolarov, this, AgentModelu);
-			AgentStolariA = new AgentStolariA(SimId.AgentStolariA, this, AgentStolarov);
-			AgentStolariB = new AgentStolariB(SimId.AgentStolariB, this, AgentStolarov);
-			AgentStolariC = new AgentStolariC(SimId.AgentStolariC, this, AgentStolarov);
-			AgentPracovisk = new AgentPracovisk(SimId.AgentPracovisk, this, AgentModelu);
-			AgentPresunuStolarov = new AgentPresunuStolarov(SimId.AgentPresunuStolarov, this, AgentStolarov);
-		}
-		public AgentModelu AgentModelu
-		{ get; set; }
-		public AgentOkolia AgentOkolia
-		{ get; set; }
-		public AgentStolarov AgentStolarov
-		{ get; set; }
-		public AgentStolariA AgentStolariA
-		{ get; set; }
-		public AgentStolariB AgentStolariB
-		{ get; set; }
-		public AgentStolariC AgentStolariC
-		{ get; set; }
-		public AgentPracovisk AgentPracovisk
-		{ get; set; }
-		public AgentPresunuStolarov AgentPresunuStolarov
-		{ get; set; }
-		//meta! tag="end"
-	}
-    
-        public class NabytokReplicationsStatistics
-        {
-            public Statistics ObjednavkaTime { get; set; } = new Statistics();
-            public Statistics ObjednavkyRecieved { get; } = new Statistics();
-            public Statistics ObjednavkyNotWorkingOn { get; } = new Statistics();
-
-            public Dictionary<StolarType, Statistics> StolariWorkTimeRatio { get; } = new()
-            {
-                { StolarType.A, new() },
-                { StolarType.B, new() },
-                { StolarType.C, new() }
-            };
-            public Dictionary<StolarType, List<Statistics>> StolarWorkTimeRatio { get; } = new()
-            {
-                { StolarType.A, new() },
-                { StolarType.B, new() },
-                { StolarType.C, new() }
-            };
         }
+
+        override public void SimulationFinished()
+        {
+            // Display simulation results
+            base.SimulationFinished();
+        }
+
+        //meta! userInfo="Generated code: do not modify", tag="begin"
+        private void Init()
+        {
+            AgentModelu = new AgentModelu(SimId.AgentModelu, this, null);
+            AgentOkolia = new AgentOkolia(SimId.AgentOkolia, this, AgentModelu);
+            AgentStolarov = new AgentStolarov(SimId.AgentStolarov, this, AgentModelu);
+            AgentStolariA = new AgentStolariA(SimId.AgentStolariA, this, AgentStolarov);
+            AgentStolariB = new AgentStolariB(SimId.AgentStolariB, this, AgentStolarov);
+            AgentStolariC = new AgentStolariC(SimId.AgentStolariC, this, AgentStolarov);
+            AgentPracovisk = new AgentPracovisk(SimId.AgentPracovisk, this, AgentModelu);
+            AgentPresunuStolarov = new AgentPresunuStolarov(SimId.AgentPresunuStolarov, this, AgentStolarov);
+        }
+        public AgentModelu AgentModelu
+        { get; set; }
+        public AgentOkolia AgentOkolia
+        { get; set; }
+        public AgentStolarov AgentStolarov
+        { get; set; }
+        public AgentStolariA AgentStolariA
+        { get; set; }
+        public AgentStolariB AgentStolariB
+        { get; set; }
+        public AgentStolariC AgentStolariC
+        { get; set; }
+        public AgentPracovisk AgentPracovisk
+        { get; set; }
+        public AgentPresunuStolarov AgentPresunuStolarov
+        { get; set; }
+        //meta! tag="end"
+    }
+
+    public class NabytokReplicationsStatistics
+    {
+        public Statistics ObjednavkaTime { get; set; } = new Statistics();
+        public Statistics ObjednavkyRecieved { get; } = new Statistics();
+        public Statistics ObjednavkyNotWorkingOn { get; } = new Statistics();
+
+        public Dictionary<StolarType, Statistics> StolariWorkTimeRatio { get; } = new()
+            {
+                { StolarType.A, new() },
+                { StolarType.B, new() },
+                { StolarType.C, new() }
+            };
+        public Dictionary<StolarType, List<Statistics>> StolarWorkTimeRatio { get; } = new()
+            {
+                { StolarType.A, new() },
+                { StolarType.B, new() },
+                { StolarType.C, new() }
+            };
+    }
+
+    public class NabytokReplicationsStatisticsCsvWriter : CsvWriter
+    {
+        public static NabytokReplicationsStatisticsCsvWriter Instance { get; } = new NabytokReplicationsStatisticsCsvWriter();
+
+        public NabytokReplicationsStatisticsCsvWriter()
+        {
+            Delimiter = ";";
+            IncludeHeaderToEmptyFile = true;
+
+            Columns.Add(new CsvColumn()
+            {
+                Title = "Timestamp",
+                Converter = (x) => DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+            });
+
+            // parametre
+            Columns.Add(new CsvColumn()
+            {
+                Title = "ReplicationsCount",
+                Converter = (x) => (x as MySimulation)?.CurrentReplication.ToString() ?? "0"
+            });
+            foreach (var stolarType in Enum.GetValues<StolarType>())
+            {
+                Columns.Add(new CsvColumn()
+                {
+                    Title = $"Stolari{stolarType} count",
+                    Converter = (x) => (x as MySimulation)?.StolariCount[stolarType].ToString() ?? "0"
+                });
+            }
+            Columns.Add(new CsvColumn()
+            {
+                Title = "Pracoviska count",
+                Converter = (x) => (x as MySimulation)?.PracoviskaCount.ToString() ?? "0"
+            });
+
+            // statistiky
+            Columns.Add(new CsvColumn()
+            {
+                Title = "ObjednavkaTime_IS_lower",
+                Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.ObjednavkaTime.IntervalLowerBound ?? 0).ToString()
+            });
+            Columns.Add(new CsvColumn()
+            {
+                Title = "ObjednavkaTime_mean",
+                Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.ObjednavkaTime.Mean ?? 0).ToString()
+            }); 
+            Columns.Add(new CsvColumn()
+            {
+                Title = "ObjednavkaTime_IS_upper",
+                Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.ObjednavkaTime.IntervalUpperBound ?? 0).ToString()
+            });
+
+            Columns.Add(new CsvColumn()
+            {
+                Title = "ObjednavkyRecieved_IS_lower",
+                Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.ObjednavkyRecieved.IntervalLowerBound ?? 0).ToString()
+            });
+            Columns.Add(new CsvColumn()
+            {
+                Title = "ObjednavkyRecieved_mean",
+                Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.ObjednavkyRecieved.Mean ?? 0).ToString()
+            });
+            Columns.Add(new CsvColumn()
+            {
+                Title = "ObjednavkyRecieved_IS_upper",
+                Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.ObjednavkyRecieved.IntervalUpperBound ?? 0).ToString()
+            });
+
+            Columns.Add(new CsvColumn()
+            {
+                Title = "ObjednavkyNotWorkingOn_IS_lower",
+                Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.ObjednavkyNotWorkingOn.IntervalLowerBound ?? 0).ToString()
+            });
+            Columns.Add(new CsvColumn()
+            {
+                Title = "ObjednavkyNotWorkingOn_mean",
+                Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.ObjednavkyNotWorkingOn.Mean ?? 0).ToString()
+            });
+            Columns.Add(new CsvColumn()
+            {
+                Title = "ObjednavkyNotWorkingOn_IS_upper",
+                Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.ObjednavkyNotWorkingOn.IntervalUpperBound ?? 0).ToString()
+            });
+
+            foreach (var stolarType in Enum.GetValues<StolarType>())
+            {
+                Columns.Add(new CsvColumn()
+                {
+                    Title = $"Stolari{stolarType}WorkTimeRatio_IS_lower",
+                    Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.StolariWorkTimeRatio[stolarType].IntervalLowerBound ?? 0).ToString()
+                });
+                Columns.Add(new CsvColumn()
+                {
+                    Title = $"Stolari{stolarType}WorkTimeRatio_mean",
+                    Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.StolariWorkTimeRatio[stolarType].Mean ?? 0).ToString()
+                });
+                Columns.Add(new CsvColumn()
+                {
+                    Title = $"Stolari{stolarType}WorkTimeRatio_IS_upper",
+                    Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.StolariWorkTimeRatio[stolarType].IntervalUpperBound ?? 0).ToString()
+                });
+            }
+        }
+    }
 
 }

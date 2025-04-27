@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -77,6 +78,12 @@ namespace FRI.DISS.SP3
                 _refreshReplicationsDoneCounters(repsDone);
                 _refreshReplicationsStats(_simulation.ReplicationsStatistics);
             });
+
+            // TODO - save simulation results to csv file
+            NabytokReplicationsStatisticsCsvWriter.Instance.Write(
+                new FileInfo("./experiments.csv"),
+                _simulation
+            );
         }
 
         private void _onReplicationWillStart(Simulation simulation)
