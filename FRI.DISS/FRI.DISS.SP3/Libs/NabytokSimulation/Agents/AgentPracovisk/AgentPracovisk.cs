@@ -66,7 +66,12 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
 
         public void DestroySimulationAnimator(IAnimator oldAnimator)
         {
-            throw new NotImplementedException();
+            // destroy old animator
+            Pracovisko.Sklad.Destroy(oldAnimator);
+            foreach (var pracovisko in Pracoviska)
+            {
+                pracovisko.Destroy(oldAnimator);
+            }
         }
         //meta! tag="end"
     }

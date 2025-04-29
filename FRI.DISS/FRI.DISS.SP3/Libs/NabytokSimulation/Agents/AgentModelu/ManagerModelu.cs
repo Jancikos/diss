@@ -62,6 +62,9 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentModelu
             if (myMsg.Nabytok is null)
                 throw new InvalidOperationException("Nabytok cannot be null");
 
+            if (MySim.AnimatorExists)
+                myMsg.Nabytok.Pracovisko!.Rerender(MySim.Animator);
+
             if (myMsg.Nabytok.AllWorkDone)
             {
                 // nabytok je hotovy callback

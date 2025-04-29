@@ -141,7 +141,7 @@ namespace FRI.DISS.SP3
         }
         private void _onSimulationAnimatorRemoved(IAnimator oldAnimator)
         {
-            //throw new NotImplementedException();
+            _simulation.AgentPracovisk.DestroySimulationAnimator(oldAnimator);
         }
 
         private void _initializeAnimator()

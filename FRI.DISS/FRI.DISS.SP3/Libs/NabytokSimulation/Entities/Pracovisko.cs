@@ -47,33 +47,39 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
             if (IsWarehouse)
             {
-                _animShapeItem = new AnimShapeItem(AnimShape.RECTANGLE_EMPTY, MyAnimator.PracoviskoWidth * 2, MyAnimator.PracoviskoHeight); 
-                
                 // vedla ostatnych pracovisk
-                _animShapeItem.SetPosition((basePositionX * 3) + ((MyAnimator.PracoviskoWidth + spacing) * MyAnimator.PracoviskaCount), basePositionY);
+                int skladPosX = (basePositionX * 3) + ((MyAnimator.PracoviskoWidth + spacing) * MyAnimator.PracoviskaCount);
+                int skladPosY = basePositionY;
 
+                _animShapeItem = new AnimShapeItem(AnimShape.RECTANGLE_EMPTY, MyAnimator.PracoviskoWidth * 2, MyAnimator.PracoviskoHeight);
+                _animShapeItem.SetPosition(skladPosX, skladPosY);
                 animator.Register(_animShapeItem);
+
+                _animTextItem = new AnimTextItem($"Sklad");
+                _animTextItem.SetPosition(skladPosX + gap, skladPosY + gap); // under the shape
+                animator.Register(_animTextItem);
+
                 return;
             }
 
-            int positionX = basePositionX + ((MyAnimator.PracoviskoWidth + spacing) * ((Id - 1) % MyAnimator.PracoviskaCount));
-            int positionY = basePositionY + ((MyAnimator.PracoviskoHeight + spacing * 2) * ((Id - 1) / MyAnimator.PracoviskaCount));
+            int posX = basePositionX + ((MyAnimator.PracoviskoWidth + spacing) * ((Id - 1) % MyAnimator.PracoviskaCount));
+            int posY = basePositionY + ((MyAnimator.PracoviskoHeight + spacing * 2) * ((Id - 1) / MyAnimator.PracoviskaCount));
 
             _animShapeItem = new AnimShapeItem(AnimShape.RECTANGLE_EMPTY, MyAnimator.PracoviskoWidth, MyAnimator.PracoviskoHeight);
-            _animShapeItem.SetPosition(positionX, positionY);
+            _animShapeItem.SetPosition(posX, posY);
             _animShapeItem.SetZIndex(1);
             animator.Register(_animShapeItem);
 
             // text nabytku
             _animTextItem = new AnimTextItem($"#{Id}");
             // _animTextItem.SetFontSize(20); // default size
-            _animTextItem.SetPosition(positionX, positionY - fontSize - gap); // above the shape
+            _animTextItem.SetPosition(posX, posY - fontSize - gap); // above the shape
             animator.Register(_animTextItem);
 
             // obrazok nabytku
             _animImageItem = new AnimImageItem(MyAnimator.Image_Free, MyAnimator.PracoviskoWidth - (gap * 2), MyAnimator.PracoviskoHeight - (gap * 2));
             _animImageItem.SetZIndex(10); // aby bol nad pracoviskom
-            _animImageItem.SetPosition(positionX + gap, positionY + gap);
+            _animImageItem.SetPosition(posX + gap, posY + gap);
             animator.Register(_animImageItem);
 
             // to set correct imamge
@@ -87,6 +93,15 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
             animator.Remove(_animShapeItem);
             _animShapeItem = null;
+
+            animator.Remove(_animTextItem);
+            _animTextItem = null;
+
+            if (!IsWarehouse)
+            {
+                animator.Remove(_animImageItem);
+                _animImageItem = null;
+            }
         }
 
         public void Rerender(IAnimator animator)
@@ -103,12 +118,13 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
             if (IsFree)
             {
                 _animImageItem!.SetImage(MyAnimator.Image_Free);
-                _animTextItem!.Text = $"#{Id} - free";
+                _animTextItem!.Text = $"#{Id}-free";
                 return;
             }
 
             _animImageItem!.SetImage(MyAnimator.Image_Stolicka);
-            _animTextItem!.Text = $"#{Id}-{CurrentNabytok!.State}".Substring(0, 16);
+            var text = $"#{Id}-{CurrentNabytok!.State}";
+            _animTextItem!.Text = text.Length <= 16 ? text : text.Substring(0, 16);    
         }
 
         private void _rerenderSklad(IAnimator animator)
