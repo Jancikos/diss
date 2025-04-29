@@ -1,6 +1,7 @@
 using OSPABA;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
+using OSPAnimator;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
 {
 	/*!
@@ -11,7 +12,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
 	 * 
 	 */
 	//meta! id="30"
-	public class AgentPracovisk : OSPABA.Agent
+	public class AgentPracovisk : OSPABA.Agent, IAnimatoredAgent
 	{
         public List<Pracovisko> Pracoviska { get; set; } = new();
 
@@ -52,6 +53,21 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
 			AddOwnMessage(Mc.RequestResponsePriradPracovisko);
 			AddOwnMessage(Mc.NoticePracoviskoUvolnene);
 		}
-		//meta! tag="end"
-	}
+
+        public void InitializeSimulationAnimator(IAnimator oldAnimator, IAnimator newAnimator)
+        {
+            // initialize new animator
+            Pracovisko.Sklad.Initialize(newAnimator);
+            foreach (var pracovisko in Pracoviska)
+            {
+                pracovisko.Initialize(newAnimator);
+            }
+        }
+
+        public void DestroySimulationAnimator(IAnimator oldAnimator)
+        {
+            throw new NotImplementedException();
+        }
+        //meta! tag="end"
+    }
 }

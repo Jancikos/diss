@@ -135,12 +135,9 @@ namespace FRI.DISS.SP3
         private void _onSimulationAnimatorCreated(IAnimator oldAnimator, IAnimator newAnimator)
         {
             newAnimator.SetSynchronizedTime(false);
+            //newAnimator.SetViewPositionCenter(0, 0);
 
-            var textItem = new AnimTextItem("prvy text", Colors.Red, new Typeface("Arial"), 25);
-
-            textItem.SetPosition(10, 10);
-
-            newAnimator.Register(textItem);
+            _simulation.AgentPracovisk.InitializeSimulationAnimator(oldAnimator, newAnimator);
         }
         private void _onSimulationAnimatorRemoved(IAnimator oldAnimator)
         {
@@ -149,16 +146,17 @@ namespace FRI.DISS.SP3
 
         private void _initializeAnimator()
         {
-            _grd_expAnimator.Visibility = Visibility.Visible;
+            _grd_expAnimatorParent.Visibility = Visibility.Visible;
 
             _simulation.CreateAnimator();
-            _grd_expAnimator.Children.Add(_simulation.Animator.Canvas);
+            //_grd_expAnimator.Children.Add(_simulation.Animator.Canvas);
+            _grd_expAnimator.Content = _simulation.Animator.Canvas;
         }
 
         private void _destroyAnimator()
         {
             // _grd_expAnimator.Children.Clear();
-            _grd_expAnimator.Visibility = Visibility.Collapsed;
+            _grd_expAnimatorParent.Visibility = Visibility.Collapsed;
 
             _simulation.RemoveAnimator();
         }

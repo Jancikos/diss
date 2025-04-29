@@ -91,6 +91,11 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
             // ak nikto nie je v rade, tak pracovisko je volne
             pracovisko.CurrentNabytok = null;
             MyAgent.FreePracoviska.Enqueue(pracovisko);
+
+            if (MySim.AnimatorExists)
+            {
+                pracovisko.Rerender(MySim.Animator);
+            }
 		}
 
         protected void _assignPracoviskoToNabytok(MyMessage message, Pracovisko pracovisko)
@@ -106,6 +111,11 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
             message.Nabytok.Pracovisko = pracovisko;
             message.Pracovisko = pracovisko;
             pracovisko.CurrentNabytok = message.Nabytok;
+
+            if (MySim.AnimatorExists)
+            {
+                pracovisko.Rerender(MySim.Animator);
+            }
         }
 
 		//meta! userInfo="Process messages defined in code", id="0"

@@ -23,4 +23,13 @@
     <ProjectReference Include="..\FRI.DISS.Libs\FRI.DISS.Libs.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Images\free.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\stolicka.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

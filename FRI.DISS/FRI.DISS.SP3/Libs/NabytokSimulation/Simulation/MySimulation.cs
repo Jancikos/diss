@@ -10,6 +10,8 @@ using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 using FRI.DISS.Libs.Generators;
 using FRI.DISS.Libs.Helpers;
+using System.Drawing;
+using OSPAnimator;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 {
     public class MySimulation : OSPABA.Simulation
@@ -253,4 +255,40 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
         }
     }
 
+    public static class MyAnimator
+    {
+        public static readonly int Width = 1000 - 0;
+        public static readonly int Height = 800 - 0;
+        public static readonly int Offset = 50;
+
+        public static readonly int PracoviskoWidth = 100;
+        public static readonly int PracoviskoHeight = 100;
+        public static readonly int PracoviskaCount = 5;
+
+        public static readonly int StolarRadius = 20;
+
+        public static readonly int SkladWidth = 200;
+        public static readonly int SkladHeight = 200;
+
+        public static readonly string Image_Free = "./Images/free.png";
+        public static readonly string Image_Stolicka = "./Images/stolicka.jpg";
+
+        public static readonly PointF LeftTop = new PointF(0 + Offset, 0 + Offset);
+        public static readonly PointF LeftBottom = new PointF(0 + Offset, Height - Offset);
+        public static readonly PointF RightTop = new PointF(Width - Offset, 0 + Offset);
+        public static readonly PointF RightBottom = new PointF(Width - Offset, Height - Offset);
+    }
+
+    public interface IAnimatoredAgent
+    {
+        public void InitializeSimulationAnimator(IAnimator oldAnimator, IAnimator newAnimator);
+        public void DestroySimulationAnimator(IAnimator oldAnimator);
+    }
+    
+    public interface IAnimatoredEntity
+    {
+        public void Initialize(IAnimator animator);
+        public void Rerender(IAnimator animator);
+        public void Destroy(IAnimator animator);
+    }
 }

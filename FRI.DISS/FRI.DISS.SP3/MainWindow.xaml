@@ -165,8 +165,10 @@
 
                                 <libsuc:DicreteStatistic Grid.RowSpan="2" Grid.Column="4" x:Name="_sts_expObjednavkaTime" Title="Objednavka TimeInSystem" MinWidth="500" TransformFromSecondsToHours="true" PlotShow="true" PlotTitle="Objednávky - celkový čas v systéme" PlotXLabel="Počet objednávek" PlotYLabel="Čas v systéme [h]" />
 
-                                <Grid x:Name="_grd_expAnimator" Grid.Row="2" Grid.ColumnSpan="5" Visibility="Collapsed" Height="600">
-                                </Grid>
+                                <StackPanel x:Name="_grd_expAnimatorParent" Grid.Row="2" Grid.ColumnSpan="5" Visibility="Collapsed" Height="800" HorizontalAlignment="Left">
+                                    <GroupBox Header="Animator" x:Name="_grd_expAnimator" Width="1000" Height="800">
+                                    </GroupBox>
+                                </StackPanel>
                             </Grid>
                         </ScrollViewer>
                     </GroupBox>
