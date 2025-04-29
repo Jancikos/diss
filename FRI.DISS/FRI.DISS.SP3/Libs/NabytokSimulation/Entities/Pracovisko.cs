@@ -35,9 +35,12 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
         protected AnimShapeItem? _animShapeItem = null;
         protected AnimImageItem? _animImageItem = null;
+        protected AnimTextItem? _animTextItem = null;
 
         public void Initialize(IAnimator animator)
         {
+            int fontSize = 10;
+            var gap = 5;
             int spacing = 20;
             int basePositionX = MyAnimator.Offset;
             int basePositionY = spacing;
@@ -54,19 +57,27 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
             }
 
             int positionX = basePositionX + ((MyAnimator.PracoviskoWidth + spacing) * ((Id - 1) % MyAnimator.PracoviskaCount));
-            int positionY = basePositionY + ((MyAnimator.PracoviskoHeight + spacing) * ((Id - 1) / MyAnimator.PracoviskaCount));
+            int positionY = basePositionY + ((MyAnimator.PracoviskoHeight + spacing * 2) * ((Id - 1) / MyAnimator.PracoviskaCount));
 
             _animShapeItem = new AnimShapeItem(AnimShape.RECTANGLE_EMPTY, MyAnimator.PracoviskoWidth, MyAnimator.PracoviskoHeight);
             _animShapeItem.SetPosition(positionX, positionY);
             _animShapeItem.SetZIndex(1);
             animator.Register(_animShapeItem);
 
+            // text nabytku
+            _animTextItem = new AnimTextItem($"#{Id}");
+            // _animTextItem.SetFontSize(20); // default size
+            _animTextItem.SetPosition(positionX, positionY - fontSize - gap); // above the shape
+            animator.Register(_animTextItem);
+
             // obrazok nabytku
-            var imageGap = 5;
-            _animImageItem = new AnimImageItem(MyAnimator.Image_Free, MyAnimator.PracoviskoWidth - (imageGap * 2), MyAnimator.PracoviskoHeight - (imageGap * 2));
+            _animImageItem = new AnimImageItem(MyAnimator.Image_Free, MyAnimator.PracoviskoWidth - (gap * 2), MyAnimator.PracoviskoHeight - (gap * 2));
             _animImageItem.SetZIndex(10); // aby bol nad pracoviskom
-            _animImageItem.SetPosition(positionX + imageGap, positionY + imageGap);
+            _animImageItem.SetPosition(positionX + gap, positionY + gap);
             animator.Register(_animImageItem);
+
+            // to set correct imamge
+            Rerender(animator);
         }
 
         public void Destroy(IAnimator animator)
@@ -80,7 +91,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
         public void Rerender(IAnimator animator)
         {
-            if ((_animShapeItem is null) || (_animImageItem is null))
+            if (_animShapeItem is null)
                 throw new InvalidOperationException("Pracovisko animator is not initialized.");
 
             if (IsWarehouse)
@@ -91,11 +102,13 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
             if (IsFree)
             {
-                _animImageItem.SetImage(MyAnimator.Image_Free);
+                _animImageItem!.SetImage(MyAnimator.Image_Free);
+                _animTextItem!.Text = $"#{Id} - free";
                 return;
             }
 
-            _animImageItem.SetImage(MyAnimator.Image_Stolicka);
+            _animImageItem!.SetImage(MyAnimator.Image_Stolicka);
+            _animTextItem!.Text = $"#{Id}-{CurrentNabytok!.State}".Substring(0, 16);
         }
 
         private void _rerenderSklad(IAnimator animator)
