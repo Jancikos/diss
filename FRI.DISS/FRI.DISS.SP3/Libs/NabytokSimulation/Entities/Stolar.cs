@@ -57,33 +57,33 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
         public override string ToString() => $"{Id} - Stolar{Type}";
 
-        protected AnimShapeItem? _animShapeItem = null;
+        public AnimShapeItem? AnimShapeItem = null;
 
         public void Initialize(IAnimator animator)
         {
-            _animShapeItem = new AnimShapeItem(AnimShape.CIRCLE, MyAnimator.StolarRadius, MyAnimator.StolarRadius);
-            _animShapeItem.Color = MyAnimator.GetStolarColor(Type);
-            _animShapeItem.SetZIndex(1000); // above the shape
-            animator.Register(_animShapeItem);
+            AnimShapeItem = new AnimShapeItem(AnimShape.CIRCLE, MyAnimator.StolarRadius, MyAnimator.StolarRadius);
+            AnimShapeItem.Color = MyAnimator.GetStolarColor(Type);
+            AnimShapeItem.SetZIndex(1000); // above the shape
+            animator.Register(AnimShapeItem);
 
             Rerender(animator);
         }
 
         public void Rerender(IAnimator animator)
         {
-            if (_animShapeItem is null)
+            if (AnimShapeItem is null)
                 throw new InvalidOperationException("Stolar animator is not initialized");
 
             var pos = MyAnimator.GetStolarPosition(this);
-            _animShapeItem.SetPosition(pos.x, pos.y);
+            AnimShapeItem.SetPosition(pos.x, pos.y);
         }
 
         public void Destroy(IAnimator animator)
         {
-            if (_animShapeItem is not null)
+            if (AnimShapeItem is not null)
             {
-                animator.Remove(_animShapeItem);
-                _animShapeItem = null;
+                animator.Remove(AnimShapeItem);
+                AnimShapeItem = null;
             }
         }
     }

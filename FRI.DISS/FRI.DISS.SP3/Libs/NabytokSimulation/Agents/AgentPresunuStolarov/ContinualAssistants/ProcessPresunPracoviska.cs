@@ -30,6 +30,11 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPresunuStolarov.Contin
             myMsg.Code = Mc.Finish;
 
             var intime = _genPresun.GetSampleDouble();
+            if (MySim.AnimatorExists)
+            {
+                var newPos = MyAnimator.GetStolarPosition(myMsg.Stolar!, myMsg.Nabytok!.Pracovisko!);
+                myMsg.Stolar!.AnimShapeItem!.MoveTo(MySim.CurrentTime, intime, newPos.x, newPos.y);
+            }
             Hold(intime, message);
 		}
 

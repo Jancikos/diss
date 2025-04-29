@@ -291,10 +291,10 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 
         public static (int x, int y) GetStolarPosition(Stolar stolar) => 
             GetStolarPosition(stolar, stolar.CurrentPracovisko!);
-        public static (int x, int y) GetStolarPosition(Stolar stolar, Pracovisko pracovisko)
+        public static (int x, int y) GetStolarPosition(Stolar stolar, Pracovisko? pracovisko)
         {
-            if (stolar.IsOnTravel)
-                return (x: 0, y: 0);
+            if (pracovisko is null)
+                pracovisko = Pracovisko.Sklad;
 
             var wpPos = GetPracoviskoPosition(pracovisko);
             int posX = wpPos.x + GetStolarXGapByType(stolar.Type); 

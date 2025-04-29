@@ -81,7 +81,7 @@
 
                             <GroupBox Header="Workplaces">
                                 <StackPanel Orientation="Vertical">
-                                    <libsuc:InlineTextBox x:Name="_txt_simWorkplacesCount" Title="Count:" Value="200" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simWorkplacesCount" Title="Count:" Value="60" />
                                 </StackPanel>
                             </GroupBox>
                         </StackPanel>

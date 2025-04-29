@@ -2,6 +2,7 @@ using  FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPresunuStolarov;
 using OSPABA;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
 using FRI.DISS.Libs.Generators;
+using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPresunuStolarov.ContinualAssistants
 {
 	//meta! id="62"
@@ -30,6 +31,12 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPresunuStolarov.Contin
             myMsg.Code = Mc.Finish;
 
             var intime = _genPresun.GetSampleDouble();
+            if (MySim.AnimatorExists)
+            {
+				var nabytok = myMsg.Nabytok!;
+                var newPos = MyAnimator.GetStolarPosition(myMsg.Stolar!, nabytok.State == Entities.NabytokState.CakaNaZaciatokPrace ? Pracovisko.Sklad : nabytok.Pracovisko!);
+                myMsg.Stolar!.AnimShapeItem!.MoveTo(MySim.CurrentTime, intime, newPos.x, newPos.y);
+            }
             Hold(intime, message);
 		}
 
