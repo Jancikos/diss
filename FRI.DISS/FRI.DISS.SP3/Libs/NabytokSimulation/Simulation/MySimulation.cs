@@ -268,7 +268,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
         public static readonly int PracoviskoWidth = 100;
         public static readonly int PracoviskoHeight = 100;
         public static readonly int PracoviskaCount = 5;
-        public static readonly int PracoviskoSpacing = 20;
+        public static readonly int PracoviskoSpacing = 25;
         public static (int x, int y) GetPracoviskoPosition(Pracovisko pracovisko)
         {
             int baseX = Offset;
@@ -289,14 +289,16 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
             return (x: posX, y: posY);
         }
 
-        public static (int x, int y) GetStolarPosition(Stolar stolar)
+        public static (int x, int y) GetStolarPosition(Stolar stolar) => 
+            GetStolarPosition(stolar, stolar.CurrentPracovisko!);
+        public static (int x, int y) GetStolarPosition(Stolar stolar, Pracovisko pracovisko)
         {
             if (stolar.IsOnTravel)
                 return (x: 0, y: 0);
 
-            var wpPos = GetPracoviskoPosition(stolar.CurrentPracovisko!);
+            var wpPos = GetPracoviskoPosition(pracovisko);
             int posX = wpPos.x + GetStolarXGapByType(stolar.Type); 
-            int posY = wpPos.y + PracoviskoHeight + Gap + StolarRadius;
+            int posY = wpPos.y + PracoviskoHeight + Gap;
 
             return (x: posX, y: posY);
         }

@@ -12,7 +12,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
 	 * tiez riadi presun stolara medzi pracoviskami alebo skladom
 	 */
     //meta! id="10"
-    public class AgentStolarov : OSPABA.Agent, IAnimatoredAgent
+    public class AgentStolarov : OSPABA.Agent
     {
         public Dictionary<NabytokOperation, Queue<MyMessage>> OperationsQueues = new()
             {
@@ -29,17 +29,6 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
         {
             Init();
         }
-
-        public void DestroySimulationAnimator(IAnimator oldAnimator)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void InitializeSimulationAnimator(IAnimator oldAnimator, IAnimator newAnimator)
-        {
-            
-        }
-
 
         override public void PrepareReplication()
         {

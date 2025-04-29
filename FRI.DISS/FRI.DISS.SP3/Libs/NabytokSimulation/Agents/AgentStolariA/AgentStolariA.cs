@@ -1,10 +1,11 @@
 using OSPABA;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
+using OSPAnimator;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariA
 {
     //meta! id="11"
-     public interface IAgentStolari
+     public interface IAgentStolari : IAnimatoredAgent
     {
         public Dictionary<int, Stolar> Stolari { get; }
         public Queue<Stolar> FreeStolarai { get; }
@@ -44,5 +45,20 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariA
             AddOwnMessage(Mc.NoticeStolarUvolneny);
         }
         //meta! tag="end"
+        public void InitializeSimulationAnimator(IAnimator oldAnimator, IAnimator newAnimator)
+        {
+            foreach (var stolar in Stolari.Values)
+            {
+                stolar.Initialize(newAnimator);
+            }
+        }
+
+        public void DestroySimulationAnimator(IAnimator oldAnimator)
+        {
+            foreach (var stolar in Stolari.Values)
+            {
+                stolar.Destroy(oldAnimator);
+            }
+        }
     }
 }

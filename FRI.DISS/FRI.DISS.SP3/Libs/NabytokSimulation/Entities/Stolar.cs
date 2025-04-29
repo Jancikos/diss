@@ -61,8 +61,9 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
         public void Initialize(IAnimator animator)
         {
-            _animShapeItem = new AnimShapeItem(AnimShape.CIRCLE_EMPTY, MyAnimator.StolarRadius, MyAnimator.StolarRadius);
+            _animShapeItem = new AnimShapeItem(AnimShape.CIRCLE, MyAnimator.StolarRadius, MyAnimator.StolarRadius);
             _animShapeItem.Color = MyAnimator.GetStolarColor(Type);
+            _animShapeItem.SetZIndex(1000); // above the shape
             animator.Register(_animShapeItem);
 
             Rerender(animator);
@@ -70,8 +71,11 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
         public void Rerender(IAnimator animator)
         {
+            if (_animShapeItem is null)
+                throw new InvalidOperationException("Stolar animator is not initialized");
+
             var pos = MyAnimator.GetStolarPosition(this);
-            _animShapeItem?.SetPosition(pos.x, pos.y);
+            _animShapeItem.SetPosition(pos.x, pos.y);
         }
 
         public void Destroy(IAnimator animator)

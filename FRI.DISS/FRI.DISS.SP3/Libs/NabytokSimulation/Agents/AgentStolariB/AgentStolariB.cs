@@ -2,6 +2,7 @@ using OSPABA;
 using  FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariA;
+using OSPAnimator;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariB
 {
 	//meta! id="12"
@@ -38,5 +39,20 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolariB
 			AddOwnMessage(Mc.NoticeStolarUvolneny);
 		}
 		//meta! tag="end"
+        public void InitializeSimulationAnimator(IAnimator oldAnimator, IAnimator newAnimator)
+        {
+            foreach (var stolar in Stolari.Values)
+            {
+                stolar.Initialize(newAnimator);
+            }
+        }
+
+        public void DestroySimulationAnimator(IAnimator oldAnimator)
+        {
+            foreach (var stolar in Stolari.Values)
+            {
+                stolar.Destroy(oldAnimator);
+            }
+        }
 	}
 }

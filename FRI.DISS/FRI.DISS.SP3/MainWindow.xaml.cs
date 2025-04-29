@@ -138,10 +138,17 @@ namespace FRI.DISS.SP3
             //newAnimator.SetViewPositionCenter(0, 0);
 
             _simulation.AgentPracovisk.InitializeSimulationAnimator(oldAnimator, newAnimator);
+
+            _simulation.AgentStolariA.InitializeSimulationAnimator(oldAnimator, newAnimator);
+            _simulation.AgentStolariB.InitializeSimulationAnimator(oldAnimator, newAnimator);
+            _simulation.AgentStolariC.InitializeSimulationAnimator(oldAnimator, newAnimator);
         }
         private void _onSimulationAnimatorRemoved(IAnimator oldAnimator)
         {
             _simulation.AgentPracovisk.DestroySimulationAnimator(oldAnimator);
+            _simulation.AgentStolariA.DestroySimulationAnimator(oldAnimator);
+            _simulation.AgentStolariB.DestroySimulationAnimator(oldAnimator);
+            _simulation.AgentStolariC.DestroySimulationAnimator(oldAnimator);
         }
 
         private void _initializeAnimator()
