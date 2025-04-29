@@ -1,6 +1,7 @@
 
 
 using FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
+using OSPAnimator;
 
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 {
@@ -11,7 +12,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
         C
     }
 
-    public class Stolar
+    public class Stolar : IAnimatoredEntity
     {
         public static int IdCounter { get; private set; } = 0;
         public static int GetNextId() => ++IdCounter;
@@ -55,5 +56,31 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
         }
 
         public override string ToString() => $"{Id} - Stolar{Type}";
+
+        protected AnimShapeItem? _animShapeItem = null;
+
+        public void Initialize(IAnimator animator)
+        {
+            _animShapeItem = new AnimShapeItem(AnimShape.CIRCLE_EMPTY, MyAnimator.StolarRadius, MyAnimator.StolarRadius);
+            _animShapeItem.Color = MyAnimator.GetStolarColor(Type);
+            animator.Register(_animShapeItem);
+
+            Rerender(animator);
+        }
+
+        public void Rerender(IAnimator animator)
+        {
+            var pos = MyAnimator.GetStolarPosition(this);
+            _animShapeItem?.SetPosition(pos.x, pos.y);
+        }
+
+        public void Destroy(IAnimator animator)
+        {
+            if (_animShapeItem is not null)
+            {
+                animator.Remove(_animShapeItem);
+                _animShapeItem = null;
+            }
+        }
     }
 }

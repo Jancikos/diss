@@ -12,6 +12,7 @@ using FRI.DISS.Libs.Generators;
 using FRI.DISS.Libs.Helpers;
 using System.Drawing;
 using OSPAnimator;
+using System.Windows.Media;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 {
     public class MySimulation : OSPABA.Simulation
@@ -261,9 +262,71 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
         public static readonly int Height = 800 - 0;
         public static readonly int Offset = 50;
 
+        public static readonly int FontSize = 10;
+        public static readonly int Gap = 5;
+
         public static readonly int PracoviskoWidth = 100;
         public static readonly int PracoviskoHeight = 100;
         public static readonly int PracoviskaCount = 5;
+        public static readonly int PracoviskoSpacing = 20;
+        public static (int x, int y) GetPracoviskoPosition(Pracovisko pracovisko)
+        {
+            int baseX = Offset;
+            int baseY = PracoviskoSpacing;
+
+            if (pracovisko.IsWarehouse)
+            {
+                // vedla ostatnych pracovisk
+                int skladPosX = (baseX * 3) + ((PracoviskoWidth + PracoviskoSpacing) * PracoviskaCount);
+                int skladPosY = baseY;
+
+                return (x: skladPosX, y: skladPosY);
+            }
+
+            int posX = baseX + ((PracoviskoWidth + PracoviskoSpacing) * ((pracovisko.Id - 1) % PracoviskaCount));
+            int posY = baseY + ((PracoviskoHeight + PracoviskoSpacing * 2) * ((pracovisko.Id - 1) / PracoviskaCount));
+
+            return (x: posX, y: posY);
+        }
+
+        public static (int x, int y) GetStolarPosition(Stolar stolar)
+        {
+            if (stolar.IsOnTravel)
+                return (x: 0, y: 0);
+
+            var wpPos = GetPracoviskoPosition(stolar.CurrentPracovisko!);
+            int posX = wpPos.x + GetStolarXGapByType(stolar.Type); 
+            int posY = wpPos.y + PracoviskoHeight + Gap + StolarRadius;
+
+            return (x: posX, y: posY);
+        }
+        
+        public static int GetStolarXGapByType(StolarType type)
+        {
+            int gap = Gap;
+
+            // zoradeny budu A, B, C
+            int stolarsCountOffset = 0;
+            switch (type)
+            {
+                case StolarType.A:
+                    stolarsCountOffset = 0;
+                    break;
+                case StolarType.B:
+                    stolarsCountOffset = 1;
+                    break;
+                case StolarType.C:
+                    stolarsCountOffset = 2;
+                    break;
+            }
+
+            for (int i = 0; i < stolarsCountOffset; i++)
+            {
+                gap += Gap + Gap + StolarRadius;
+            }
+
+            return gap;
+        }
 
         public static readonly int StolarRadius = 20;
 
@@ -277,6 +340,17 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
         public static readonly PointF LeftBottom = new PointF(0 + Offset, Height - Offset);
         public static readonly PointF RightTop = new PointF(Width - Offset, 0 + Offset);
         public static readonly PointF RightBottom = new PointF(Width - Offset, Height - Offset);
+
+        public static System.Windows.Media.Color GetStolarColor(StolarType type)
+        {
+            return type switch
+            {
+                StolarType.A => Colors.Red,
+                StolarType.B => Colors.Green,
+                StolarType.C => Colors.Blue,
+                _ => Colors.Black
+            };
+        }
     }
 
     public interface IAnimatoredAgent

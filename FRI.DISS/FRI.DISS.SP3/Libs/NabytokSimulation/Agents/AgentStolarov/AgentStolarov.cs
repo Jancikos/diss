@@ -2,6 +2,7 @@ using OSPABA;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov.ContinualAssistants;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Entities;
+using OSPAnimator;
 namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
 {
     /*!
@@ -11,7 +12,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
 	 * tiez riadi presun stolara medzi pracoviskami alebo skladom
 	 */
     //meta! id="10"
-    public class AgentStolarov : OSPABA.Agent
+    public class AgentStolarov : OSPABA.Agent, IAnimatoredAgent
     {
         public Dictionary<NabytokOperation, Queue<MyMessage>> OperationsQueues = new()
             {
@@ -28,6 +29,17 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
         {
             Init();
         }
+
+        public void DestroySimulationAnimator(IAnimator oldAnimator)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InitializeSimulationAnimator(IAnimator oldAnimator, IAnimator newAnimator)
+        {
+            
+        }
+
 
         override public void PrepareReplication()
         {

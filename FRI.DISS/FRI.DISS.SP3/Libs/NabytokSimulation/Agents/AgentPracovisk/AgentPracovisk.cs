@@ -53,6 +53,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
 			AddOwnMessage(Mc.RequestResponsePriradPracovisko);
 			AddOwnMessage(Mc.NoticePracoviskoUvolnene);
 		}
+        //meta! tag="end"
 
         public void InitializeSimulationAnimator(IAnimator oldAnimator, IAnimator newAnimator)
         {
@@ -73,6 +74,5 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentPracovisk
                 pracovisko.Destroy(oldAnimator);
             }
         }
-        //meta! tag="end"
     }
 }

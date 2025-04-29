@@ -39,47 +39,33 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
 
         public void Initialize(IAnimator animator)
         {
-            int fontSize = 10;
-            var gap = 5;
-            int spacing = 20;
-            int basePositionX = MyAnimator.Offset;
-            int basePositionY = spacing;
-
-            if (IsWarehouse)
-            {
-                // vedla ostatnych pracovisk
-                int skladPosX = (basePositionX * 3) + ((MyAnimator.PracoviskoWidth + spacing) * MyAnimator.PracoviskaCount);
-                int skladPosY = basePositionY;
-
-                _animShapeItem = new AnimShapeItem(AnimShape.RECTANGLE_EMPTY, MyAnimator.PracoviskoWidth * 2, MyAnimator.PracoviskoHeight);
-                _animShapeItem.SetPosition(skladPosX, skladPosY);
-                animator.Register(_animShapeItem);
-
-                _animTextItem = new AnimTextItem($"Sklad");
-                _animTextItem.SetPosition(skladPosX + gap, skladPosY + gap); // under the shape
-                animator.Register(_animTextItem);
-
-                return;
-            }
-
-            int posX = basePositionX + ((MyAnimator.PracoviskoWidth + spacing) * ((Id - 1) % MyAnimator.PracoviskaCount));
-            int posY = basePositionY + ((MyAnimator.PracoviskoHeight + spacing * 2) * ((Id - 1) / MyAnimator.PracoviskaCount));
+            var pos = MyAnimator.GetPracoviskoPosition(this);
+            int posX = pos.x;
+            int posY = pos.y;
 
             _animShapeItem = new AnimShapeItem(AnimShape.RECTANGLE_EMPTY, MyAnimator.PracoviskoWidth, MyAnimator.PracoviskoHeight);
             _animShapeItem.SetPosition(posX, posY);
             _animShapeItem.SetZIndex(1);
             animator.Register(_animShapeItem);
 
+            if (IsWarehouse)
+            {
+                _animTextItem = new AnimTextItem($"Sklad");
+                _animTextItem.SetPosition(posX + MyAnimator.Gap, posY + MyAnimator.Gap); // under the shape
+                animator.Register(_animTextItem);
+
+                return;
+            }
+
             // text nabytku
             _animTextItem = new AnimTextItem($"#{Id}");
-            // _animTextItem.SetFontSize(20); // default size
-            _animTextItem.SetPosition(posX, posY - fontSize - gap); // above the shape
+            _animTextItem.SetPosition(posX, posY - MyAnimator.FontSize - MyAnimator.Gap); // above the shape
             animator.Register(_animTextItem);
 
             // obrazok nabytku
-            _animImageItem = new AnimImageItem(MyAnimator.Image_Free, MyAnimator.PracoviskoWidth - (gap * 2), MyAnimator.PracoviskoHeight - (gap * 2));
+            _animImageItem = new AnimImageItem(MyAnimator.Image_Free, MyAnimator.PracoviskoWidth - (MyAnimator.Gap * 2), MyAnimator.PracoviskoHeight - (MyAnimator.Gap * 2));
             _animImageItem.SetZIndex(10); // aby bol nad pracoviskom
-            _animImageItem.SetPosition(posX + gap, posY + gap);
+            _animImageItem.SetPosition(posX + MyAnimator.Gap, posY + MyAnimator.Gap);
             animator.Register(_animImageItem);
 
             // to set correct imamge
