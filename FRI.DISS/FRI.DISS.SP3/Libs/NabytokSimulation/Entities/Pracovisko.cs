@@ -108,7 +108,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
                 return;
             }
 
-            _animImageItem!.SetImage(MyAnimator.Image_Stolicka);
+            _animImageItem!.SetImage(MyAnimator.GetNabytokImage(CurrentNabytok!.Type));
             var text = $"#{Id}-{CurrentNabytok!.State}";
             _animTextItem!.Text = text.Length <= 16 ? text : text.Substring(0, 16);    
         }

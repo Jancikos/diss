@@ -27,6 +27,12 @@
     <None Update="Images\free.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Images\skrina.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\stol.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Images\stolicka.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

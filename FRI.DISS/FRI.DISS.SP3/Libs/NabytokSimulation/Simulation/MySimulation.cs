@@ -337,6 +337,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
 
         public static readonly string Image_Free = "./Images/free.png";
         public static readonly string Image_Stolicka = "./Images/stolicka.jpg";
+        public static readonly string Image_Stol = "./Images/stol.jpg";
+        public static readonly string Image_Skrina = "./Images/skrina.jpg";
 
         public static readonly PointF LeftTop = new PointF(0 + Offset, 0 + Offset);
         public static readonly PointF LeftBottom = new PointF(0 + Offset, Height - Offset);
@@ -351,6 +353,17 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
                 StolarType.B => Colors.Green,
                 StolarType.C => Colors.Blue,
                 _ => Colors.Black
+            };
+        }
+
+        public static string GetNabytokImage(NabytokType type)
+        {
+            return type switch
+            {
+                NabytokType.Skrina => Image_Skrina,
+                NabytokType.Stol => Image_Stol,
+                NabytokType.Stolicka => Image_Stolicka,
+                _ => throw new NotImplementedException($"Nabytok type {type} is not implemented")
             };
         }
     }
