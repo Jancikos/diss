@@ -169,11 +169,15 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             var nabytok = myMsg.Nabytok!;
             nabytok.State = nabytok.GetNextState();
 
+            // zabezpeci ze po skonceni operacie sa stolar uvolni (okrem pripravy materialu, lebo potom musi nabytok ist zo skladu a rovno rezat)
             if (nabytok.State != NabytokState.PripravenyMaterial) 
             {
-                // uvolni stolara
-                _tryFreeStolar(myMsg.Stolar!);
-                myMsg.Stolar = null;
+                // ak bol nabytok namoreny a musi byt este lakovany, tak uvolni stolara, len ak sa caka na montaz kovani
+                if (!(nabytok.State == NabytokState.Namorena && nabytok.GetNextState() == NabytokState.Nalakovana && MyAgent.OperationsQueues[NabytokOperation.MontazKovani].Count == 0))
+                {
+                    _tryFreeStolar(myMsg.Stolar!);
+                    myMsg.Stolar = null;
+                }
             }
 
             // vrat response

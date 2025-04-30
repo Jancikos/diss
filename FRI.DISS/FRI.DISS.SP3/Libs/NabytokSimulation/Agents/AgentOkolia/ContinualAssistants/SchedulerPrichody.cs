@@ -84,7 +84,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentOkolia.ContinualAssist
             var pocetNabytkov = _genPocetNabytkov.GetSampleInt();
             for (int i = 0; i < pocetNabytkov; i++)
             {
-                objednavka.Nabytky.Add(new Nabytok(objednavka, _generateNabytokType()));
+                objednavka.Nabytky.Add(new Nabytok(objednavka, _generateNabytokType(), 
+                    _genLakovanie.GetSampleDouble()));
             }
 
             return objednavka;
