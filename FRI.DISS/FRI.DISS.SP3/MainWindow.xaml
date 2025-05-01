@@ -186,8 +186,8 @@
                             </Grid>
                     </GroupBox>
 
-                    
-                    <GroupBox Grid.Row="2" Header="Replications statistics">
+
+                    <GroupBox Grid.Row="2" Header="Replications statistics" MaxHeight="700">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" /> 
