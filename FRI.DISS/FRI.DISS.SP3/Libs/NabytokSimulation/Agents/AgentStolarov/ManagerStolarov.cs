@@ -64,7 +64,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
             }
 
             // no free stolar of given type => add to waiting queue
-            MyAgent.OperationsQueues[myMsg.Nabytok!.MapStateToNextOperation()!].Enqueue(myMsg);
+            MyAgent.OperationsQueues[myMsg.Nabytok!.MapStateToNextOperation()!].Enqueue(myMsg, myMsg.Nabytok);
 		}
 
 		//meta! sender="AgentStolariB", id="25", type="Response"

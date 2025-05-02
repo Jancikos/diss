@@ -33,7 +33,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
         Ukoncena
     }
 
-    public class Nabytok
+    public class Nabytok : IComparable<Nabytok>
     {
         public static int IdCounter { get; private set; } = 0;
         public static int GetNextId() => ++IdCounter;
@@ -83,6 +83,17 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
         public override string ToString()
         {
             return $"#{Id} {Type} [{State}]";
+        }
+        
+        public int CompareTo(Nabytok? other)
+        {
+            if (other is null)
+                return 1; // this is greater than null
+
+            int orderCompare = Objednavka.Id.CompareTo(other.Objednavka.Id);
+            if (orderCompare != 0)
+                return orderCompare;
+            return Id.CompareTo(other.Id);
         }
 
         public NabytokState GetNextState()

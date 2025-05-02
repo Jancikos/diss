@@ -14,7 +14,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
     //meta! id="10"
     public class AgentStolarov : OSPABA.Agent
     {
-        public Dictionary<NabytokOperation, Queue<MyMessage>> OperationsQueues = new()
+        public Dictionary<NabytokOperation, PriorityQueue<MyMessage, Nabytok>> OperationsQueues = new()
             {
                 { NabytokOperation.PripravaMaterialu, new() },
                 { NabytokOperation.Rezanie, new() },

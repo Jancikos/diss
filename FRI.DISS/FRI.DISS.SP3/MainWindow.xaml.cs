@@ -394,9 +394,12 @@ namespace FRI.DISS.SP3
                 var nabytokOperation = operationQueueUC.NabytokOperation;
                 var items = nabytokOperation == NabytokOperation.PriradovaniePracoviska
                     ? agentPracovisk.WaitingForPracovisko.ToList()
-                    : agentStolarov.OperationsQueues[nabytokOperation].ToList();
+                    : agentStolarov.OperationsQueues[nabytokOperation].UnorderedItems
+                        // .OrderBy(x => x.Priority)
+                        .Select(x => x.Element)
+                        .ToList();
 
-                operationQueueUC._updateGUI(items);
+                // operationQueueUC._updateGUI(items);
             });
         }
         #endregion
