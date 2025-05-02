@@ -399,7 +399,7 @@ namespace FRI.DISS.SP3
                         .Select(x => x.Element)
                         .ToList();
 
-                // operationQueueUC._updateGUI(items);
+                operationQueueUC._updateGUI(items);
             });
         }
         #endregion
