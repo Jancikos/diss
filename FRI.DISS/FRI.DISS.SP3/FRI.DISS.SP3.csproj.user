@@ -22,6 +22,9 @@
     <Compile Update="Controls\StolarUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="ExperimentsWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="StanicaSimulationWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -40,6 +43,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Controls\StolarUserControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="ExperimentsWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MainWindow.xaml">

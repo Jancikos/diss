@@ -129,6 +129,23 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
         public AgentPresunuStolarov AgentPresunuStolarov
         { get; set; }
         //meta! tag="end"
+
+        public void InitializeFromCsvRow(string[] cols)
+        {
+            var col = 0;
+
+            // parametre
+            ++col; // max replications count
+            ++col; // min sirka intervalu
+
+            // stolari count
+            foreach (var stolarType in Enum.GetValues<StolarType>())
+            {
+                StolariCount[stolarType] = int.Parse(cols[col++]);
+            }
+            // pracoviska count
+            PracoviskaCount = int.Parse(cols[col++]);
+        }
     }
 
     public class NabytokReplicationsStatistics
