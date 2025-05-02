@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -33,6 +34,7 @@ namespace FRI.DISS.SP3
     public partial class MainWindow : Window
     {
         private readonly MySimulation _simulation;
+        private Window? _animWindow = null;
 
         public MainWindow()
         {
@@ -153,22 +155,33 @@ namespace FRI.DISS.SP3
 
         private void _initializeAnimator()
         {
-            _grd_expAnimatorParent.Visibility = Visibility.Visible;
-
             _simulation.CreateAnimator();
-            //_grd_expAnimator.Children.Add(_simulation.Animator.Canvas);
-            _grd_expAnimator.Content = _simulation.Animator.Canvas;
+
+            _animWindow = new Window()
+            {
+                Title = "Animator",
+                Content = _simulation.Animator.Canvas,
+                Width = 1000,
+                Height = 600,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+            };
+            _animWindow.Show();
         }
 
         private void _destroyAnimator()
         {
-            // _grd_expAnimator.Children.Clear();
-            _grd_expAnimatorParent.Visibility = Visibility.Collapsed;
-
             _simulation.RemoveAnimator();
+
+            _animWindow?.Close();
+            _animWindow = null;
         }
 
         #endregion Simulation events
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+        }
 
         #region GUI methods
 
