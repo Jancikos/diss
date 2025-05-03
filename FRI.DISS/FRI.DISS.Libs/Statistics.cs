@@ -45,6 +45,7 @@ namespace FRI.DISS.Libs.Generators
             : throw new InvalidOperationException("Interval calculation is not valid for sample sizes less than 30.");  
         public double IntervalLowerBound => Mean - IntervalHalfWidth;
         public double IntervalUpperBound => Mean + IntervalHalfWidth;
+        public double IntervalWidth => IntervalHalfWidth * 2;
 
         public Statistics()
         {

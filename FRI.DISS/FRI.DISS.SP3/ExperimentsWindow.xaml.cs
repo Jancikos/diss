@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using FRI.DISS.Libs.Helpers;
 using FRI.DISS.SP3.Libs.NabytokSimulation.Simulation;
 using OSPABA;
 
@@ -24,6 +26,7 @@ namespace FRI.DISS.SP3
     {
         private readonly MySimulation _simulation;
         private int? _confCurrentRunnig;
+        private double? _confIntervalWidthPercent; 
         private string[]? _confings;
 
         private FileInfo _fileConfigs = new FileInfo("./experimentsConfigs.csv");
@@ -99,6 +102,23 @@ namespace FRI.DISS.SP3
             {
                 _txt_simCurrentReplication.Text = (repsDone + 1).ToString();
             });
+
+            // check if interval is not short enough
+            var orderTotalTime = _simulation.ReplicationsStatistics.ObjednavkaTime;
+            if (orderTotalTime.Count > 30)
+            {
+                var intervalWidth = orderTotalTime.IntervalWidth;
+                var intervalWidthPercent = intervalWidth / orderTotalTime.Mean * 100;
+
+                // Debug.WriteLine($"[{_confCurrentRunnig}:{repsDone + 1}] Order total time interval width: {TimeHelper.S2H(intervalWidth):F2} ({intervalWidthPercent:F2}%)");
+
+                if (intervalWidthPercent < _confIntervalWidthPercent)
+                {
+                    Debug.WriteLine($"[{_confCurrentRunnig}:{repsDone + 1}] Interval width is small enough ({intervalWidthPercent:F2}%). Starting next simulation.");
+                    simulation.StopSimulation();
+                    return;
+                }
+            }
         }
 
         private void _mnitem_Close_Click(object sender, RoutedEventArgs e)
@@ -126,6 +146,7 @@ namespace FRI.DISS.SP3
         private void _startSimulation(int i)
         {
             var config = _confings![i].Split(';');
+            _confIntervalWidthPercent = double.TryParse(config[1], out var intervalWidthPercent) ? intervalWidthPercent : throw new Exception("Interval width percent is not valid.");
             
             _simulation.InitializeFromCsvRow(config);
 

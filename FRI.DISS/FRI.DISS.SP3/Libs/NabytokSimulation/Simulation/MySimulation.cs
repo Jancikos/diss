@@ -187,7 +187,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
             Columns.Add(new CsvColumn()
             {
                 Title = "ReplicationsCount",
-                Converter = (x) => (x as MySimulation)?.CurrentReplication.ToString() + 1 ?? "0"
+                Converter = (x) => ((x as MySimulation)?.CurrentReplication  + 1).ToString() ?? "0"
             });
             foreach (var stolarType in Enum.GetValues<StolarType>())
             {
