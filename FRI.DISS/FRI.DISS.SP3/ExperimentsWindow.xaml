@@ -32,7 +32,7 @@
 
             <GroupBox Header="Simulations parameters">
                 <StackPanel Orientation="Horizontal">
-                    <GroupBox Header="Simlation controls">
+                    <GroupBox Header="Experiments controls">
                         <StackPanel Orientation="Vertical">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch"
                                 Margin="0 5">

@@ -23,61 +23,68 @@ namespace FRI.DISS.SP3
     public partial class ExperimentsWindow : Window
     {
         private readonly MySimulation _simulation;
-        private int _confCurrent = 0;
+        private int? _confCurrentRunnig;
         private string[]? _confings;
-        
+
+        private FileInfo _fileConfigs = new FileInfo("./experimentsConfigs.csv");
+        private FileInfo _fileOutput = new FileInfo("./experimentsOutput.csv");
+
         public ExperimentsWindow()
         {
             InitializeComponent();
 
             _simulation = new MySimulation();
 
-            _simulation.OnRefreshUI(_onRefreshUI);
             _simulation.OnReplicationWillStart(_onReplicationWillStart);
             _simulation.OnReplicationDidFinish(_onReplicationDidFinish);
             _simulation.OnSimulationWillStart(_onSimulationWillStart);
             _simulation.OnSimulationDidFinish(_onSimulationDidFinish);
+
+            _loadConfigsFromFile(_fileConfigs.FullName);
         }
 
         private void _onSimulationWillStart(Simulation simulation)
         {
-
+            Dispatcher.InvokeAsync(() =>
+            {
+                _txt_simCurrentReplication.Text = "0";
+                _txt_simTotalReplications.Text = simulation.ReplicationCount.ToString();
+                _txt_simStartTime.Value = DateTime.Now.ToString("HH:mm:ss");
+            });
         }
         private void _onSimulationDidFinish(Simulation simulation)
         {
-            var repsDone = _simulation.CurrentReplication;
+            if (_confCurrentRunnig is null)
+                throw new Exception("Current configuration running can not be null.");
 
             Dispatcher.InvokeAsync(() =>
             {
-                _txt_repsEndTime.Value = DateTime.Now.ToString("HH:mm:ss");
-
-                _refreshReplicationsDoneCounters(repsDone);
-                _refreshReplicationsStats(_simulation.ReplicationsStatistics);
+                _txt_confsCurrent.Text = (_confCurrentRunnig + 1).ToString();
             });
 
             // save simulation results to csv file
-            if (repsDone > 30)
+            if (_simulation.CurrentReplication > 30)
             {
                 NabytokReplicationsStatisticsCsvWriter.Instance.Write(
-                    new FileInfo("./experimentsOutput.csv"),
+                    _fileOutput,
                     _simulation
                 );
             }
 
-
             // should start another simulation
-            var runAnotherSimulation = true;
-
+            var runAnotherSimulation = _confCurrentRunnig < _confings?.Length - 1;
             if (!runAnotherSimulation)
             {
                 Dispatcher.InvokeAsync(() =>
                 {
                     _txt_confsEndTime.Value = DateTime.Now.ToString("HH:mm:ss");
+                    MessageBox.Show("All configurations have been simulated.", "Simulation finished", MessageBoxButton.OK, MessageBoxImage.Information);
                 });
                 return;
             }
 
             // start another simulation
+            _startSimulation(_confCurrentRunnig.Value + 1);
         }
 
         private void _onReplicationWillStart(Simulation simulation)
@@ -90,22 +97,40 @@ namespace FRI.DISS.SP3
 
             Dispatcher.InvokeAsync(() =>
             {
-                _txt_simCurrentReplication.Text = repsDone.ToString();
+                _txt_simCurrentReplication.Text = (repsDone + 1).ToString();
             });
         }
 
         private void _mnitem_Close_Click(object sender, RoutedEventArgs e)
         {
-
+            Close();
         }
 
         private void _btn_simStart_Click(object sender, RoutedEventArgs e)
         {
-            var repsCount = _txt_simReplicationsCount.IntValue;
-            _txt_expTotalReplications.Text = repsCount.ToString();
+            if (_confings is null || _confings.Length == 0)
+            {
+                MessageBox.Show("No configuration loaded. Please load a configuration file first.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
-            _initializeSimulationFromGUI();
-            _simulation.SimulateAsync(repsCount, _simulation.Endtime);
+            _txt_confsCurrent.Text = 0.ToString();
+            _txt_confsTotal.Text = _confings?.Length.ToString() ?? "???";
+
+            _txt_confsStartTime.Value = DateTime.Now.ToString("HH:mm:ss");
+            _txt_confsEndTime.Value = "???";
+
+            _startSimulation(0);
+        }
+
+        private void _startSimulation(int i)
+        {
+            var config = _confings![i].Split(';');
+            
+            _simulation.InitializeFromCsvRow(config);
+
+            _simulation.SimulateAsync(int.Parse(config[0]), _simulation.Endtime);
+            _confCurrentRunnig = i;
         }
 
         private void _btn_simStop_Click(object sender, RoutedEventArgs e)
@@ -128,15 +153,27 @@ namespace FRI.DISS.SP3
             var fileDialog = new Microsoft.Win32.OpenFileDialog
             {
                 Filter = "Configuration files (*.xml)|*.xml|All files (*.*)|*.*",
-                Title = "Select configuration file"
+                Title = "Select configuration file",
+                InitialDirectory = Environment.CurrentDirectory,
+                FileName = _fileConfigs.FullName,
             };
 
             if (fileDialog.ShowDialog() == true)
             {
-                _confings = File.ReadAllLines(fileDialog.FileName);
-                _txt_confLoadedCount.Value = _confings?.Length.ToString() ?? "???";
+                _loadConfigsFromFile(fileDialog.FileName);
+            }
+        }
+
+        private void _loadConfigsFromFile(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                MessageBox.Show($"File {filePath} does not exist.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
 
+            _confings = File.ReadAllLines(filePath).Skip(1).ToArray();
+            _txt_confLoadedCount.Value = _confings?.Length.ToString() ?? "???";
         }
     }
 }

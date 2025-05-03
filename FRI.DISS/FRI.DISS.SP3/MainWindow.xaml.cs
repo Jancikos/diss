@@ -410,9 +410,9 @@ namespace FRI.DISS.SP3
             Close();
         }
 
-        private void _mnitem_StanicaSimWindow_Click(object sender, RoutedEventArgs e)
+        private void _mnitem_ExperimentsWindow_Click(object sender, RoutedEventArgs e)
         {
-            var stanicaSimulationWindow = new StanicaSimulationWindow();
+            var stanicaSimulationWindow = new ExperimentsWindow();
 
             stanicaSimulationWindow.Owner = this;
             stanicaSimulationWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;

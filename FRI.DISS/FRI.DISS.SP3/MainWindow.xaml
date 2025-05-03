@@ -21,7 +21,7 @@
             <Menu>
                 <MenuItem Header="Run simulation" Click="_mnitem_RunSim_Click">
                 </MenuItem>
-                <MenuItem Header="Stanica simulation" Click="_mnitem_StanicaSimWindow_Click">
+                <MenuItem Header="Experiments windows" Click="_mnitem_ExperimentsWindow_Click">
                 </MenuItem>
 
                 <MenuItem x:Name="_mnitem_Close" Header="Close" Click="_mnitem_Close_Click" />

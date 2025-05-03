@@ -187,7 +187,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
             Columns.Add(new CsvColumn()
             {
                 Title = "ReplicationsCount",
-                Converter = (x) => (x as MySimulation)?.CurrentReplication.ToString() ?? "0"
+                Converter = (x) => (x as MySimulation)?.CurrentReplication.ToString() + 1 ?? "0"
             });
             foreach (var stolarType in Enum.GetValues<StolarType>())
             {
@@ -207,17 +207,17 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Simulation
             Columns.Add(new CsvColumn()
             {
                 Title = "ObjednavkaTime_IS_lower",
-                Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.ObjednavkaTime.IntervalLowerBound ?? 0).ToString()
+                Converter = (x) => TimeHelper.S2H((x as MySimulation)?.ReplicationsStatistics.ObjednavkaTime.IntervalLowerBound ?? 0).ToString()
             });
             Columns.Add(new CsvColumn()
             {
                 Title = "ObjednavkaTime_mean",
-                Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.ObjednavkaTime.Mean ?? 0).ToString()
+                Converter = (x) => TimeHelper.S2H((x as MySimulation)?.ReplicationsStatistics.ObjednavkaTime.Mean ?? 0).ToString()
             }); 
             Columns.Add(new CsvColumn()
             {
                 Title = "ObjednavkaTime_IS_upper",
-                Converter = (x) => ((x as MySimulation)?.ReplicationsStatistics.ObjednavkaTime.IntervalUpperBound ?? 0).ToString()
+                Converter = (x) => TimeHelper.S2H((x as MySimulation)?.ReplicationsStatistics.ObjednavkaTime.IntervalUpperBound ?? 0).ToString()
             });
 
             Columns.Add(new CsvColumn()
