@@ -66,7 +66,7 @@ namespace FRI.DISS.SP3
             });
 
             // save simulation results to csv file
-            if (_simulation.CurrentReplication > 30)
+            if (_simulation.CurrentReplication >= 30)
             {
                 NabytokReplicationsStatisticsCsvWriter.Instance.Write(
                     _fileOutput,
