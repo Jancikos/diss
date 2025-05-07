@@ -57,7 +57,7 @@
                                 <StackPanel Orientation="Vertical">
                                     <libsuc:InlineTextBox x:Name="_txt_simSeed" Title="Seed:" Value="" />
                                     <libsuc:InlineTextBox x:Name="_txt_simReplicationsCount" Title="Replications count:" Value="1000" />
-                                    <libsuc:InlineTextBox x:Name="_txt_simReplicationsStatsRefresh" Title="Replications stats refresh interval:" Value="25" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simReplicationsStatsRefresh" Title="Replications stats refresh interval:" Value="10" />
                                     <libsuc:InlineTextBox x:Name="_txt_simPlotsSkipFirstCount" Title="Plot - skip first:" Value="350" />
                                 </StackPanel>
                             </GroupBox>
@@ -73,15 +73,15 @@
 
                             <GroupBox Header="Stolari">
                                 <StackPanel Orientation="Vertical">
-                                    <libsuc:InlineTextBox x:Name="_txt_simStolariACount" Title="A count:" Value="35" />
-                                    <libsuc:InlineTextBox x:Name="_txt_simStolariBCount" Title="B count:" Value="10" />
-                                    <libsuc:InlineTextBox x:Name="_txt_simStolariCCount" Title="C count:" Value="80" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simStolariACount" Title="A count:" Value="6" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simStolariBCount" Title="B count:" Value="5" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simStolariCCount" Title="C count:" Value="38" />
                                 </StackPanel>
                             </GroupBox>
 
                             <GroupBox Header="Workplaces">
                                 <StackPanel Orientation="Vertical">
-                                    <libsuc:InlineTextBox x:Name="_txt_simWorkplacesCount" Title="Count:" Value="60" />
+                                    <libsuc:InlineTextBox x:Name="_txt_simWorkplacesCount" Title="Count:" Value="58" />
                                 </StackPanel>
                             </GroupBox>
                         </StackPanel>
