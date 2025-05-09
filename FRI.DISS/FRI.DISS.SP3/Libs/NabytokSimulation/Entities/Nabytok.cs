@@ -17,7 +17,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
         Morenie,
         Lakovanie,
         Skladanie,
-        MontazKovani
+        MontazKovani,
+        KontrolaUpevnenia
     }
 
     public enum NabytokState
@@ -30,6 +31,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
         Nalakovana,
         Poskladana,
         NamontovaneKovania,
+        SkontrolovaneUpevnenia,
         Ukoncena
     }
 
@@ -58,10 +60,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
             {
                 switch (State)
                 {
-                    case NabytokState.Poskladana:
-                        return Type == NabytokType.Skrina
-                            ? false
-                            : true;
+                    case NabytokState.SkontrolovaneUpevnenia:
                     case NabytokState.NamontovaneKovania:
                     case NabytokState.Ukoncena:
                         return true;
@@ -117,7 +116,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
                 case NabytokState.Poskladana:
                     if (Type == NabytokType.Skrina)
                         return NabytokState.NamontovaneKovania;
-                    break;
+                    return NabytokState.SkontrolovaneUpevnenia;
             }
             return NabytokState.Ukoncena;
         }
@@ -143,7 +142,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
                 case NabytokState.Poskladana:
                     if (Type == NabytokType.Skrina)
                         return NabytokOperation.MontazKovani;
-                    break;
+                    return NabytokOperation.KontrolaUpevnenia;
             }
             throw new NotImplementedException();
         }
@@ -163,6 +162,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
                     return [StolarType.B];
                 case NabytokOperation.MontazKovani:
                     return [StolarType.A, StolarType.C];
+                case NabytokOperation.KontrolaUpevnenia:
+                    return [StolarType.C];
             }
             throw new NotImplementedException($"Operation {operation} is not implemented");
         }
@@ -175,7 +176,7 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Entities
                 case StolarType.B:
                     return [NabytokOperation.Skladanie];
                 case StolarType.C:
-                    return [NabytokOperation.MontazKovani, NabytokOperation.Morenie, NabytokOperation.Lakovanie];
+                    return [NabytokOperation.MontazKovani, NabytokOperation.Morenie, NabytokOperation.Lakovanie, NabytokOperation.KontrolaUpevnenia];
             }
             throw new NotImplementedException($"Stolar type {stolarType} is not implemented");
         }
