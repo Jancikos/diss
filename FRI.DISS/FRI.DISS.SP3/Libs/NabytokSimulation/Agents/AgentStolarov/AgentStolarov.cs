@@ -21,7 +21,8 @@ namespace FRI.DISS.SP3.Libs.NabytokSimulation.Agents.AgentStolarov
                 { NabytokOperation.Morenie, new() },
                 { NabytokOperation.Lakovanie, new() },
                 { NabytokOperation.Skladanie, new() },
-                { NabytokOperation.MontazKovani, new() }
+                { NabytokOperation.MontazKovani, new() },
+                { NabytokOperation.KontrolaUpevnenia, new() }
             };
 
         public AgentStolarov(int id, OSPABA.Simulation mySim, Agent parent) :
