@@ -42,9 +42,10 @@ namespace FRI.DISS.Libs.Generators
         public bool CanCalculateInterval => Count >= 30;
         public double IntervalHalfWidth => CanCalculateInterval
             ? (IntervalT_alfaValue * SampleStandardDeviation) / Math.Sqrt(Count)
-            : throw new InvalidOperationException("Interval calculation is not valid for sample sizes less than 30.");
+            : throw new InvalidOperationException("Interval calculation is not valid for sample sizes less than 30.");  
         public double IntervalLowerBound => Mean - IntervalHalfWidth;
         public double IntervalUpperBound => Mean + IntervalHalfWidth;
+        public double IntervalWidth => IntervalHalfWidth * 2;
 
         public Statistics()
         {

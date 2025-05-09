@@ -1,0 +1,48 @@
+﻿<Window x:Class="FRI.DISS.SP3.StanicaSimulationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:libsuc="clr-namespace:FRI.DISS.Libs.GUI.Controls;assembly=FRI.DISS.Libs.GUI"
+        xmlns:local="clr-namespace:FRI.DISS.SP3"
+        mc:Ignorable="d"
+        Title="DISS SP3 Stanica Simulation" Height="1000" Width="1200">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+    
+            <StackPanel>
+                <Menu>
+                    <MenuItem Header="Run simulation" Click="_mnitem_RunSimulation_Click">
+                    </MenuItem>
+    
+                    <MenuItem x:Name="_mnitem_Close" Header="Close" Click="_mnitem_Close_Click" />
+                </Menu>
+            </StackPanel>
+    
+    
+            <Grid Grid.Row="1" Margin="5">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <libsuc:DicreteStatistic x:Name="_sts_repTotalTime" Title="Celkový čas zakaznika v systému"
+                         MinWidth="200" TransformFromSecondsToHours="true" PlotShow="true" />
+
+                        <libsuc:DicreteStatistic x:Name="_sts_repQueueTime" Title="Průměrná doba čekání na vyřízení"
+                         MinWidth="200" PlotShow="true" />
+                         
+                        <libsuc:DicreteStatistic x:Name="_sts_repQueueLength" Title="Průměrná délka fronty na konci simulace"
+                         MinWidth="200" PlotShow="true" />
+                         
+                        <libsuc:DicreteStatistic x:Name="_sts_repTotalCustomerCount" Title="Celkový počet zakazníků"
+                         MinWidth="200" PlotShow="true" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+    
+        </Grid>
+    </Window>

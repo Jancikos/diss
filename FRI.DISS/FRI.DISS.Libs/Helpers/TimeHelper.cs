@@ -35,5 +35,19 @@ namespace FRI.DISS.Libs.Helpers
         {
             return MinutesToSeconds(minutes);
         }
+
+        public static double SecondsToHours(double seconds)
+        {
+            return seconds / 3600.0;
+        }
+        /// <summary>
+        /// seconds to hours
+        /// </summary>
+        /// <param name="seconds"></param>
+        /// <returns></returns>
+        public static double S2H(double seconds)
+        {
+            return SecondsToHours(seconds);
+        }
     }
 }

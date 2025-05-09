@@ -1,0 +1,96 @@
+﻿<Window x:Class="FRI.DISS.SP3.ExperimentsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:libsuc="clr-namespace:FRI.DISS.Libs.GUI.Controls;assembly=FRI.DISS.Libs.GUI"
+    xmlns:local="clr-namespace:FRI.DISS.SP3"
+    mc:Ignorable="d"
+    Title="ExperimentsWindow" Height="800" Width="1000">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <Menu>
+                <MenuItem x:Name="_mnitem_Close" Header="Close" Click="_mnitem_Close_Click" />
+            </Menu>
+        </StackPanel>
+
+
+        <Grid Grid.Row="1" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="200" />
+                <RowDefinition Height="250" />
+            </Grid.RowDefinitions>
+
+            <GroupBox Header="Simulations parameters">
+                <StackPanel Orientation="Horizontal">
+                    <GroupBox Header="Experiments controls">
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch"
+                                Margin="0 5">
+                                <Button Content="Start" Click="_btn_simStart_Click"
+                                    Margin="0 0 28 0" Padding="5 3" />
+                                <Button Content="Stop" Click="_btn_simStop_Click" Padding="5 3" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <Button Content="Resume" Click="_btn_simResume_Click"
+                                    Margin="0 0 10 0" Padding="5 3" />
+                                <Button Content="Pause" Click="_btn_simPause_Click" Padding="5 3" />
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox Header="General">
+                        <StackPanel Orientation="Vertical">
+                            <Button x:Name="_btn_confLoadFile" Content="Load configuration file"
+                                Click="_btn_confLoadFile_Click" Margin="0 0 0 5" Padding="5 3" />
+                            <libsuc:InlineText x:Name="_txt_confLoadedCount"
+                                Title="Loaded configurations:" Value="???" />
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox x:Name="_grbx_simCurrentRunning" Grid.Row="1"
+                Header="Current simulation">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Margin="0 0 0 55" FontSize="20" FontWeight="Bold">
+                        <Run x:Name="_txt_simCurrentReplication">x</Run>
+                        <Run Text="/" />
+                        <Run x:Name="_txt_simTotalReplications">YYY</Run>
+                        <Run Text=" replications done" />
+                    </TextBlock>
+                    <libsuc:InlineText x:Name="_txt_simStartTime"
+                        Title="Start time:" Value="???" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Grid>
+            </GroupBox>
+
+            <GroupBox x:Name="_grbx_confs" Grid.Row="2"
+                Header="Configurations">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Margin="0 0 0 55" FontSize="20" FontWeight="Bold">
+                        <Run x:Name="_txt_confsCurrent">x</Run>
+                        <Run Text="/" />
+                        <Run x:Name="_txt_confsTotal">YYY</Run>
+                        <Run Text=" simulation configurations done" />
+                    </TextBlock>
+                    <libsuc:InlineText x:Name="_txt_confsStartTime"
+                        Title="Start time:" Value="???" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <libsuc:InlineText x:Name="_txt_confsEndTime"
+                        Title="End time:" Value="???" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 40 0 0"/>
+                </Grid>
+            </GroupBox>
+
+        </Grid>
+    </Grid>
+</Window>
